@@ -1,0 +1,60 @@
+[2025-02-23 08:21:40] Users count: 6
+[2025-02-23 08:21:40] Schools count: 2
+[2025-02-23 08:21:40] Questions count: 4
+[2025-02-23 08:21:40] Active subscriptions count: 1
+[2025-02-23 08:21:40] Test results table exists: Yes
+[2025-02-23 08:21:40] Tests count: 0
+[2025-02-23 08:21:40] Revenue: 4.00 €
+[2025-02-23 08:21:40] Categories count: 6
+[2025-02-23 08:21:40] Subcategories count: 6
+[2025-02-23 08:21:40] Chapters count: 3
+[2025-02-23 08:27:04] Users count: 6
+[2025-02-23 08:27:04] Schools count: 2
+[2025-02-23 08:27:04] Questions count: 4
+[2025-02-23 08:27:04] Active subscriptions count: 1
+[2025-02-23 08:27:04] Test results table exists: Yes
+[2025-02-23 08:27:04] Tests count: 0
+[2025-02-23 08:27:04] Revenue: 4.00 €
+[2025-02-23 08:27:04] Categories count: 6
+[2025-02-23 08:27:04] Subcategories count: 6
+[2025-02-23 08:27:04] Chapters count: 3
+[2025-02-23 08:50:26] Users count: 6
+[2025-02-23 08:50:26] Schools count: 2
+[2025-02-23 08:50:26] Questions count: 4
+[2025-02-23 08:50:26] Active subscriptions count: 1
+[2025-02-23 08:50:26] Test results table exists: Yes
+[2025-02-23 08:50:26] Tests count: 0
+[2025-02-23 08:50:26] Revenue: 4.00 €
+[2025-02-23 08:50:26] Categories count: 6
+[2025-02-23 08:50:26] Subcategories count: 6
+[2025-02-23 08:50:26] Chapters count: 3
+[2025-02-23 10:51:33] Users count: 5
+[2025-02-23 10:51:33] Schools count: 1
+[2025-02-23 10:51:33] Questions count: 4
+[2025-02-23 10:51:33] Active subscriptions count: 1
+[2025-02-23 10:51:33] Test results table exists: Yes
+[2025-02-23 10:51:33] Tests count: 0
+[2025-02-23 10:51:33] Revenue: 4.00 €
+[2025-02-23 10:51:33] Categories count: 6
+[2025-02-23 10:51:33] Subcategories count: 6
+[2025-02-23 10:51:33] Chapters count: 3
+[2025-02-23 17:41:03] Users count: 6
+[2025-02-23 17:41:03] Schools count: 1
+[2025-02-23 17:41:03] Questions count: 4
+[2025-02-23 17:41:03] Active subscriptions count: 1
+[2025-02-23 17:41:03] Test results table exists: Yes
+[2025-02-23 17:41:03] Tests count: 0
+[2025-02-23 17:41:03] Revenue: 4.00 €
+[2025-02-23 17:41:03] Categories count: 6
+[2025-02-23 17:41:03] Subcategories count: 6
+[2025-02-23 17:41:03] Chapters count: 3
+[2025-02-25 20:14:52] Users count: 6
+[2025-02-25 20:14:52] Schools count: 1
+[2025-02-25 20:14:52] Questions count: 4
+[2025-02-25 20:14:52] Active subscriptions count: 7
+[2025-02-25 20:14:52] Test results table exists: Yes
+[2025-02-25 20:14:52] Tests count: 0
+[2025-02-25 20:14:52] Revenue: 99.00 €
+[2025-02-25 20:14:52] Categories count: 6
+[2025-02-25 20:14:52] Subcategories count: 6
+[2025-02-25 20:14:52] Chapters count: 3

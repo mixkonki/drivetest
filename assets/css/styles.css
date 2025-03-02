@@ -1,0 +1,150 @@
+/* === Βασικές Ρυθμίσεις === */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 2%;
+}
+
+
+/* Στυλ για το κείμενο */
+.welcome h1 {
+    text-align: center;
+    margin: 2% 0;
+    font-size: xx-large;
+    font-weight: bold;
+    line-height: 100%;
+}
+
+.welcome h2 {
+    text-align: center;
+    margin: 2% 0;
+    font-size: x-large;
+    font-weight: bold;
+    line-height: 50%;
+}
+
+.welcome p {
+    text-align: center;
+    margin: 2% 0;
+    font-size: large;
+}
+
+/* Στυλ για τα Κουμπιά Εγγραφής */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.buttons .btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* προσθήκη για καλύτερο κεντράρισμα */
+    background-color: #aa3636;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    min-width: 250px; /* προσθήκη ελάχιστου πλάτους */
+    width: auto; /* θα προσαρμόζεται στο περιεχόμενο αλλά όχι μικρότερο από min-width */
+    box-sizing: border-box; /* για να συμπεριλαμβάνει padding στο συνολικό πλάτος */
+}
+
+.buttons .btn-secondary:hover {
+    background-color: #bb4747;
+    transform: scale(1.05);
+}
+
+.buttons .btn-secondary img {
+    margin-right: 10px;
+    height: 30px;
+    transition: all 0.3s ease;
+    flex-shrink: 0; /* προσθήκη για να μην συμπιέζεται η εικόνα */
+}
+
+.buttons .btn-secondary img:hover {
+    transform: scale(1.2);
+}
+
+/* Προσθήκη για καλύτερη προσαρμογή σε μικρές οθόνες */
+@media (max-width: 600px) {
+    .buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .buttons .btn-secondary {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+.buttons .btn-secondary img {
+    margin-right: 10px;
+    height: 30px;
+    transition: all 0.3s ease;
+    filter: brightness(0) invert(1); /* Αυτή η γραμμή κάνει τα εικονίδια λευκά */
+}
+
+
+/* === Footer === */
+footer {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: auto;
+}
+.verification-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.verification-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+}
+
+.verification-box h1 {
+    color: #28a745;
+}
+
+.verification-box p {
+    font-size: 16px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+.user-avatar{
+    width: 50px;
+    height: 50px;
+
+}

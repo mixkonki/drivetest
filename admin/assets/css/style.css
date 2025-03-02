@@ -1,0 +1,138 @@
+/* === Γενικές Ρυθμίσεις === */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* === Κεντρικό Container === */
+.container {
+    max-width: 50%;
+    margin: 20px auto;
+    padding: 40px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* === Header === */
+header {
+    background-color: #a02626;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header .logo {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* === Κουμπιά === */
+.btn {
+    display: inline-block;
+    padding: 15px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background-color: #a02626;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #8b1e1e;
+}
+
+.btn-secondary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #0056b3;
+}
+
+/* === Κεντρικό Banner === */
+.main-banner {
+    text-align: center;
+    padding: 60px;
+    background: #a02626;
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.main-banner h1 {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.main-banner p {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* === Κουμπιά Εγγραφής στην Κεντρική Σελίδα === */
+.register-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 25px;
+}
+
+.register-buttons .btn {
+    font-size: 20px;
+    padding: 18px 35px;
+}
+
+/* === Πληροφοριακό Κουτί === */
+.info-box {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    width: 60%;
+    text-align: left;
+}
+
+/* === Υποσέλιδο (Footer) === */
+footer {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 30px;
+}

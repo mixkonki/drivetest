@@ -1,0 +1,57 @@
+h2 {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+button {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    margin: 2px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+.btn-primary {
+    background-color: #28a745;
+    color: white;
+    border-radius: 3px;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+    border-radius: 3px;
+}
+
+#add-subcategory-btn {
+    width: auto;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    display: block;
+    margin: 10px auto;
+}

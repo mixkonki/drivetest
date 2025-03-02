@@ -1,0 +1,254 @@
+/* Βασικό Styling για τη διαχείριση ερωτήσεων */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 20px;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Στοίχιση dropdowns */
+.select-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.select-group label {
+    font-weight: bold;
+}
+
+select, textarea, input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Στυλ για τις απαντήσεις */
+.answers {
+    margin-top: 20px;
+}
+
+.answer-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.answer-item input[type="text"] {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.answer-item input[type="checkbox"] {
+    margin-left: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+/* Διαμορφώνει την υποκατηγορία και το κεφάλαιο στην ίδια γραμμή */
+.select-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.select-group .select-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.select-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.select-group select {
+    width: 100%;
+}
+
+/* Διαμορφώνει το ID ερώτησης σαν ετικέτα */
+.question-id-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.question-id {
+    background-color: #e9ecef;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* Στοιχίζει το αρχείο δίπλα στην ερώτηση */
+.question-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.question-group textarea {
+    flex: 0 0 75%;
+    min-width: 200px;
+    height: 100px;
+    resize: none;
+}
+
+.question-group .file-input {
+    flex: 0 0 25%;
+    height: 100px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Στυλ για τον πίνακα ερωτήσεων */
+#questions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#questions-table th, #questions-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    color: black;
+}
+
+#questions-table th {
+    background-color: #f4f4f4;
+}
+
+#questions-table th:last-child, #questions-table td:last-child {
+    display: table-cell; /* Βεβαιώνουμε ότι εμφανίζεται το ID */
+    color: black;
+}
+
+#question-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Βασικό στυλ για το container των απαντήσεων */
+#answers-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+/* Στυλ για κάθε απάντηση */
+.answer-entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Πεδίο εισαγωγής κειμένου */
+.answer-entry .answer-text {
+    flex: 0 0 50%;
+    height: 80px;
+    resize: none;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Checkbox για τη σωστή απάντηση */
+.answer-entry .correct-answer {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+/* Πεδίο για multimedia απάντησης */
+.answer-entry .answer-media {
+    flex: 0 0 20%;
+    height: 80px;
+    box-sizing: border-box;
+}
+
+/* Κουμπί διαγραφής */
+.answer-entry .delete-answer-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.answer-entry .delete-answer-btn:hover {
+    background: #c82333;
+}
+
+/* Κουμπί προσθήκης νέας απάντησης */
+#add-answer-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+#add-answer-btn:hover {
+    background: #218838;
+}
+
+/* Γενικό στυλ για input file */
+.file-input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

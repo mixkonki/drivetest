@@ -1,0 +1,8 @@
+{
+    "name": "DriveTest",
+    "short_name": "DriveTest",
+    "start_url": "/public/index.php",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#d9534f"
+  }
