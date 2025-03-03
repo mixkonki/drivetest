@@ -39,3 +39,40 @@ Received FILES data: Array
 Transaction started for user ID: 4Preparing user update for ID: 4User update successful for ID: 4Starting to fetch user data for ID: 4Successfully fetched user data for ID: 4 - Name: Σχολή ΟδηγώνStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 4Editable state for user ID 4: false[2025-03-03 15:55:09] ✅ Email sent successfully to k.michailidis@thessdrive.gr with subject: Επαναφορά Κωδικού - DriveTest
 [2025-03-03 15:59:31] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: Προσθήκη σε σχολή στο DriveTest
 [2025-03-03 16:00:47] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: Επαναφορά Κωδικού - DriveTest
+Starting to fetch user data for ID: 17Successfully fetched user data for ID: 17 - Name: Kostas TestStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 17Editable state for user ID 17: falseProcessing action: deleteProcessing action: updateStarting update for user ID: 17Received POST data: Array
+(
+    [action] => update
+    [fullname] => Kostas Test
+    [email] => kostas.michailidis1@gmail.com
+    [phone] => 
+    [license_number] => 
+    [responsible_person] => Κωνσταντίνος Μιχαηλίδης
+    [address] => Εγνατία
+    [street_number] => 
+    [postal_code] => 555 35
+    [city] => Πυλαία
+    [latitude] => 40.59836690
+    [longitude] => 22.98564940
+)
+Received FILES data: Array
+(
+)
+Transaction started for user ID: 17Preparing user update for ID: 17User update successful for ID: 17Starting to fetch user data for ID: 4Successfully fetched user data for ID: 4 - Name: Σχολή ΟδηγώνStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 4Editable state for user ID 4: falseProcessing action: deleteProcessing action: updateStarting update for user ID: 4Received POST data: Array
+(
+    [action] => update
+    [fullname] => Σχολή Οδηγών
+    [email] => k.michailidis@thessdrive.gr
+    [phone] => 2310529802
+    [license_number] => 
+    [responsible_person] => Κωνσταντίνος Μιχαηλίδης
+    [address] => Παπαδιαμαντοπούλου
+    [street_number] => 13
+    [postal_code] => 561 23
+    [city] => Θεσσαλονίκη
+    [latitude] => 40.64877390
+    [longitude] => 22.93441830
+)
+Received FILES data: Array
+(
+)
+Transaction started for user ID: 4Preparing user update for ID: 4User update successful for ID: 4[2025-03-03 16:37:20] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: Επαλήθευση Email - DriveTest

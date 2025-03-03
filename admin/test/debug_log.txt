@@ -98,3 +98,13 @@
 [2025-03-03 15:53:53] Categories count: 6
 [2025-03-03 15:53:53] Subcategories count: 6
 [2025-03-03 15:53:53] Chapters count: 3
+[2025-03-03 16:34:58] Users count: 6
+[2025-03-03 16:34:58] Schools count: 1
+[2025-03-03 16:34:58] Questions count: 4
+[2025-03-03 16:34:58] Active subscriptions count: 7
+[2025-03-03 16:34:58] Test results table exists: Yes
+[2025-03-03 16:34:58] Tests count: 0
+[2025-03-03 16:34:58] Revenue: 99.00 €
+[2025-03-03 16:34:58] Categories count: 6
+[2025-03-03 16:34:58] Subcategories count: 6
+[2025-03-03 16:34:58] Chapters count: 3
