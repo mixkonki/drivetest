@@ -1,0 +1,5 @@
+[2025-03-03 06:46:38] ✅ Email sent successfully to kostas.michailidis@hotmail.gr with subject: 🚗 Επιβεβαίωση Συνδρομής - DriveTest
+[2025-03-03 07:23:51] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: Επαναφορά Κωδικού - DriveTest
+[2025-03-03 12:29:36] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: Επαναφορά Κωδικού - DriveTest
+[2025-03-03 12:31:45] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: Επαναφορά Κωδικού - DriveTest
+[2025-03-03 15:12:04] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: Επαναφορά Κωδικού - DriveTest

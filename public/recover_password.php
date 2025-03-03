@@ -14,34 +14,44 @@ $success = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
-
-    $stmt = $mysqli->prepare("SELECT id, email, created_at FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 1) {
-        $user = $result->fetch_assoc();
-        $verification_token = bin2hex(random_bytes(32));
-        $token_created_at = date('Y-m-d H:i:s'); // Χρησιμοποιούμε το created_at για να ελέγξουμε τη λήξη
-
-        $update_stmt = $mysqli->prepare("UPDATE users SET verification_token = ? WHERE id = ?");
-        $update_stmt->bind_param("si", $verification_token, $user['id']);
-        
-        if ($update_stmt->execute()) {
-            send_reset_password_email($user['email'], $verification_token);
-            $success = isset($translations['reset_email_sent']) ? $translations['reset_email_sent'] : "Ένα email επαναφοράς κωδικού έχει σταλεί στο " . htmlspecialchars($email) . ".";
-        } else {
-            $error = isset($translations['reset_error']) ? $translations['reset_error'] : "Σφάλμα κατά την επαναφορά. Προσπαθήστε ξανά!";
-        }
-        $update_stmt->close();
+    
+    if (empty($email)) {
+        $error = "Παρακαλώ εισάγετε το email σας.";
     } else {
-        $error = isset($translations['email_not_found']) ? $translations['email_not_found'] : "Το email δεν βρέθηκε. Ελέγξτε το και προσπαθήστε ξανά.";
-    }
-    $stmt->close();
-}
-?>
+        $stmt = $mysqli->prepare("SELECT id, email FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            $verification_token = bin2hex(random_bytes(32));
+            $token_expiry = date('Y-m-d H:i:s', strtotime('+1 hour')); // Λήξη σε 1 ώρα
+            
+            // Ενημέρωση και του πεδίου verification_token_expiry
+            $update_stmt = $mysqli->prepare("UPDATE users SET verification_token = ?, verification_token_expiry = ? WHERE id = ?");
+            $update_stmt->bind_param("ssi", $verification_token, $token_expiry, $user['id']);
+            
+            if ($update_stmt->execute()) {
+                // Αποστολή email επαναφοράς κωδικού
+                if (send_reset_password_email($user['email'], $verification_token, $language)) {
+                    $success = isset($translations['reset_email_sent']) ? $translations['reset_email_sent'] : "Ένα email επαναφοράς κωδικού έχει σταλεί στο " . htmlspecialchars($email) . ".";
+                } else {
+                    $error = "Σφάλμα κατά την αποστολή email. Παρακαλώ προσπαθήστε ξανά.";
+                }
+            } else {
+                $error = isset($translations['reset_error']) ? $translations['reset_error'] : "Σφάλμα κατά την επαναφορά. Προσπαθήστε ξανά!";
+            }
+            $update_stmt->close();
+        } else {
+            $error = isset($translations['email_not_found']) ? $translations['email_not_found'] : "Το email δεν βρέθηκε. Ελέγξτε το και προσπαθήστε ξανά.";
+        }
+        $stmt->close();
+    }
+}
+// Φόρτωση του header
+require_once '../includes/header.php';
+?>
 <!DOCTYPE html>
 <html lang="<?= $language ?>">
 <head>
@@ -50,56 +60,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title><?= isset($translations['reset_password_title']) ? $translations['reset_password_title'] : 'Επαναφορά Κωδικού - DriveTest' ?></title>
     <link rel="icon" type="image/ico" href="<?= BASE_URL ?>/assets/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/register.css">
-    <style>
-        .container {
-            min-height: calc(100vh - 200px); /* Λαμβάνει υπόψη header/footer */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .card {
-            width: 100%;
-            max-width: 500px;
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .card-body {
-            padding: 2rem;
-        }
-        .text-center.mb-4 img {
-            max-width: 150px;
-        }
-        .alert {
-            margin-bottom: 1rem;
-        }
-        .form-label {
-            font-weight: 500;
-        }
-        .btn-primary {
-            background: #d9534f;
-            border: none;
-        }
-        .btn-primary:hover {
-            background: #c9302c;
-        }
-    </style>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/recover_password.css">
 </head>
 <body>
-    <?php require_once '../includes/header.php'; ?>
-
-    <main class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
+    <main class="container">
+        <div class="recover-container">
+            <div class="recover-form">
                 <div class="card shadow">
-                    <div class="card-body">
-                        <div class="text-center mb-4">
-                            <img src="<?= BASE_URL ?>/assets/images/drivetest.png" alt="DriveTest" class="img-fluid" style="max-width: 120px;">
-                        </div>
-                        <h2 class="text-center mb-3"><?= isset($translations['reset_password_title']) ? $translations['reset_password_title'] : 'Επαναφορά Κωδικού' ?></h2>
-                        <p class="text-center text-muted mb-4"><?= isset($translations['reset_password_subtitle']) ? $translations['reset_password_subtitle'] : 'Εισαγάγετε το email σας για να λάβετε σύνδεσμο επαναφοράς.' ?></p>
+                    <div class="card-body text-center">
+                        <img src="<?= BASE_URL ?>/assets/images/drivetest.png" alt="DriveTest" class="img-fluid" style="max-width: 120px;">
+                        <h2 class="mb-3"><?= isset($translations['reset_password_title']) ? $translations['reset_password_title'] : 'Επαναφορά Κωδικού' ?></h2>
+                        <p class="text-muted mb-4"><?= isset($translations['reset_password_subtitle']) ? $translations['reset_password_subtitle'] : 'Εισαγάγετε το email σας για να λάβετε σύνδεσμο επαναφοράς.' ?></p>
                         <form action="recover_password.php?lang=<?= $language ?>" method="post" class="needs-validation" novalidate>
                             <?php if ($error): ?>
                                 <div class="alert alert-danger" role="alert"><?= $error ?></div>
@@ -115,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             <button type="submit" class="btn btn-primary w-100"><?= isset($translations['reset_button']) ? $translations['reset_button'] : 'Αποστολή Συνδέσμου' ?></button>
                         </form>
-                        <p class="text-center mt-3"><?= isset($translations['login_link']) ? $translations['login_link'] : 'Θυμηθήκατε τον κωδικό σας? <a href="' . BASE_URL . '/public/login.php?lang=' . $language . '">Συνδεθείτε</a>' ?></p>
+                        <p class="mt-3"><?= isset($translations['login_link']) ? $translations['login_link'] : 'Θυμηθήκατε τον κωδικό σας; <a href="' . BASE_URL . '/public/login.php?lang=' . $language . '">Συνδεθείτε</a>' ?></p>
                     </div>
                 </div>
             </div>
@@ -123,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </main>
 
     <?php require_once '../includes/footer.php'; ?>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
 </body>
 </html>

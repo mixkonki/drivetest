@@ -54,7 +54,17 @@ $stmt->close();
 function check_user_role($required_role) {
     global $role;
     if ($role !== $required_role) {
-        header("Location: " . BASE_URL . "/dashboard.php?error=unauthorized");
+        if ($role === 'user') {
+            header("Location: " . BASE_URL . "/users/dashboard.php?error=unauthorized");
+        } else if ($role === 'admin') {
+            header("Location: " . BASE_URL . "/admin/dashboard.php?error=unauthorized");
+        } else if ($role === 'school') {
+            header("Location: " . BASE_URL . "/schools/dashboard.php?error=unauthorized");
+        } else if ($role === 'student') {
+            header("Location: " . BASE_URL . "/students/dashboard.php?error=unauthorized");
+        } else {
+            header("Location: " . BASE_URL . "/public/login.php?error=unauthorized");
+        }
         exit();
     }
 }

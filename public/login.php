@@ -107,6 +107,7 @@ require_once('../includes/header.php');
 
 <main class="container" role="main">
     <h1 class="page-title" aria-label="Σύνδεση Χρήστη">Σύνδεση Χρήστη</h1>
+    
 
     <!-- Εμφάνιση μηνύματος λάθους αν υπάρχει -->
     <?php if (isset($error)) : ?>
@@ -127,6 +128,15 @@ require_once('../includes/header.php');
         </div>
 
         <button type="submit" class="login-btn" aria-label="Σύνδεση">Σύνδεση</button>
+        <!-- Προσθέστε αυτόν τον κώδικα μετά το κουμπί "Σύνδεση" στο αρχείο login.php -->
+
+<div class="form-group text-center mt-3">
+    <a href="<?= BASE_URL ?>/public/recover_password.php" class="forgot-password">Ξέχασα τον κωδικό μου</a>
+</div>
+
+<div class="form-group text-center mt-2">
+    <a href="<?= BASE_URL ?>/public/register_user.php" class="register-link">Δεν έχετε λογαριασμό; Εγγραφείτε εδώ</a>
+</div>
     </form>
 </main>
 

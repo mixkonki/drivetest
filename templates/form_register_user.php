@@ -29,11 +29,13 @@
         </div>
 
         <div class="password-visibility">
-            <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="<?= isset($translations['confirm_password_placeholder']) ? $translations['confirm_password_placeholder'] : 'Επιβεβαίωση Συνθηματικού' ?>" required>
-            <span class="password-toggle" onclick="togglePassword('confirm_password')">
-                <img src="<?= BASE_URL ?>/assets/images/eye.png" alt="Show/Hide Password" style="width: 20px;">
-            </span>
-        </div>
+    <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="<?= isset($translations['password_placeholder']) ? $translations['password_placeholder'] : 'Επιβεβαίωση συνθηματικού' ?>" required>
+
+    <span class="password-toggle" onclick="togglePassword('confirm_password')">
+        <img src="<?= BASE_URL ?>/assets/images/eye.png" alt="Show/Hide Password" style="width: 20px;">
+    </span>
+</div>
+
 
         <p class="text_pass"><?= isset($translations['password_requirements']) ? $translations['password_requirements'] : 'Το συνθηματικό πρέπει να περιέχει:' ?></p>
         <ul class="password-hint">
@@ -57,4 +59,7 @@
 
     </form>
     <br><p class="login-link"><?= isset($translations['login_link']) ? $translations['login_link'] : 'Έχετε ήδη λογαριασμό? <a href="' . BASE_URL . '/public/login.php?lang=' . $language . '">Συνδεθείτε</a>' ?></p>
+
 </div>
+
+

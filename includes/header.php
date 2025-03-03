@@ -38,11 +38,27 @@ if (!defined('BASE_URL')) {
             <li><a href="<?= BASE_URL ?>/public/index.php">Αρχική</a></li>
             <li><a href="<?= BASE_URL ?>/public/about.php">Σχετικά</a></li>
             <li><a href="<?= BASE_URL ?>/public/contact.php">Επικοινωνία</a></li>
+            <li><a href="<?= BASE_URL ?>/public/login.php">Σύνδεση</a></li>
             <?php if (isset($_SESSION['user_id'])) : ?>
-                <li><a href="<?= BASE_URL ?>/admin/dashboard.php">Πίνακας Ελέγχου</a></li>
-                <li><a href="<?= BASE_URL ?>/admin/logout.php" class="logout-btn">Αποσύνδεση</a></li>
-            <?php else : ?>
-                <li><a href="<?= BASE_URL ?>/public/login.php" class="login-btn">Είσοδος</a></li>
+                <li><?php if (isset($_SESSION['user_id'])) : ?>
+    <?php if (isset($_SESSION['role'])): ?>
+        <?php if ($_SESSION['role'] === 'admin'): ?>
+            <li><a href="<?= BASE_URL ?>/admin/dashboard.php">Πίνακας Ελέγχου</a></li>
+        <?php elseif ($_SESSION['role'] === 'user'): ?>
+            <li><a href="<?= BASE_URL ?>/users/dashboard.php">Πίνακας Ελέγχου</a></li>
+        <?php elseif ($_SESSION['role'] === 'school'): ?>
+            <li><a href="<?= BASE_URL ?>/schools/dashboard.php">Πίνακας Ελέγχου</a></li>
+        <?php elseif ($_SESSION['role'] === 'student'): ?>
+            <li><a href="<?= BASE_URL ?>/students/dashboard.php">Πίνακας Ελέγχου</a></li>
+        <?php endif; ?>
+    <?php else: ?>
+        <li><a href="<?= BASE_URL ?>/public/login.php">Πίνακας Ελέγχου</a></li>
+    <?php endif; ?>
+    <li><a href="<?= BASE_URL ?>/admin/logout.php" class="logout-btn">Αποσύνδεση</a></li>
+<?php else : ?>
+    <li><a href="<?= BASE_URL ?>/public/login.php" class="login-btn">Είσοδος</a></li>
+<?php endif; ?></li>
+       
             <?php endif; ?>
         </ul>
     </nav>

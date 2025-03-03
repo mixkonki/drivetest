@@ -1,13 +1,17 @@
-// Password toggle
+/// Password toggle
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
     const toggle = input.nextElementSibling;
+    
+    // Δημιουργία των απόλυτων διαδρομών
+    const baseUrl = window.location.origin + '/drivetest';
+    
     if (input.type === "password") {
         input.type = "text";
-        toggle.querySelector('img').src = "<?= BASE_URL ?>/assets/images/eye_slash.png";
+        toggle.querySelector('img').src = baseUrl + "/assets/images/eye_slash.png";
     } else {
         input.type = "password";
-        toggle.querySelector('img').src = "<?= BASE_URL ?>/assets/images/eye.png";
+        toggle.querySelector('img').src = baseUrl + "/assets/images/eye.png";
     }
 }
 
