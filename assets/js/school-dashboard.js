@@ -1,187 +1,159 @@
-// Αρχείο JavaScript για το dashboard της σχολής
-
-// Αρχικοποίηση του χάρτη
-let map;
-let marker;
-
+// Αρχικοποίηση Google Maps
 function initMap() {
-    const mapElement = document.getElementById("map");
-    if (!mapElement) return;
+    // Παίρνουμε τις συντεταγμένες από τα πεδία latitude και longitude
+    const latitudeInput = document.getElementById('latitude');
+    const longitudeInput = document.getElementById('longitude');
     
-    // Λήψη συντεταγμένων από data attributes
-    const lat = parseFloat(mapElement.getAttribute('data-lat') || 38.9);
-    const lng = parseFloat(mapElement.getAttribute('data-lng') || 22.9);
-    const hasCoordinates = mapElement.hasAttribute('data-has-coordinates');
+    // Αρχικές προεπιλεγμένες συντεταγμένες (κέντρο της Ελλάδας)
+    let latitude = 39.0742;
+    let longitude = 21.8243;
+    let zoomLevel = 6; // Προεπιλεγμένο επίπεδο ζουμ για όλη την Ελλάδα
     
-    if (hasCoordinates) {
-        const schoolLocation = { lat, lng };
-        map = new google.maps.Map(mapElement, {
-            zoom: 15,
-            center: schoolLocation,
-        });
-        marker = new google.maps.Marker({
-            position: schoolLocation,
-            map: map,
-            title: document.getElementById('school_name').value || 'Τοποθεσία Σχολής'
-        });
-    } else {
-        // Αν δεν υπάρχουν συντεταγμένες, εμφάνιση χάρτη της Ελλάδας
-        const defaultLocation = { lat: 38.9, lng: 22.9 };
-        map = new google.maps.Map(mapElement, {
-            zoom: 6,
-            center: defaultLocation,
-        });
+    // Χρήση των συντεταγμένων από τα πεδία αν υπάρχουν
+    if (latitudeInput && latitudeInput.value && longitudeInput && longitudeInput.value) {
+        latitude = parseFloat(latitudeInput.value);
+        longitude = parseFloat(longitudeInput.value);
+        zoomLevel = 15; // Μεγαλύτερο ζουμ για συγκεκριμένη τοποθεσία
     }
     
-    // Προσθήκη listener για ενημέρωση του χάρτη όταν αλλάζει η διεύθυνση
-    document.getElementById('address')?.addEventListener('change', updateMap);
-    document.getElementById('street_number')?.addEventListener('change', updateMap);
-    document.getElementById('postal_code')?.addEventListener('change', updateMap);
-    document.getElementById('city')?.addEventListener('change', updateMap);
-}
-
-function updateMap() {
-    const address = document.getElementById('address').value;
-    const streetNumber = document.getElementById('street_number').value;
-    const postalCode = document.getElementById('postal_code').value;
-    const city = document.getElementById('city').value;
+    // Δημιουργία του χάρτη στο div με id "map"
+    const mapElement = document.getElementById('map');
+    if (!mapElement) return; // Αν δεν υπάρχει το element, επιστροφή
     
-    if (address && city) {
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ 
-            'address': address + ' ' + streetNumber + ', ' + city + ', ' + postalCode + ', Ελλάδα' 
-        }, function(results, status) {
-            if (status === 'OK') {
-                map.setCenter(results[0].geometry.location);
-                map.setZoom(15);
-                
-                if (marker) {
-                    marker.setMap(null);
-                }
-                
-                marker = new google.maps.Marker({
-                    map: map,
-                    position: results[0].geometry.location,
-                    title: document.getElementById('school_name').value || 'Τοποθεσία Σχολής'
-                });
-            }
-        });
-    }
-}
-
-// Διαχείριση κοινωνικών δικτύων
-document.addEventListener('DOMContentLoaded', function() {
-    // Προσθήκη νέου κοινωνικού δικτύου
-    const addSocialButton = document.getElementById('add-social');
-    if (addSocialButton) {
-        addSocialButton.addEventListener('click', addSocialNetwork);
-    }
-    
-    // Διαγραφή κοινωνικών δικτύων (για τα υπάρχοντα)
-    const deleteSocialButtons = document.querySelectorAll('.social-delete');
-    deleteSocialButtons.forEach(button => {
-        button.addEventListener('click', deleteSocialNetwork);
+    const map = new google.maps.Map(mapElement, {
+        center: { lat: latitude, lng: longitude },
+        zoom: zoomLevel,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
     });
-});
-
-// Προσθήκη νέου κοινωνικού δικτύου
-function addSocialNetwork() {
-    const select = document.getElementById('social-select');
-    const selectedOption = select.options[select.selectedIndex];
     
-    if (select.value) {
-        const socialKey = select.value;
-        const socialName = selectedOption.text;
-        const socialIcon = selectedOption.getAttribute('data-icon');
-        
-        // Έλεγχος αν υπάρχει ήδη αυτό το κοινωνικό δίκτυο
-        if (!document.querySelector(`[name="social_${socialKey}"]`)) {
-            const container = document.getElementById('new-social-container');
-            
-            const socialDiv = document.createElement('div');
-            socialDiv.className = 'social-link';
-            socialDiv.dataset.social = socialKey;
-            
-            const icon = document.createElement('i');
-            icon.className = socialIcon;
-            
-            const input = document.createElement('input');
-            input.type = 'url';
-            input.name = `social_${socialKey}`;
-            input.className = 'form-control';
-            input.placeholder = `URL προφίλ ${socialName}`;
-            
-            const deleteButton = document.createElement('button');
-            deleteButton.type = 'button';
-            deleteButton.className = 'social-delete';
-            deleteButton.innerHTML = '<i class="fas fa-times"></i>';
-            deleteButton.setAttribute('aria-label', 'Διαγραφή');
-            deleteButton.addEventListener('click', deleteSocialNetwork);
-            
-            socialDiv.appendChild(icon);
-            socialDiv.appendChild(input);
-            socialDiv.appendChild(deleteButton);
-            
-            container.appendChild(socialDiv);
-            
-            // Αφαίρεση της επιλογής από το dropdown
-            select.removeChild(selectedOption);
-            select.selectedIndex = 0;
+    // Δημιουργία marker για την τοποθεσία
+    const marker = new google.maps.Marker({
+        position: { lat: latitude, lng: longitude },
+        map: map,
+        title: document.getElementById('school_name')?.value || 'Σχολή',
+        draggable: true // Επιτρέπει στον χρήστη να μετακινήσει το marker
+    });
+    
+    // Ενημέρωση των συντεταγμένων όταν σύρεται το marker
+    google.maps.event.addListener(marker, 'dragend', function() {
+        const position = marker.getPosition();
+        if (latitudeInput) latitudeInput.value = position.lat();
+        if (longitudeInput) longitudeInput.value = position.lng();
+    });
+    
+    // Προσθήκη listeners για τα πεδία διεύθυνσης
+    const addressFields = ['address', 'street_number', 'postal_code', 'city'];
+    addressFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (input) {
+            input.addEventListener('change', function() {
+                updateMapFromAddress();
+            });
         }
-    }
-}
-
-// Διαγραφή κοινωνικού δικτύου
-function deleteSocialNetwork(event) {
-    const button = event.target.closest('.social-delete');
-    const socialLink = button.closest('.social-link');
-    const socialKey = socialLink.dataset.social || socialLink.querySelector('input[name^="social_"]').name.replace('social_', '');
-    const socialName = socialLink.querySelector('input').placeholder.replace('URL προφίλ ', '');
+    });
     
-    // Προσθήκη του κοινωνικού δικτύου πίσω στο dropdown
-    const select = document.getElementById('social-select');
-    const option = document.createElement('option');
-    option.value = socialKey;
-    option.text = socialName;
-    option.setAttribute('data-icon', socialLink.querySelector('i').className);
-    select.appendChild(option);
+    // Προσθήκη κουμπιού ενημέρωσης χάρτη
+    const updateMapButton = document.createElement('button');
+    updateMapButton.textContent = 'Ενημέρωση Χάρτη';
+    updateMapButton.className = 'btn-secondary';
+    updateMapButton.style.marginTop = '10px';
+    updateMapButton.type = 'button';
+    updateMapButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        updateMapFromAddress();
+    });
     
-    // Αφαίρεση του κοινωνικού δικτύου από τη φόρμα
-    socialLink.remove();
-}
-
-// Προεπισκόπηση εικόνας λογότυπου
-function previewLogo(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.querySelector('.school-logo');
-            if (preview) {
-                preview.src = e.target.result;
-            } else {
-                const newPreview = document.createElement('img');
-                newPreview.src = e.target.result;
-                newPreview.alt = 'Λογότυπο Σχολής';
-                newPreview.className = 'school-logo';
+    // Προσθήκη του κουμπιού μετά τον χάρτη
+    mapElement.parentNode.insertBefore(updateMapButton, mapElement.nextSibling);
+    
+    // Συνάρτηση ενημέρωσης του χάρτη από τη διεύθυνση
+    function updateMapFromAddress() {
+        const address = document.getElementById('address')?.value || '';
+        const streetNumber = document.getElementById('street_number')?.value || '';
+        const postalCode = document.getElementById('postal_code')?.value || '';
+        const city = document.getElementById('city')?.value || '';
+        
+        if (!address || !city) return; // Αν δεν υπάρχουν βασικά στοιχεία διεύθυνσης, επιστροφή
+        
+        // Δημιουργία πλήρους διεύθυνσης
+        const fullAddress = `${address} ${streetNumber}, ${postalCode} ${city}, Ελλάδα`;
+        
+        // Χρήση του Geocoder για μετατροπή της διεύθυνσης σε συντεταγμένες
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ 'address': fullAddress }, function(results, status) {
+            if (status === 'OK' && results[0]) {
+                const location = results[0].geometry.location;
                 
-                const container = document.querySelector('.logo-upload');
-                const noLogoText = container.querySelector('p');
-                if (noLogoText) {
-                    container.replaceChild(newPreview, noLogoText);
-                } else {
-                    container.insertBefore(newPreview, container.firstChild);
-                }
+                // Ενημέρωση των πεδίων latitude/longitude
+                if (latitudeInput) latitudeInput.value = location.lat();
+                if (longitudeInput) longitudeInput.value = location.lng();
+                
+                // Ενημέρωση του χάρτη και του marker
+                map.setCenter(location);
+                marker.setPosition(location);
+                map.setZoom(15);
+            } else {
+                alert('Η γεωκωδικοποίηση της διεύθυνσης απέτυχε. Παρακαλώ ελέγξτε τα στοιχεία διεύθυνσης.');
             }
-        };
-        reader.readAsDataURL(file);
+        });
     }
 }
 
-// Προσθήκη event listener για την προεπισκόπηση λογότυπου
+// Προσθήκη νέων κοινωνικών δικτύων
 document.addEventListener('DOMContentLoaded', function() {
-    const logoInput = document.querySelector('input[name="logo"]');
-    if (logoInput) {
-        logoInput.addEventListener('change', previewLogo);
+    const addSocialBtn = document.getElementById('add-social');
+    const socialSelect = document.getElementById('social-select');
+    const newSocialContainer = document.getElementById('new-social-container');
+    
+    if (addSocialBtn && socialSelect && newSocialContainer) {
+        addSocialBtn.addEventListener('click', function() {
+            const selectedOption = socialSelect.options[socialSelect.selectedIndex];
+            if (selectedOption.value) {
+                const socialKey = selectedOption.value;
+                const socialName = selectedOption.text;
+                const socialIcon = selectedOption.getAttribute('data-icon');
+                
+                const socialDiv = document.createElement('div');
+                socialDiv.className = 'social-link';
+                socialDiv.innerHTML = `
+                    <i class="${socialIcon}"></i>
+                    <input type="url" name="social_${socialKey}" class="form-control" 
+                           placeholder="URL προφίλ ${socialName}" value="">
+                    <button type="button" class="social-delete" onclick="this.parentNode.remove()">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                
+                newSocialContainer.appendChild(socialDiv);
+                
+                // Αφαίρεση από τη λίστα
+                socialSelect.removeChild(selectedOption);
+                socialSelect.selectedIndex = 0;
+            }
+        });
+    }
+    
+    // Προσθήκη λειτουργικότητας για το κουμπί ΑΑΔΕ
+    const aadeButton = document.querySelector('.aade-button');
+    if (aadeButton) {
+        aadeButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const taxId = document.getElementById('tax_id').value;
+            if (!taxId || taxId.length !== 9) {
+                alert('Παρακαλώ εισάγετε έναν έγκυρο ΑΦΜ (9 ψηφία)');
+                return;
+            }
+            
+            // Υποβολή της φόρμας με το όνομα του κουμπιού
+            const form = this.closest('form');
+            if (form) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'fetch_aade';
+                hiddenInput.value = '1';
+                form.appendChild(hiddenInput);
+                form.submit();
+            }
+        });
     }
 });

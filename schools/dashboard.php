@@ -2,6 +2,7 @@
 require_once '../config/config.php';
 require_once '../includes/db_connection.php';
 require_once '../includes/user_auth.php';
+require_once '../includes/aade_api.php'; // Προσθέτουμε το νέο αρχείο για το API της ΑΑΔΕ
 
 // Έλεγχος αν ο χρήστης είναι σχολή
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'school') {
@@ -94,6 +95,52 @@ $result_pending = $stmt_pending->get_result();
 $pending_requests = $result_pending->fetch_assoc()['total'];
 $stmt_pending->close();
 
+// Άντληση στοιχείων από ΑΑΔΕ
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_aade'])) {
+    $tax_id = trim($school['tax_id']);
+    
+    if (empty($tax_id)) {
+        $error = "Το ΑΦΜ δεν μπορεί να είναι κενό για την άντληση στοιχείων από την ΑΑΔΕ.";
+    } else {
+        // Έλεγχος αν ο ΑΦΜ έχει σωστό μέγεθος
+        if (strlen($tax_id) !== 9) {
+            $error = "Ο ΑΦΜ πρέπει να έχει ακριβώς 9 ψηφία.";
+        } else {
+            // Κλήση της συνάρτησης getAadeDetails
+            $aade_data = getAadeDetails($tax_id);
+            
+            if (isset($aade_data['error'])) {
+                $error = $aade_data['error'];
+            } else {
+                // Ενημέρωση των πεδίων της φόρμας με τα δεδομένα από την ΑΑΔΕ
+                $responsible_person = $aade_data['onomasia']; // Αν είναι φυσικό πρόσωπο
+                $address = $aade_data['postal_address'];
+                $street_number = $aade_data['postal_address_no'];
+                $postal_code = $aade_data['postal_zip_code'];
+                $city = $aade_data['postal_area_description'];
+                
+                // Γεωκωδικοποίηση της διεύθυνσης
+                $full_address = $address . " " . $street_number . ", " . $postal_code . " " . $city . ", Ελλάδα";
+                $geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . 
+                               urlencode($full_address) . 
+                               "&key=" . $config['google_maps_api_key'];
+                
+                $geocode_response = @file_get_contents($geocode_url);
+                if ($geocode_response !== false) {
+                    $geocode_data = json_decode($geocode_response, true);
+                    if ($geocode_data['status'] === 'OK' && !empty($geocode_data['results'])) {
+                        $location = $geocode_data['results'][0]['geometry']['location'];
+                        $latitude = $location['lat'];
+                        $longitude = $location['lng'];
+                    }
+                }
+                
+                $success = "Τα στοιχεία αντλήθηκαν επιτυχώς από την ΑΑΔΕ.";
+            }
+        }
+    }
+}
+
 // Επεξεργασία της φόρμας ενημέρωσης στοιχείων
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $responsible_person = trim($_POST['responsible_person']);
@@ -103,6 +150,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $postal_code = trim($_POST['postal_code']);
     $city = trim($_POST['city']);
     $website = trim($_POST['website']);
+    $latitude = isset($_POST['latitude']) ? trim($_POST['latitude']) : $school['latitude'];
+    $longitude = isset($_POST['longitude']) ? trim($_POST['longitude']) : $school['longitude'];
     
     // Social links - επεξεργασία από τη φόρμα και μετατροπή σε JSON
     $social_links = [];
@@ -121,12 +170,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $training_categories = isset($_POST['training_categories']) ? $_POST['training_categories'] : [];
     $training_categories_json = json_encode($training_categories);
     
-    // Γεωκωδικοποίηση αν άλλαξε η διεύθυνση
-    $latitude = $school['latitude'];
-    $longitude = $school['longitude'];
+    // Γεωκωδικοποίηση αν άλλαξε η διεύθυνση και δεν έχουν ενημερωθεί ήδη οι συντεταγμένες
     if (($address != $school['address'] || $street_number != $school['street_number'] || 
          $city != $school['city'] || $postal_code != $school['postal_code']) && 
-        !empty($address) && !empty($city)) {
+        !empty($address) && !empty($city) && 
+        ($latitude == $school['latitude'] && $longitude == $school['longitude'])) {
         
         $geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . 
                       urlencode($address . " " . $street_number . ", " . $city . ", " . $postal_code . ", Ελλάδα") . 
@@ -185,7 +233,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                         WHERE id = ?";
         
         $stmt_user = $mysqli->prepare($update_user);
-        // Διορθώθηκε το "i" με λατινικό "i" αντί για κυριλλικό "і"
         $stmt_user->bind_param("sssssddi", $phone, $address, $street_number, $postal_code, $city, $latitude, $longitude, $user_id);
         
         if (!$stmt_user->execute()) {
@@ -239,19 +286,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     }
 }
 
-// Άντληση στοιχείων από ΑΑΔΕ (προσομοίωση - θα υλοποιηθεί αργότερα)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_aade'])) {
-    $success = "Η λειτουργία άντλησης στοιχείων από την ΑΑΔΕ θα υλοποιηθεί σύντομα.";
-}
-
 require_once '../includes/header.php';
 ?>
 
 <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/user.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/school-dashboard.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
-
 
 <div class="dashboard-container">
     <h1>Πίνακας Ελέγχου Σχολής - <?= htmlspecialchars($school['fullname']) ?></h1>
@@ -376,6 +416,10 @@ require_once '../includes/header.php';
                         <label for="city">Πόλη</label>
                         <input type="text" id="city" name="city" class="form-control" value="<?= htmlspecialchars($school['city'] ?? '') ?>">
                     </div>
+                    
+                    <!-- Κρυφά πεδία για τις συντεταγμένες -->
+                    <input type="hidden" id="latitude" name="latitude" value="<?= htmlspecialchars($school['latitude'] ?? '') ?>">
+                    <input type="hidden" id="longitude" name="longitude" value="<?= htmlspecialchars($school['longitude'] ?? '') ?>">
                 </div>
                 
                 <div class="dashboard-card">
@@ -461,83 +505,85 @@ require_once '../includes/header.php';
                         <div class="stats-details">
                             <p class="stats-value"><?= $active_subscription ? date('d/m/Y', strtotime($active_subscription['expiry_date'])) : 'Μη διαθέσιμο' ?></p>
                             <p class="stats-label">Λήξη συνδρομής</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stats-item">
-                        <div class="stats-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <div class="stats-details">
-                            <p class="stats-value">0</p>
-                            <p class="stats-label">Ολοκληρωμένα τεστ</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 4η στήλη: Συντομεύσεις και επιλογές -->
-            <div class="dashboard-column">
-                <div class="dashboard-card">
-                    <h3><i class="fas fa-th-large"></i> Γρήγορη Πρόσβαση</h3>
-                    
-                    <div class="quick-links">
-                        <a href="<?= BASE_URL ?>/schools/school_profile.php" class="quick-link">
-                            <i class="fas fa-id-card"></i>
-                            <div>
-                                <h4>Προφίλ Σχολής</h4>
-                                <p>Επεξεργασία του δημόσιου προφίλ της σχολής σας</p>
-                            </div>
-                        </a>
-                        
-                        <a href="<?= BASE_URL ?>/schools/manage_students.php" class="quick-link">
-                            <i class="fas fa-user-graduate"></i>
-                            <div>
-                                <h4>Διαχείριση Μαθητών</h4>
-                                <p>Προσθήκη, επεξεργασία και διαγραφή μαθητών</p>
-                            </div>
-                        </a>
-                        
-                        <a href="<?= BASE_URL ?>/schools/manage_student_requests.php" class="quick-link">
-                            <i class="fas fa-user-plus"></i>
-                            <div>
-                                <h4>Αιτήματα Μαθητών</h4>
-                                <p>Διαχείριση αιτημάτων συμμετοχής από μαθητές</p>
-                                <?php if ($pending_requests > 0): ?>
-                                    <span class="badge badge-primary"><?= $pending_requests ?> νέα</span>
-                                <?php endif; ?>
-                            </div>
-                        </a>
-                        
-                        <a href="<?= BASE_URL ?>/schools/subscriptions.php" class="quick-link">
-                            <i class="fas fa-credit-card"></i>
-                            <div>
-                                <h4>Συνδρομές</h4>
-                                <p>Διαχείριση και ανανέωση συνδρομών</p>
-                            </div>
-                        </a>
-                        
-                        <a href="<?= BASE_URL ?>/schools/statistics.php" class="quick-link">
-                            <i class="fas fa-chart-line"></i>
-                            <div>
-                                <h4>Στατιστικά</h4>
-                                <p>Αναλυτικά στατιστικά επιδόσεων μαθητών</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="dashboard-card">
-                    <button type="submit" name="update_profile" class="btn-primary" style="width: 100%;">
-                        <i class="fas fa-save"></i> Αποθήκευση Αλλαγών
-                    </button>
-                </div>
-            </div>
-        </div>
-    </form>
+                            <p class="stats-value"><?= $active_subscription ? date('d/m/Y', strtotime($active_subscription['expiry_date'])) : 'Μη διαθέσιμο' ?></p>
+                           <p class="stats-label">Λήξη συνδρομής</p>
+                       </div>
+                   </div>
+                   
+                   <div class="stats-item">
+                       <div class="stats-icon">
+                           <i class="fas fa-graduation-cap"></i>
+                       </div>
+                       <div class="stats-details">
+                           <p class="stats-value">0</p>
+                           <p class="stats-label">Ολοκληρωμένα τεστ</p>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           
+           <!-- 4η στήλη: Συντομεύσεις και επιλογές -->
+           <div class="dashboard-column">
+               <div class="dashboard-card">
+                   <h3><i class="fas fa-th-large"></i> Γρήγορη Πρόσβαση</h3>
+                   
+                   <div class="quick-links">
+                       <a href="<?= BASE_URL ?>/schools/school_profile.php" class="quick-link">
+                           <i class="fas fa-id-card"></i>
+                           <div>
+                               <h4>Προφίλ Σχολής</h4>
+                               <p>Επεξεργασία του δημόσιου προφίλ της σχολής σας</p>
+                           </div>
+                       </a>
+                       
+                       <a href="<?= BASE_URL ?>/schools/manage_students.php" class="quick-link">
+                           <i class="fas fa-user-graduate"></i>
+                           <div>
+                               <h4>Διαχείριση Μαθητών</h4>
+                               <p>Προσθήκη, επεξεργασία και διαγραφή μαθητών</p>
+                           </div>
+                       </a>
+                       
+                       <a href="<?= BASE_URL ?>/schools/manage_student_requests.php" class="quick-link">
+                           <i class="fas fa-user-plus"></i>
+                           <div>
+                               <h4>Αιτήματα Μαθητών</h4>
+                               <p>Διαχείριση αιτημάτων συμμετοχής από μαθητές</p>
+                               <?php if ($pending_requests > 0): ?>
+                                   <span class="badge badge-primary"><?= $pending_requests ?> νέα</span>
+                               <?php endif; ?>
+                           </div>
+                       </a>
+                       
+                       <a href="<?= BASE_URL ?>/schools/subscriptions.php" class="quick-link">
+                           <i class="fas fa-credit-card"></i>
+                           <div>
+                               <h4>Συνδρομές</h4>
+                               <p>Διαχείριση και ανανέωση συνδρομών</p>
+                           </div>
+                       </a>
+                       
+                       <a href="<?= BASE_URL ?>/schools/statistics.php" class="quick-link">
+                           <i class="fas fa-chart-line"></i>
+                           <div>
+                               <h4>Στατιστικά</h4>
+                               <p>Αναλυτικά στατιστικά επιδόσεων μαθητών</p>
+                           </div>
+                       </a>
+                   </div>
+               </div>
+               
+               <div class="dashboard-card">
+                   <button type="submit" name="update_profile" class="btn-primary" style="width: 100%;">
+                       <i class="fas fa-save"></i> Αποθήκευση Αλλαγών
+                   </button>
+               </div>
+           </div>
+       </div>
+   </form>
 </div>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=<?= $config['google_maps_api_key'] ?>&callback=initMap" async defer></script>
 <script src="<?= BASE_URL ?>/assets/js/school-dashboard.js"></script>
-<script>
+
 <?php require_once '../includes/footer.php'; ?>

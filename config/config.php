@@ -74,4 +74,12 @@ if (!defined('DEBUG')) {
 }
 
 // Επιστρέφουμε το config array
+
+
+
+// Φόρτωση ρυθμίσεων ενσωμάτωσης ΑΑΔΕ
+if (file_exists(__DIR__ . '/aade_config.php')) {
+    include __DIR__ . '/aade_config.php';
+}
+
 return $config;
