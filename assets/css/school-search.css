@@ -1,0 +1,361 @@
+/* assets/css/school-search.css */
+
+/* Βασικό στυλ για τον container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Στυλ για την επικεφαλίδα αναζήτησης */
+.search-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.search-header h1 {
+    color: #aa3636;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.search-header p {
+    color: #555;
+    font-size: 18px;
+}
+
+/* Στυλ για το container αναζήτησης */
+.search-container {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Στυλ για τα φίλτρα αναζήτησης */
+.search-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    flex: 1 1 300px;
+}
+
+.filter-group {
+    flex: 1 1 200px;
+}
+
+.location-group {
+    flex: 1 1 100%;
+    margin-top: 10px;
+}
+
+.search-filters label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #444;
+}
+
+.search-filters input[type="text"],
+.search-filters select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.search-filters select {
+    background-color: white;
+}
+
+/* Στυλ για το checkbox τοποθεσίας */
+.location-group label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.location-group input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Στυλ για το slider απόστασης */
+.distance-slider {
+    margin-top: 10px;
+}
+
+.distance-slider input[type="range"] {
+    width: 100%;
+    margin-top: 5px;
+}
+
+/* Στυλ για τα κουμπιά αναζήτησης */
+.search-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.search-button,
+.reset-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-button {
+    background-color: #aa3636;
+    color: white;
+}
+
+.search-button:hover {
+    background-color: #8e2c2c;
+}
+
+.reset-button {
+    background-color: #f0f0f0;
+    color: #444;
+}
+
+.reset-button:hover {
+    background-color: #e0e0e0;
+}
+
+.search-button i,
+.reset-button i {
+    margin-right: 8px;
+}
+
+/* Στυλ για το πλαίσιο πληροφοριών αποτελεσμάτων */
+.results-info {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.results-info h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.results-info p {
+    color: #777;
+    font-size: 16px;
+}
+
+/* Στυλ για την κάρτα σχολής */
+.school-card {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.school-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Στυλ για το λογότυπο της σχολής */
+.school-logo {
+    width: 120px;
+    height: 120px;
+    margin-right: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.school-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.default-logo {
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.default-logo i {
+    font-size: 48px;
+    color: #aaa;
+}
+
+/* Στυλ για τις πληροφορίες της σχολής */
+.school-info {
+    flex: 1 1 320px;
+}
+
+.school-info h3 {
+    color: #aa3636;
+    font-size: 20px;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.school-address,
+.school-categories,
+.school-website {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.school-address i,
+.school-categories i,
+.school-website i {
+    width: 18px;
+    margin-right: 8px;
+    color: #777;
+}
+
+.school-distance {
+    margin-left: 6px;
+    color: #aa3636;
+    font-weight: bold;
+}
+
+.school-website a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.school-website a:hover {
+    text-decoration: underline;
+}
+
+/* Στυλ για τις ενέργειες */
+.school-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    align-items: flex-start;
+    flex: 1 0 100%;
+}
+
+.join-button,
+.details-button,
+.directions-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.join-button {
+    background-color: #aa3636;
+    color: white;
+}
+
+.join-button:hover {
+    background-color: #8e2c2c;
+}
+
+.details-button {
+    background-color: #f0f0f0;
+    color: #444;
+}
+
+.details-button:hover {
+    background-color: #e0e0e0;
+}
+
+.directions-button {
+    background-color: #4285F4;
+    color: white;
+}
+
+.directions-button:hover {
+    background-color: #3b78e7;
+}
+
+.directions-button i {
+    margin-right: 5px;
+}
+
+/* Στυλ για καμία αποτελέσματα */
+.no-results {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.no-results i {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.no-results h3 {
+    color: #555;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.no-results p {
+    color: #777;
+}
+
+/* Προσαρμογή για μικρές οθόνες */
+@media (max-width: 768px) {
+    .search-filters {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-input,
+    .filter-group {
+        flex: 1 1 100%;
+    }
+    
+    .school-logo {
+        margin-right: 0;
+        margin-bottom: 15px;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .school-card {
+        padding: 15px;
+    }
+    
+    .school-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .join-button,
+    .details-button,
+    .directions-button {
+        width: 100%;
+        justify-content: center;
+    }
+}   
