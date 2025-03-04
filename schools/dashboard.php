@@ -585,5 +585,7 @@ require_once '../includes/header.php';
 
 <script src="https://maps.googleapis.com/maps/api/js?key=<?= $config['google_maps_api_key'] ?>&callback=initMap" async defer></script>
 <script src="<?= BASE_URL ?>/assets/js/school-dashboard.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/aade-integration.js"></script>
+<link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/aade-integration.css">
 
 <?php require_once '../includes/footer.php'; ?>

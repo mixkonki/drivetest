@@ -76,3 +76,5 @@ Received FILES data: Array
 (
 )
 Transaction started for user ID: 4Preparing user update for ID: 4User update successful for ID: 4[2025-03-03 16:37:20] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: Επαλήθευση Email - DriveTest
+[2025-03-03 20:11:47] ✅ Email sent successfully to k.michailidis@thessdrive.gr with subject: Επαλήθευση Email - DriveTest
+Processing action: filterProcessing action: filterProcessing action: filterProcessing action: filter

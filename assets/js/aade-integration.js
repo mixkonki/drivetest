@@ -1,383 +1,340 @@
 /**
- * AADE Integration Client-side Script
- * Handles client-side functionality for AADE tax ID validation
+ * Script για την ενσωμάτωση με το API της ΑΑΔΕ
+ * 
+ * Παρέχει λειτουργίες για την επικοινωνία με το API της ΑΑΔΕ
+ * και την αυτόματη συμπλήρωση φορμών με τα στοιχεία επιχειρήσεων.
  * 
  * @package DriveTest
- * @file assets/js/aade-integration.js
  */
 
-// Ορισμός της βασικής διεύθυνσης (URL) της εφαρμογής
-const baseUrl = window.location.origin + '/drivetest';
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Έλεγχος για το κουμπί ΑΑΔΕ
-    const aadeButtons = document.querySelectorAll('.aade-button');
+// Αντικείμενο για τη διαχείριση της ενσωμάτωσης με την ΑΑΔΕ
+const AADEIntegration = {
+    // Βασική διεύθυνση του API
+    apiBaseUrl: window.location.origin + '/drivetest/api/aade_api.php',
     
-    if (aadeButtons.length > 0) {
-        aadeButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const taxIdField = document.getElementById('tax_id');
+    /**
+     * Επικύρωση ΑΦΜ
+     * 
+     * @param {string} afm ΑΦΜ προς επικύρωση
+     * @return {Promise} Promise που επιστρέφει αν το ΑΦΜ είναι έγκυρο
+     */
+    validateAfm: function(afm) {
+        return fetch(`${this.apiBaseUrl}?action=validate&afm=${afm}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                return data.success;
+            });
+    },
+    
+    /**
+     * Ανάκτηση στοιχείων επιχείρησης
+     * 
+     * @param {string} afm ΑΦΜ επιχείρησης
+     * @param {string} asOnDate Προαιρετική ημερομηνία για ιστορικά στοιχεία (μορφή YYYY-MM-DD)
+     * @return {Promise} Promise που επιστρέφει τα στοιχεία της επιχείρησης
+     */
+    getCompanyInfo: function(afm, asOnDate = null) {
+        let url = `${this.apiBaseUrl}?action=info&afm=${afm}`;
+        
+        if (asOnDate) {
+            url += `&date=${asOnDate}`;
+        }
+        
+        return fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                return data.data;
+            });
+    },
+    
+    /**
+     * Ανάκτηση πληροφοριών έκδοσης
+     * 
+     * @return {Promise} Promise που επιστρέφει την έκδοση του API
+     */
+    getVersionInfo: function() {
+        return fetch(`${this.apiBaseUrl}?action=version`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                return data.version;
+            });
+    },
+    
+    /**
+     * Παραγωγή προσομοιωμένων στοιχείων επιχείρησης
+     * Χρησιμοποιείται όταν δεν είναι διαθέσιμο το API της ΑΑΔΕ
+     * 
+     * @param {string} afm ΑΦΜ επιχείρησης
+     * @return {Promise} Promise που επιστρέφει τα προσομοιωμένα στοιχεία
+     */
+    getSimulatedCompanyInfo: function(afm) {
+        return new Promise((resolve) => {
+            // Μικρή καθυστέρηση για ρεαλιστική αίσθηση
+            setTimeout(() => {
+                // Προσομοίωση στοιχείων επιχείρησης με βάση το ΑΦΜ
+                let data;
                 
-                if (!taxIdField || !taxIdField.value.trim()) {
-                    showMessage('error', 'Παρακαλώ εισάγετε έγκυρο ΑΦΜ πρώτα.');
-                    return;
+                if (afm === '123456789') {
+                    data = {
+                        'afm': '123456789',
+                        'doy': '1104',
+                        'doy_descr': 'Δ.Ο.Υ. ΦΑΕ ΘΕΣΣΑΛΟΝΙΚΗΣ',
+                        'i_ni_flag_descr': 'ΜΗ ΦΠ',
+                        'deactivation_flag': '1',
+                        'deactivation_flag_descr': 'ΕΝΕΡΓΟΣ ΑΦΜ',
+                        'firm_flag_descr': 'ΕΠΙΤΗΔΕΥΜΑΤΙΑΣ',
+                        'onomasia': 'ΠΑΡΑΔΕΙΓΜΑ ΑΕ',
+                        'commercial_title': 'ΠΑΡΑΔΕΙΓΜΑ',
+                        'legal_status_descr': 'ΑΝΩΝΥΜΗ ΕΤΑΙΡΕΙΑ',
+                        'postal_address': 'ΕΓΝΑΤΙΑΣ',
+                        'postal_address_no': '10',
+                        'postal_zip_code': '54625',
+                        'postal_area_description': 'ΘΕΣΣΑΛΟΝΙΚΗ'
+                    };
+                } else {
+                    // Χρήση του τελευταίου ψηφίου του ΑΦΜ για να καθορίσουμε αν είναι φυσικό πρόσωπο
+                    const isPhysical = (parseInt(afm.slice(-1)) % 2 === 0) ? 'ΦΠ' : 'ΜΗ ΦΠ';
+                    
+                    data = {
+                        'afm': afm,
+                        'doy': '1104',
+                        'doy_descr': 'Δ.Ο.Υ. ΦΑΕ ΘΕΣΣΑΛΟΝΙΚΗΣ',
+                        'i_ni_flag_descr': isPhysical,
+                        'deactivation_flag': '1',
+                        'deactivation_flag_descr': 'ΕΝΕΡΓΟΣ ΑΦΜ',
+                        'firm_flag_descr': 'ΕΠΙΤΗΔΕΥΜΑΤΙΑΣ',
+                        'onomasia': (isPhysical === 'ΦΠ') ? 'ΠΑΠΑΔΟΠΟΥΛΟΣ ΝΙΚΟΛΑΟΣ' : 'ΕΤΑΙΡΕΙΑ ' + afm,
+                        'commercial_title': (isPhysical === 'ΦΠ') ? '' : 'ΕΤΑΙΡΕΙΑ ' + afm.substring(0, 3),
+                        'legal_status_descr': (isPhysical === 'ΦΠ') ? 'ΑΤΟΜΙΚΗ ΕΠΙΧΕΙΡΗΣΗ' : 'ΑΝΩΝΥΜΗ ΕΤΑΙΡΕΙΑ',
+                        'postal_address': 'ΕΓΝΑΤΙΑΣ',
+                        'postal_address_no': afm.substring(0, 2),
+                        'postal_zip_code': '54' + afm.substring(2, 5),
+                        'postal_area_description': 'ΘΕΣΣΑΛΟΝΙΚΗ'
+                    };
                 }
                 
-                const taxId = taxIdField.value.trim();
-                fetchCompanyInfo(taxId);
+                resolve(data);
+            }, 1000);
+        });
+    },
+    
+   /**
+ * Αυτόματη συμπλήρωση φόρμας με στοιχεία επιχείρησης
+ * 
+ * @param {string} afm ΑΦΜ επιχείρησης
+ * @param {Object} fieldMapping Αντιστοίχιση πεδίων API με πεδία φόρμας
+ * @return {Promise} Promise που επιστρέφει αν η συμπλήρωση ήταν επιτυχής
+ */
+autoFillForm: function(afm, fieldMapping) {
+    // Εμφάνιση μήνυμα φόρτωσης
+    this.showLoader('Γίνεται ανάκτηση στοιχείων...');
+    
+    return this.getCompanyInfo(afm)
+        .then(data => {
+            // Εμφάνιση στην κονσόλα για debugging
+            console.log('Στοιχεία που επιστράφηκαν από την ΑΑΔΕ:', data);
+            console.log('Field mapping:', fieldMapping);
+            
+            // Συμπλήρωση της φόρμας με τα στοιχεία που επιστρέφονται
+            for (const apiField in fieldMapping) {
+                const formField = fieldMapping[apiField];
+                const element = document.getElementById(formField);
+                
+                if (element && data[apiField] !== undefined) {
+                    console.log(`Συμπλήρωση πεδίου ${formField} με τιμή ${data[apiField]}`);
+                    element.value = data[apiField];
+                    
+                    // Πυροδότηση του event change
+                    const event = new Event('change', { bubbles: true });
+                    element.dispatchEvent(event);
+                } else {
+                    console.log(`Αδυναμία συμπλήρωσης πεδίου: ${formField} - Υπάρχει στοιχείο: ${!!element}, Υπάρχει τιμή: ${data[apiField] !== undefined}`);
+                }
+            }
+            
+            // Απόκρυψη μηνύματος φόρτωσης
+            this.hideLoader();
+            
+            // Εμφάνιση μηνύματος επιτυχίας
+            this.showMessage('Τα στοιχεία ανακτήθηκαν επιτυχώς από την ΑΑΔΕ!', 'success');
+            
+            return true;
+        })
+            .catch(error => {
+                // Απόκρυψη μηνύματος φόρτωσης
+                this.hideLoader();
+                
+                // Ελέγχουμε για συγκεκριμένα σφάλματα
+                if (error.message.includes('RG_WS_PUBLIC_AFM_CALLED_BY_NOT_FOUND') || 
+                    error.message.includes('afm_called_by')) {
+                    // Αυτό το σφάλμα συμβαίνει όταν τα διαπιστευτήρια δεν έχουν ρυθμιστεί σωστά
+                    this.showMessage('Χρησιμοποιείται η λειτουργία προσομοίωσης, καθώς τα διαπιστευτήρια ΑΑΔΕ δεν έχουν ρυθμιστεί σωστά.', 'warning');
+                    
+                    // Ανάκτηση προσομοιωμένων στοιχείων
+                    return this.getSimulatedCompanyInfo(afm)
+                        .then(data => {
+                            // Συμπλήρωση της φόρμας με τα στοιχεία
+                            for (const apiField in fieldMapping) {
+                                const formField = fieldMapping[apiField];
+                                const element = document.getElementById(formField);
+                                
+                                if (element && data[apiField] !== undefined) {
+                                    element.value = data[apiField];
+                                    
+                                    // Πυροδότηση του event change
+                                    const event = new Event('change', { bubbles: true });
+                                    element.dispatchEvent(event);
+                                }
+                            }
+                            
+                            return true;
+                        });
+                } else {
+                    // Εμφάνιση μηνύματος λάθους για άλλα σφάλματα
+                    this.showMessage(`Σφάλμα: ${error.message}`, 'error');
+                    return false;
+                }
             });
-        });
-    }
+    },
     
-    // Προσθήκη επικύρωσης ΑΦΜ στη φόρμα εγγραφής σχολής
-    const taxIdInput = document.getElementById('tax_id');
-    if (taxIdInput) {
-        taxIdInput.addEventListener('blur', function() {
-            validateTaxId(this.value.trim());
-        });
-    }
-});
-
-/**
- * Επικύρωση ΑΦΜ με βάση τον αλγόριθμο
- * 
- * @param {string} taxId ΑΦΜ προς επικύρωση
- * @returns {boolean} Εάν το ΑΦΜ είναι έγκυρο
- */
-function validateTaxId(taxId) {
-    // Έλεγχος μορφής (9 ψηφία)
-    if (!/^\d{9}$/.test(taxId)) {
-        if (taxId) {
-            showFieldError('tax_id', 'Το ΑΦΜ πρέπει να αποτελείται από 9 ψηφία.');
-        }
-        return false;
-    }
-    
-    // Αλγόριθμος επικύρωσης ΑΦΜ
-    let sum = 0;
-    for (let i = 0; i < 8; i++) {
-        sum += parseInt(taxId.charAt(i)) * Math.pow(2, 8 - i);
-    }
-    
-    let checkDigit = sum % 11;
-    if (checkDigit > 9) {
-        checkDigit = 0;
-    }
-    
-    if (checkDigit === parseInt(taxId.charAt(8))) {
-        clearFieldError('tax_id');
-        return true;
-    } else {
-        showFieldError('tax_id', 'Μη έγκυρο ΑΦΜ. Παρακαλώ ελέγξτε τα ψηφία.');
-        return false;
-    }
-}
-
-/**
- * Ανάκτηση πληροφοριών επιχείρησης από την ΑΑΔΕ
- * 
- * @param {string} taxId ΑΦΜ της επιχείρησης
- */
-function fetchCompanyInfo(taxId) {
-    // Έλεγχος εάν το ΑΦΜ είναι έγκυρο
-    if (!validateTaxId(taxId)) {
-        return;
-    }
-    
-    // Εμφάνιση φόρτωσης
-    const loader = showLoader();
-    
-    // Αποστολή αιτήματος στον server
-    fetch(`${baseUrl}/api/aade_api.php?action=info&afm=${taxId}`)
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.error || 'Σφάλμα κατά την επικοινωνία με την ΑΑΔΕ.');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Συμπλήρωση των πεδίων της φόρμας με τα δεδομένα από την ΑΑΔΕ
-                populateFormFields(data.data);
-                showMessage('success', 'Τα στοιχεία ανακτήθηκαν επιτυχώς από την ΑΑΔΕ.');
-            } else {
-                showMessage('error', data.error || 'Άγνωστο σφάλμα κατά την ανάκτηση δεδομένων.');
-            }
-        })
-        .catch(error => {
-            showMessage('error', error.message);
-        })
-        .finally(() => {
-            // Απόκρυψη φόρτωσης
-            hideLoader(loader);
-        });
-}
-
-/**
- * Ενημέρωση στοιχείων σχολής από την ΑΑΔΕ
- * 
- * @param {number} schoolId ID της σχολής
- */
-function updateSchoolInfo(schoolId) {
-    // Εμφάνιση φόρτωσης
-    const loader = showLoader();
-    
-    // Αποστολή αιτήματος στον server
-    fetch(`${baseUrl}/api/aade_api.php?action=update_school&school_id=${schoolId}`)
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.error || 'Σφάλμα κατά την επικοινωνία με την ΑΑΔΕ.');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Ανανέωση της σελίδας για εμφάνιση των ενημερωμένων στοιχείων
-                showMessage('success', data.message);
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else {
-                showMessage('error', data.error || 'Άγνωστο σφάλμα κατά την ενημέρωση στοιχείων.');
-            }
-        })
-        .catch(error => {
-            showMessage('error', error.message);
-        })
-        .finally(() => {
-            // Απόκρυψη φόρτωσης
-            hideLoader(loader);
-        });
-}
-
-/**
- * Συμπλήρωση των πεδίων της φόρμας με τα δεδομένα από την ΑΑΔΕ
- * 
- * @param {object} data Δεδομένα επιχείρησης
- */
-function populateFormFields(data) {
-    // Συμπλήρωση του ονόματος της σχολής
-    const schoolNameField = document.getElementById('school_name');
-    if (schoolNameField) {
-        schoolNameField.value = data.name;
-    }
-    
-    // Συμπλήρωση της διεύθυνσης
-    const addressField = document.getElementById('address');
-    if (addressField) {
-        addressField.value = data.address.street;
-    }
-    
-    // Συμπλήρωση του αριθμού
-    const streetNumberField = document.getElementById('street_number');
-    if (streetNumberField) {
-        streetNumberField.value = data.address.streetNumber;
-    }
-    
-    // Συμπλήρωση του ταχυδρομικού κώδικα
-    const postalCodeField = document.getElementById('postal_code');
-    if (postalCodeField) {
-        postalCodeField.value = data.address.postalCode;
-    }
-    
-    // Συμπλήρωση της πόλης
-    const cityField = document.getElementById('city');
-    if (cityField) {
-        cityField.value = data.address.city;
-    }
-    
-    // Συμπλήρωση του υπεύθυνου (αν υπάρχει πεδίο)
-    const responsiblePersonField = document.getElementById('responsible_person');
-    if (responsiblePersonField && responsiblePersonField.value === '') {
-        // Προτείνουμε το όνομα της εταιρείας ως υπεύθυνο εάν δεν έχει οριστεί
-        responsiblePersonField.value = data.name;
-    }
-    
-    // Ενημέρωση του label της νομικής μορφής αν υπάρχει
-    const legalFormLabel = document.getElementById('legal_form_label');
-    if (legalFormLabel) {
-        legalFormLabel.textContent = data.legalForm || 'Μη διαθέσιμο';
-    }
-    
-    // Αποθήκευση των δεδομένων στο session storage για μελλοντική χρήση
-    sessionStorage.setItem('aadeCompanyData', JSON.stringify(data));
-    
-    // Εμφάνιση επιπλέον πληροφοριών στο UI
-    showCompanyInfoPanel(data);
-}
-
-/**
- * Εμφάνιση πληροφοριών επιχείρησης σε πάνελ
- * 
- * @param {object} data Δεδομένα επιχείρησης
- */
-function showCompanyInfoPanel(data) {
-    // Έλεγχος αν υπάρχει ή δημιουργία του πάνελ
-    let infoPanel = document.getElementById('aade_info_panel');
-    
-    if (!infoPanel) {
-        infoPanel = document.createElement('div');
-        infoPanel.id = 'aade_info_panel';
-        infoPanel.className = 'aade-info-panel';
+    /**
+     * Εμφάνιση μηνύματος φόρτωσης
+     * 
+     * @param {string} message Προαιρετικό μήνυμα φόρτωσης
+     */
+    showLoader: function(message = 'Παρακαλώ περιμένετε...') {
+        // Δημιουργία του loader αν δεν υπάρχει ήδη
+        let loader = document.getElementById('aade-loader');
         
-        // Προσθήκη στη σελίδα μετά το πεδίο ΑΦΜ
-        const taxIdField = document.getElementById('tax_id');
-        if (taxIdField && taxIdField.parentNode) {
-            taxIdField.parentNode.insertAdjacentElement('afterend', infoPanel);
+        if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'aade-loader';
+            loader.className = 'loader-overlay';
+            loader.innerHTML = `
+                <div class="loader-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p id="loader-message">${message}</p>
+                </div>
+            `;
+            document.body.appendChild(loader);
+        } else {
+            document.getElementById('loader-message').textContent = message;
+            loader.style.display = 'flex';
+        }
+    },
+    
+    /**
+     * Απόκρυψη μηνύματος φόρτωσης
+     */
+    hideLoader: function() {
+        const loader = document.getElementById('aade-loader');
+        
+        if (loader) {
+            loader.style.display = 'none';
+        }
+    },
+    
+    /**
+     * Εμφάνιση μηνύματος
+     * 
+     * @param {string} message Το μήνυμα προς εμφάνιση
+     * @param {string} type Ο τύπος του μηνύματος (success, error, warning, info)
+     * @param {number} duration Διάρκεια σε ms (προεπιλογή: 5000ms)
+     */
+    showMessage: function(message, type = 'info', duration = 5000) {
+        // Δημιουργία του container αν δεν υπάρχει ήδη
+        let container = document.getElementById('aade-messages');
+        
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'aade-messages';
+            container.className = 'messages-container';
+            document.body.appendChild(container);
+        }
+        
+        // Δημιουργία του μηνύματος
+        const messageElement = document.createElement('div');
+        messageElement.className = `alert alert-${type}`;
+        messageElement.innerHTML = `
+            <button type="button" class="close" onclick="this.parentElement.remove();">&times;</button>
+            ${message}
+        `;
+        
+        // Προσθήκη στο container
+        container.appendChild(messageElement);
+        
+        // Αυτόματη απόκρυψη μετά από το συγκεκριμένο χρονικό διάστημα
+        if (duration > 0) {
+            setTimeout(() => {
+                if (messageElement.parentNode) {
+                    messageElement.remove();
+                }
+            }, duration);
+        }
+    }
+};
+
+/**
+ * Συνάρτηση για ανάκτηση στοιχείων από την ΑΑΔΕ μέσω ΑΦΜ
+ * Καλείται από το κουμπί "Ανάκτηση από ΑΑΔΕ" στις φόρμες
+ * 
+ * @param {string} afm ΑΦΜ προς αναζήτηση
+ * @return {Promise} Promise που επιστρέφει αν η ανάκτηση ήταν επιτυχής
+ */
+function fetchCompanyInfo(afm) {
+    // Έλεγχος αν έχει οριστεί ΑΦΜ
+    if (!afm) {
+        const afmField = document.getElementById('tax_id');
+        if (afmField) {
+            afm = afmField.value.trim();
         }
     }
     
-    // Δημιουργία περιεχομένου πάνελ
-    let statusClass = data.status.isActive ? 'active-status' : 'inactive-status';
-    let statusText = data.status.isActive ? 'Ενεργή Επιχείρηση' : 'Ανενεργή Επιχείρηση';
+    // Έλεγχος αν έχει οριστεί ΑΦΜ
+    if (!afm) {
+        AADEIntegration.showMessage('Παρακαλώ συμπληρώστε το ΑΦΜ πρώτα.', 'warning');
+        return Promise.resolve(false);
+    }
     
-    infoPanel.innerHTML = `
-        <div class="aade-header">
-            <h4>Στοιχεία από ΑΑΔΕ</h4>
-            <span class="status-badge ${statusClass}">${statusText}</span>
-        </div>
-        <div class="aade-body">
-            <p><strong>Επωνυμία:</strong> ${data.name}</p>
-            <p><strong>Διεύθυνση:</strong> ${data.address.street} ${data.address.streetNumber}, ${data.address.postalCode} ${data.address.city}</p>
-            <p><strong>Νομική Μορφή:</strong> ${data.legalForm || 'Μη διαθέσιμο'}</p>
-            <p><strong>Ημ. Έναρξης:</strong> ${formatDate(data.registrationDate)}</p>
-            ${data.deactivationDate ? `<p><strong>Ημ. Διακοπής:</strong> ${formatDate(data.deactivationDate)}</p>` : ''}
-            ${data.activities && data.activities.length > 0 ? `
-                <p><strong>Κύρια Δραστηριότητα:</strong> ${data.activities[0].code} - ${data.activities[0].description}</p>
-            ` : ''}
-        </div>
-    `;
+    // Αντιστοίχιση πεδίων API με πεδία φόρμας
+    const fieldMapping = {
+        'onomasia': 'school_name',
+        'postal_address': 'address',
+        'postal_address_no': 'street_number',
+        'postal_zip_code': 'postal_code',
+        'postal_area_description': 'city'
+    };
     
-    // Εμφάνιση του πάνελ
-    infoPanel.style.display = 'block';
+    // Κλήση της μεθόδου autoFillForm του αντικειμένου AADEIntegration
+    return AADEIntegration.autoFillForm(afm, fieldMapping);
 }
 
-/**
- * Μορφοποίηση ημερομηνίας σε ελληνική μορφή
- * 
- * @param {string} dateStr Συμβολοσειρά ημερομηνίας
- * @returns {string} Μορφοποιημένη ημερομηνία
- */
-function formatDate(dateStr) {
-    if (!dateStr) return 'Μη διαθέσιμο';
+// Προσθήκη του event listener για τα κουμπιά ανάκτησης στοιχείων ΑΑΔΕ όταν φορτωθεί η σελίδα
+document.addEventListener('DOMContentLoaded', function() {
+    // Κουμπιά ΑΑΔΕ
+    const aadeButtons = document.querySelectorAll('.aade-button');
     
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr; // Επιστροφή ως έχει εάν δεν είναι έγκυρη ημερομηνία
-    
-    return date.toLocaleDateString('el-GR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
+    aadeButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            // Έλεγχος αν υπάρχει data-afm attribute ή αν θα χρησιμοποιηθεί το πεδίο tax_id
+            const afm = this.getAttribute('data-afm') || document.getElementById('tax_id')?.value;
+            
+            if (afm) {
+                fetchCompanyInfo(afm);
+            } else {
+                AADEIntegration.showMessage('Δεν βρέθηκε ΑΦΜ για αναζήτηση.', 'warning');
+            }
+        });
     });
-}
-
-/**
- * Εμφάνιση μηνύματος στο χρήστη
- * 
- * @param {string} type Τύπος μηνύματος ('success', 'error', 'warning', 'info')
- * @param {string} message Κείμενο μηνύματος
- */
-function showMessage(type, message) {
-    // Έλεγχος αν υπάρχει container μηνυμάτων
-    let messagesContainer = document.querySelector('.messages-container');
-    
-    if (!messagesContainer) {
-        messagesContainer = document.createElement('div');
-        messagesContainer.className = 'messages-container';
-        document.body.insertBefore(messagesContainer, document.body.firstChild);
-    }
-    
-    // Δημιουργία του στοιχείου μηνύματος
-    const messageElement = document.createElement('div');
-    messageElement.className = `alert alert-${type} alert-dismissible fade show`;
-    messageElement.role = 'alert';
-    
-    messageElement.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    
-    // Προσθήκη στο container
-    messagesContainer.appendChild(messageElement);
-    
-    // Αυτόματη απόκρυψη μετά από 5 δευτερόλεπτα
-    setTimeout(() => {
-        if (messageElement.parentNode) {
-            messageElement.remove();
-        }
-    }, 5000);
-}
-
-/**
- * Εμφάνιση σφάλματος στο πεδίο φόρμας
- * 
- * @param {string} fieldId ID του πεδίου
- * @param {string} errorMessage Μήνυμα σφάλματος
- */
-function showFieldError(fieldId, errorMessage) {
-    const field = document.getElementById(fieldId);
-    if (!field) return;
-    
-    // Προσθήκη κλάσης σφάλματος στο πεδίο
-    field.classList.add('is-invalid');
-    
-    // Έλεγχος αν υπάρχει ήδη στοιχείο μηνύματος σφάλματος
-    let errorElement = field.nextElementSibling;
-    if (!errorElement || !errorElement.classList.contains('invalid-feedback')) {
-        errorElement = document.createElement('div');
-        errorElement.className = 'invalid-feedback';
-        field.parentNode.insertBefore(errorElement, field.nextSibling);
-    }
-    
-    errorElement.textContent = errorMessage;
-    errorElement.style.display = 'block';
-}
-
-/**
- * Καθαρισμός σφάλματος πεδίου
- * 
- * @param {string} fieldId ID του πεδίου
- */
-function clearFieldError(fieldId) {
-    const field = document.getElementById(fieldId);
-    if (!field) return;
-    
-    // Αφαίρεση κλάσης σφάλματος
-    field.classList.remove('is-invalid');
-    field.classList.add('is-valid');
-    
-    // Αφαίρεση μηνύματος σφάλματος
-    const errorElement = field.nextElementSibling;
-    if (errorElement && errorElement.classList.contains('invalid-feedback')) {
-        errorElement.style.display = 'none';
-    }
-}
-
-/**
- * Εμφάνιση ένδειξης φόρτωσης
- * 
- * @returns {HTMLElement} Το στοιχείο φόρτωσης
- */
-function showLoader() {
-    const loader = document.createElement('div');
-    loader.className = 'loader-overlay';
-    loader.innerHTML = '<div class="loader-spinner"><i class="fas fa-circle-notch fa-spin"></i></div>';
-    document.body.appendChild(loader);
-    return loader;
-}
-
-/**
- * Απόκρυψη ένδειξης φόρτωσης
- * 
- * @param {HTMLElement} loader Το στοιχείο φόρτωσης
- */
-function hideLoader(loader) {
-    if (loader && loader.parentNode) {
-        loader.parentNode.removeChild(loader);
-    }
-}
+});

@@ -25,12 +25,13 @@
         
         <input type="email" name="email" id="email" class="form-control" placeholder="<?= isset($translations['email_placeholder']) ? $translations['email_placeholder'] : 'Email*' ?>" required value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
         
-        <input type="text" name="tax_id" id="tax_id" class="form-control" placeholder="<?= isset($translations['tax_id_placeholder']) ? $translations['tax_id_placeholder'] : 'ΑΦΜ*' ?>
+        <input type="text" name="tax_id" id="tax_id" class="form-control" placeholder="<?= isset($translations['tax_id_placeholder']) ? $translations['tax_id_placeholder'] : 'ΑΦΜ*' ?>" required value="<?= isset($_POST['tax_id']) ? htmlspecialchars($_POST['tax_id']) : '' ?>">
         <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
             <button type="button" class="aade-button" onclick="fetchCompanyInfo(document.getElementById('tax_id').value)">
                 <i class="fas fa-sync-alt"></i> Ανάκτηση από ΑΑΔΕ
             </button>
             <small class="form-text">Ανάκτηση στοιχείων από ΑΑΔΕ με βάση το ΑΦΜ</small>
+        </div>
         </div>" required value="<?= isset($_POST['tax_id']) ? htmlspecialchars($_POST['tax_id']) : '' ?>">
         
         <div class="password-visibility">

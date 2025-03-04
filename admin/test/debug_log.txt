@@ -108,3 +108,33 @@
 [2025-03-03 16:34:58] Categories count: 6
 [2025-03-03 16:34:58] Subcategories count: 6
 [2025-03-03 16:34:58] Chapters count: 3
+[2025-03-03 20:08:55] Users count: 5
+[2025-03-03 20:08:55] Schools count: 1
+[2025-03-03 20:08:55] Questions count: 4
+[2025-03-03 20:08:55] Active subscriptions count: 7
+[2025-03-03 20:08:55] Test results table exists: Yes
+[2025-03-03 20:08:55] Tests count: 0
+[2025-03-03 20:08:55] Revenue: 99.00 €
+[2025-03-03 20:08:55] Categories count: 6
+[2025-03-03 20:08:55] Subcategories count: 6
+[2025-03-03 20:08:55] Chapters count: 3
+[2025-03-03 20:10:57] Users count: 5
+[2025-03-03 20:10:57] Schools count: 1
+[2025-03-03 20:10:57] Questions count: 4
+[2025-03-03 20:10:57] Active subscriptions count: 7
+[2025-03-03 20:10:57] Test results table exists: Yes
+[2025-03-03 20:10:57] Tests count: 0
+[2025-03-03 20:10:57] Revenue: 99.00 €
+[2025-03-03 20:10:57] Categories count: 6
+[2025-03-03 20:10:57] Subcategories count: 6
+[2025-03-03 20:10:57] Chapters count: 3
+[2025-03-03 20:18:51] Users count: 6
+[2025-03-03 20:18:51] Schools count: 2
+[2025-03-03 20:18:51] Questions count: 4
+[2025-03-03 20:18:51] Active subscriptions count: 7
+[2025-03-03 20:18:51] Test results table exists: Yes
+[2025-03-03 20:18:51] Tests count: 0
+[2025-03-03 20:18:51] Revenue: 99.00 €
+[2025-03-03 20:18:51] Categories count: 6
+[2025-03-03 20:18:51] Subcategories count: 6
+[2025-03-03 20:18:51] Chapters count: 3

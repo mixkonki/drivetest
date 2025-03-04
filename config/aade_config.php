@@ -9,11 +9,13 @@
 // Ρυθμίσεις για την ενσωμάτωση της ΑΑΔΕ
 $config['aade_integration'] = [
     // SOAP API Endpoint
-    'endpoint' => 'https://www1.gsis.gr/wsaade/RgWsPublic2/RgWsPublic2?WSDL',
+    'endpoint' => 'https://www1.gsis.gr/wsaade/RgWsPublic2/RgWsPublic2',
     
-    // Διαπιστευτήρια για το API της ΑΑΔΕ
-    'username' => 'XXXXXXXXXXXXXXXXXXXXXXXXX', // Αντικαταστήστε με το πραγματικό username
-    'password' => 'YYYYYYYYYYYYYYYYYYYYYYYYYY', // Αντικαταστήστε με το πραγματικό password
+    // Διαπιστευτήρια για το API της ΑΑΔΕ - Αντικαταστήστε με τα δικά σας από την ΑΑΔΕ
+    // ΣΗΜΑΝΤΙΚΟ: Για να λειτουργήσει το API, χρειάζεστε πραγματικά διαπιστευτήρια από την ΑΑΔΕ
+    // Αν δεν έχετε διαπιστευτήρια, το σύστημα θα λειτουργεί σε κατάσταση προσομοίωσης
+    'username' => '', // Αντικαταστήστε με το πραγματικό username
+    'password' => '', // Αντικαταστήστε με το πραγματικό password
     
     // Διαδρομή για το αρχείο καταγραφής
     'log_path' => BASE_PATH . '/logs/aade_api.log',

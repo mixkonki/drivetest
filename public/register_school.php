@@ -145,5 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?= BASE_URL ?>/assets/js/register.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/aade-integration.js"></script>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/aade-integration.css">
 </body>
 </html>
