@@ -1,0 +1,329 @@
+/* Διαδρομή: /assets/css/test.css */
+:root {
+    --primary-color: #a02626;
+    --secondary-color: #007bff;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --white-color: #ffffff;
+    --gray-color: #6c757d;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.test-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    background: var(--white-color);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Header */
+.test-header {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    padding: 15px 20px;
+    text-align: center;
+    position: relative;
+}
+
+.test-header h1 {
+    margin: 0;
+    font-size: 24px;
+    padding-bottom: 10px;
+}
+
+/* Timer */
+.timer {
+    background-color: var(--white-color);
+    color: var(--dark-color);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    display: inline-block;
+    margin: 10px 0;
+}
+
+.timer-icon {
+    margin-right: 5px;
+}
+
+.timer-warning {
+    background-color: var(--warning-color);
+    color: var(--dark-color);
+}
+
+.timer-danger {
+    background-color: var(--danger-color);
+    color: var(--white-color);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+ }
+ 
+ /* Progress Bar */
+ .progress-container {
+    margin: 10px 0;
+ }
+ 
+ .progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    overflow: hidden;
+ }
+ 
+ .progress {
+    height: 100%;
+    background-color: var(--success-color);
+    transition: width 0.3s ease;
+ }
+ 
+ .progress-text {
+    font-size: 14px;
+    margin-top: 5px;
+ }
+ 
+ /* Question Container */
+ .question-container {
+    padding: 20px;
+ }
+ 
+ .question-chapter {
+    font-size: 14px;
+    color: var(--gray-color);
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    display: inline-block;
+ }
+ 
+ .question-text {
+    margin-bottom: 20px;
+ }
+ 
+ .question-text h2 {
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 0;
+ }
+ 
+ /* Question Media */
+ .question-media {
+    margin: 15px 0;
+    text-align: center;
+ }
+ 
+ .question-image {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+ }
+ 
+ .question-video {
+    max-width: 100%;
+    border-radius: 8px;
+ }
+ 
+ .question-audio {
+    width: 100%;
+ }
+ 
+ /* Answers */
+ .answers-container {
+    margin-bottom: 20px;
+ }
+ 
+ .answer-option {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+ }
+ 
+ .answer-option:hover {
+    background-color: #f0f0f0;
+    transform: translateX(5px);
+ }
+ 
+ .answer-option.selected {
+    background-color: #e2f0ff;
+    border-color: #b8daff;
+ }
+ 
+ .answer-option input[type="radio"],
+ .answer-option input[type="checkbox"] {
+    margin-right: 10px;
+ }
+ 
+ .answer-option label {
+    cursor: pointer;
+    display: inline-block;
+    width: calc(100% - 25px);
+    vertical-align: middle;
+ }
+ 
+ .answer-media {
+    margin-top: 10px;
+    text-align: center;
+ }
+ 
+ .answer-image {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+ }
+ 
+ /* Form Actions */
+ .form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+ }
+ 
+ .navigation-buttons {
+    display: flex;
+    gap: 10px;
+ }
+ 
+ /* Question Navigation */
+ .question-navigation {
+    padding: 15px;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    border-top: 1px solid #dee2e6;
+ }
+ 
+ .nav-number {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    color: #495057;
+    border-radius: 50%;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.2s ease;
+ }
+ 
+ .nav-number:hover {
+    background-color: #dee2e6;
+    transform: scale(1.1);
+ }
+ 
+ .nav-number.active {
+    background-color: var(--primary-color);
+    color: white;
+ }
+ 
+ .nav-number.answered {
+    background-color: #b8daff;
+    color: #004085;
+ }
+ 
+ .nav-number.active.answered {
+    background-color: #004085;
+    color: white;
+ }
+ 
+ /* Buttons */
+ .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+ }
+ 
+ .btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+ }
+ 
+ .btn-primary:hover {
+    background-color: #8b2020;
+    transform: translateY(-2px);
+ }
+ 
+ .btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+ }
+ 
+ .btn-secondary:hover {
+    background-color: #0069d9;
+    transform: translateY(-2px);
+ }
+ 
+ .btn-success {
+    background-color: var(--success-color);
+    color: white;
+ }
+ 
+ .btn-success:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+ }
+ 
+ /* Media Queries */
+ @media (max-width: 768px) {
+    .test-container {
+        margin: 10px;
+        border-radius: 5px;
+    }
+    
+    .question-text h2 {
+        font-size: 16px;
+    }
+    
+    .answer-option {
+        padding: 10px;
+    }
+    
+    .navigation-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .nav-number {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+ }
