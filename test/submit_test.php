@@ -18,6 +18,17 @@ $is_timeout = isset($_GET['timeout']) && $_GET['timeout'] == 1;
 $time_spent = time() - $test['start_time'];
 
 // Υπολογισμός βαθμολογίας
+// Επιβεβαίωση ότι το test['questions'] είναι πίνακας
+if (!is_array($test['questions'])) {
+    // Αν δεν είναι πίνακας, δημιούργησε έναν άδειο πίνακα ή ανακατεύθυνε
+    $test['questions'] = []; 
+}
+
+// Επιβεβαίωση ότι το user_answers είναι πίνακας
+if (!isset($test['user_answers']) || !is_array($test['user_answers'])) {
+    $test['user_answers'] = [];
+}
+
 $total_questions = count($test['questions']);
 $correct_answers = 0;
 $unanswered_count = 0;
@@ -25,7 +36,13 @@ $results = [];
 
 foreach ($test['questions'] as $question) {
     $question_id = $question['id'];
-    $user_answers = $test['user_answers'][$question_id] ?? [];
+    
+    // Έλεγχος αν υπάρχουν απαντήσεις για αυτή την ερώτηση
+    if (!isset($test['user_answers'][$question_id]) || !is_array($test['user_answers'][$question_id])) {
+        $user_answers = [];
+    } else {
+        $user_answers = $test['user_answers'][$question_id];
+    }
     
     if (empty($user_answers)) {
         $unanswered_count++;
@@ -36,6 +53,11 @@ foreach ($test['questions'] as $question) {
             'status' => 'unanswered'
         ];
         continue;
+    }
+    
+    // Έλεγχος αν το answers είναι πίνακας
+    if (!isset($question['answers']) || !is_array($question['answers'])) {
+        $question['answers'] = [];
     }
     
     // Ανάκτηση σωστών απαντήσεων
@@ -83,26 +105,32 @@ $test_result_id = null;
 try {
     $mysqli->begin_transaction();
     
-    // Εισαγωγή αποτελέσματος τεστ - προσαρμογή στις στήλες του πίνακα test_results
-    $query = "INSERT INTO test_results (
-                user_id, test_type, test_category_id, chapter_id, 
-                score, total_questions, time_spent, passed, 
-                start_time, end_time
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?), NOW())";
-    
-    $stmt = $mysqli->prepare($query);
-    $score_value = $score_decimal; // Μετατροπή σε decimal για το schema της βάσης δεδομένων
-    $stmt->bind_param("isiidiiss", 
-        $user_id, 
-        $test['type'], 
-        $test['category_id'], 
-        $test['chapter_id'], 
-        $score_value, 
-        $total_questions, 
-        $time_spent, 
-        $passed ? 1 : 0, 
-        $test['start_time']
-    );
+   // Εισαγωγή αποτελέσματος τεστ - προσαρμογή στις στήλες του πίνακα test_results
+$query = "INSERT INTO test_results (
+    user_id, test_type, test_category_id, chapter_id, 
+    score, total_questions, time_spent, passed, 
+    start_time, end_time
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?), NOW())";
+
+// Πρέπει να αποθηκεύσουμε τις τιμές σε μεταβλητές πριν το bind_param
+$test_type = $test['type'];
+$category_id = $test['category_id'];
+$chapter_id = $test['chapter_id'];
+$start_time = $test['start_time'];
+$passed_value = $passed ? 1 : 0;
+
+$stmt = $mysqli->prepare($query);
+$stmt->bind_param("isiidiisi", 
+$user_id, 
+$test_type, 
+$category_id, 
+$chapter_id, 
+$score_value, 
+$total_questions, 
+$time_spent, 
+$passed_value, 
+$start_time
+);
     
     $stmt->execute();
     $test_result_id = $mysqli->insert_id;
