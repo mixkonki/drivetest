@@ -77,4 +77,36 @@ Received FILES data: Array
 )
 Transaction started for user ID: 4Preparing user update for ID: 4User update successful for ID: 4[2025-03-03 16:37:20] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: Επαλήθευση Email - DriveTest
 [2025-03-03 20:11:47] ✅ Email sent successfully to k.michailidis@thessdrive.gr with subject: Επαλήθευση Email - DriveTest
-Processing action: filterProcessing action: filterProcessing action: filterProcessing action: filter
+Processing action: filterProcessing action: filterProcessing action: filterProcessing action: filterStarting to fetch user data for ID: 19Successfully fetched user data for ID: 19 - Name: ThessdriveStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 19Editable state for user ID 19: falseProcessing action: updateStarting update for user ID: 19Received POST data: Array
+(
+    [action] => update
+    [fullname] => Thessdrive
+    [email] => kostas.michailidis1@gmail.com
+    [phone] => 2310529806
+    [role] => user
+    [school_id] => 
+    [license_number] => 
+    [responsible_person] => 
+    [subscription_status] => pending
+    [status] => active
+    [address] => Αμύντα
+    [street_number] => 12
+    [postal_code] => 54631
+    [city] => ΘΕΣΣΑΛΟΝΙΚΗ
+    [latitude] => 40.63694790
+    [longitude] => 22.94766410
+)
+Received FILES data: Array
+(
+    [avatar] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+Transaction started for user ID: 19Preparing user update for ID: 19User update successful for ID: 19Starting to fetch user data for ID: 19Successfully fetched user data for ID: 19 - Name: ThessdriveStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 19Editable state for user ID 19: false[2025-03-04 22:09:53] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: 🚗 Επιβεβαίωση Συνδρομής - DriveTest

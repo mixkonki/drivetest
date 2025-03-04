@@ -1,10 +1,61 @@
-/* Γενικά στυλ για τα τεστ */
-.test-container {
+/* Συμπληρωματικά στυλ για τις σελίδες του συστήματος τεστ */
+
+/* Σελίδα έναρξης τεστ */
+.test-start-container {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
+}
+
+.user-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.stat-item {
+    flex: 1;
+    min-width: 150px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.good-score {
+    color: #28a745;
+}
+
+.bad-score {
+    color: #dc3545;
+}
+
+.form-control-range {
+    width: 100%;
+}
+
+/* Σελίδα τεστ */
+.test-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 800px;
 }
 
 .test-header {
@@ -14,13 +65,6 @@
     padding-bottom: 15px;
 }
 
-.test-header h1 {
-    color: #a02626;
-    font-size: 28px;
-    margin-bottom: 10px;
-}
-
-/* Timer */
 .timer {
     font-size: 24px;
     font-weight: bold;
@@ -48,7 +92,6 @@
     100% { transform: scale(1); }
 }
 
-/* Progress bar */
 .progress-container {
     margin-bottom: 15px;
 }
@@ -72,7 +115,6 @@
     margin-top: 5px;
 }
 
-/* Question container */
 .question-container {
     background-color: #f8f9fa;
     border-radius: 8px;
@@ -86,30 +128,17 @@
     margin-bottom: 10px;
 }
 
-.question-text h2 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    color: #333;
-}
-
 .question-media {
     margin: 15px 0;
     text-align: center;
 }
 
-.question-image {
+.question-image, .answer-image {
     max-width: 100%;
     height: auto;
     border-radius: 5px;
 }
 
-.question-video, .question-audio {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* Answers */
 .answers-container {
     margin-bottom: 20px;
 }
@@ -132,35 +161,11 @@
     border-color: #91d5ff;
 }
 
-.answer-option input {
-    margin-right: 10px;
-}
-
-.answer-media {
-    margin-top: 10px;
-}
-
-.answer-image {
-    max-width: 100%;
-    height: auto;
-    max-height: 200px;
-    border-radius: 5px;
-}
-
-/* Form actions */
-.form-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-}
-
 .navigation-buttons {
     display: flex;
     gap: 10px;
 }
 
-/* Question navigation */
 .question-navigation {
     display: flex;
     flex-wrap: wrap;
@@ -183,10 +188,6 @@
     transition: all 0.2s ease;
 }
 
-.nav-number:hover {
-    background-color: #f1f1f1;
-}
-
 .nav-number.active {
     background-color: #a02626;
     color: white;
@@ -198,16 +199,7 @@
     border-color: #91d5ff;
 }
 
-.nav-number.active.answered {
-    background-color: #a02626;
-    color: white;
-}
-
-/* Results page styles */
-.results-container {
-    text-align: center;
-}
-
+/* Σελίδα αποτελεσμάτων */
 .results-overview {
     display: flex;
     flex-wrap: wrap;
@@ -227,6 +219,7 @@
     margin-bottom: 20px;
     padding: 20px;
     border-radius: 8px;
+    text-align: center;
 }
 
 .score-container.passed {
@@ -249,33 +242,9 @@
     margin-top: 10px;
 }
 
-.results-details {
-    text-align: left;
-}
-
-.result-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.result-label {
-    font-weight: 500;
-    color: #6c757d;
-}
-
 .results-chart {
     flex: 1;
     min-width: 300px;
-}
-
-.results-actions {
-    margin-top: 30px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
 }
 
 .retry-suggestion {
@@ -285,54 +254,11 @@
     border-radius: 8px;
 }
 
-/* Review page styles */
-.review-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
+/* Σελίδα ανασκόπησης */
 .test-info {
     background-color: #f8f9fa;
     border-radius: 8px;
     padding: 20px;
-    margin-bottom: 30px;
-}
-
-.test-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.stat-item {
-    flex: 1;
-    min-width: 120px;
-    padding: 10px;
-    background-color: white;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.stat-label {
-    font-size: 14px;
-    color: #6c757d;
-    margin-bottom: 5px;
-}
-
-.stat-value {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.stat-value.passed {
-    color: #28a745;
-}
-
-.stat-value.failed {
-    color: #dc3545;
-}
-
-.questions-review {
     margin-bottom: 30px;
 }
 
@@ -350,16 +276,6 @@
 
 .question-item.incorrect {
     border-left: 5px solid #dc3545;
-}
-
-.question-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-}
-
-.question-number {
-    font-weight: 500;
 }
 
 .status-badge {
@@ -404,10 +320,6 @@
     color: #dc3545;
 }
 
-.answer-text {
-    flex: 1;
-}
-
 .correct-answer {
     background-color: #d4edda;
     border-color: #c3e6cb;
@@ -425,18 +337,7 @@
     border-radius: 5px;
 }
 
-.explanation-title {
-    font-weight: 500;
-    margin-bottom: 10px;
-}
-
-.review-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-/* History page styles */
+/* Σελίδα ιστορικού */
 .filter-container {
     background-color: #f8f9fa;
     border-radius: 8px;
@@ -452,13 +353,7 @@
 
 .filter-group {
     flex: 1;
-    min-width: 200px;
-}
-
-.filter-actions {
-    display: flex;
-    gap: 10px;
-    align-items: flex-end;
+    min-width: 150px;
 }
 
 .history-stats {
@@ -468,36 +363,10 @@
     margin-bottom: 30px;
 }
 
-.stat-card {
-    flex: 1;
-    min-width: 200px;
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-.stat-card h3 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.stat-card p {
-    font-size: 24px;
-    font-weight: 500;
-    color: #a02626;
-}
-
-.history-table-container {
-    margin-bottom: 30px;
-    overflow-x: auto;
-}
-
 .history-table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 30px;
 }
 
 .history-table th, .history-table td {
@@ -512,10 +381,6 @@
     color: #333;
 }
 
-.history-table tr:hover {
-    background-color: #f8f9fa;
-}
-
 .passed-test .score-cell {
     color: #28a745;
 }
@@ -524,35 +389,15 @@
     color: #dc3545;
 }
 
-.actions-cell {
-    display: flex;
-    gap: 5px;
-}
-
-.page-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .filter-form, .test-stats, .history-stats, .results-overview {
+    .filter-form, .results-overview, .test-stats, .history-stats {
         flex-direction: column;
     }
     
-    .results-card, .results-chart {
-        width: 100%;
-    }
-    
-    .navigation-buttons, .results-actions, .review-actions, .page-actions {
+    .navigation-buttons {
         flex-direction: column;
         width: 100%;
-    }
-    
-    .btn {
-        width: 100%;
-        margin-bottom: 10px;
     }
     
     .nav-number {

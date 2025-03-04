@@ -69,7 +69,7 @@ $additional_css = '<link rel="stylesheet" href="' . BASE_URL . '/assets/css/test
     <meta charset="UTF-8">
     <title><?= $page_title ?> - DriveTest</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
-    <?= $additional_css ?>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/test.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>

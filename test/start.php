@@ -1,8 +1,10 @@
 <?php
 require_once '../config/config.php';
-require_once '../includes/db_connection.php'; // Προσθήκη της σύνδεσης με τη βάση
+require_once '../includes/db_connection.php';
 require_once '../includes/user_auth.php';
+
 $page_title = "Έναρξη Τεστ";
+$load_test_css = true; // Αυτή η γραμμή υποδεικνύει ότι χρειαζόμαστε το test.css
 require_once '../includes/header.php';
 
 // Έλεγχος αν ο χρήστης είναι συνδεδεμένος

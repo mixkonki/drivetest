@@ -3,6 +3,7 @@ require_once '../config/config.php';
 require_once '../includes/db_connection.php'; // Προσθήκη της σύνδεσης με τη βάση
 require_once '../includes/user_auth.php';
 $page_title = "Ιστορικό Τεστ";
+$load_test_css = true; // Αυτή η γραμμή υποδεικνύει ότι χρειαζόμαστε το test.css
 require_once '../includes/header.php';
 
 // Έλεγχος εξουσιοδότησης
@@ -237,7 +238,7 @@ $stmt->close();
     
     <div class="page-actions">
         <a href="<?= BASE_URL ?>/test/start.php" class="btn btn-primary">Νέο Τεστ</a>
-        <a href="<?= BASE_URL ?>/dashboard.php" class="btn btn-secondary">Επιστροφή στην Αρχική</a>
+        <a href="<?= BASE_URL ?>/users/dashboard.php" class="btn btn-secondary">Επιστροφή στην Αρχική</a>
     </div>
 </div>
 
