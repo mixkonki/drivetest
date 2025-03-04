@@ -105,32 +105,32 @@ $test_result_id = null;
 try {
     $mysqli->begin_transaction();
     
-   // Εισαγωγή αποτελέσματος τεστ - προσαρμογή στις στήλες του πίνακα test_results
-$query = "INSERT INTO test_results (
-    user_id, test_type, test_category_id, chapter_id, 
-    score, total_questions, time_spent, passed, 
-    start_time, end_time
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?), NOW())";
-
-// Πρέπει να αποθηκεύσουμε τις τιμές σε μεταβλητές πριν το bind_param
-$test_type = $test['type'];
-$category_id = $test['category_id'];
-$chapter_id = $test['chapter_id'];
-$start_time = $test['start_time'];
-$passed_value = $passed ? 1 : 0;
-
-$stmt = $mysqli->prepare($query);
-$stmt->bind_param("isiidiisi", 
-$user_id, 
-$test_type, 
-$category_id, 
-$chapter_id, 
-$score_value, 
-$total_questions, 
-$time_spent, 
-$passed_value, 
-$start_time
-);
+    // Εισαγωγή αποτελέσματος τεστ - προσαρμογή στις στήλες του πίνακα test_results
+    $query = "INSERT INTO test_results (
+                user_id, test_type, test_category_id, chapter_id, 
+                score, total_questions, time_spent, passed, 
+                start_time, end_time
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?), NOW())";
+    
+    // Πρέπει να αποθηκεύσουμε τις τιμές σε μεταβλητές πριν το bind_param
+    $test_type = $test['type'];
+    $category_id = $test['category_id'];
+    $chapter_id = $test['chapter_id'];
+    $start_time = $test['start_time'];
+    $passed_value = $passed ? 1 : 0;
+    
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("isiidiisi", 
+        $user_id, 
+        $test_type, 
+        $category_id, 
+        $chapter_id, 
+        $score_decimal, 
+        $total_questions, 
+        $time_spent, 
+        $passed_value, 
+        $start_time
+    );
     
     $stmt->execute();
     $test_result_id = $mysqli->insert_id;

@@ -59,14 +59,17 @@ $progress_percentage = round(($current_question_index + 1) / count($test['questi
 // Μετατροπή χρόνου σε λεπτά:δευτερόλεπτα
 $minutes_remaining = floor($time_remaining / 60);
 $seconds_remaining = $time_remaining % 60;
+
+$page_title = "Τεστ σε Εξέλιξη";
+$additional_css = '<link rel="stylesheet" href="' . BASE_URL . '/assets/css/test.css">';
 ?>
 <!DOCTYPE html>
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <title>Τεστ σε Εξέλιξη - DriveTest</title>
+    <title><?= $page_title ?> - DriveTest</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/test.css">
+    <?= $additional_css ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
