@@ -32,6 +32,7 @@ if (!isset($_SESSION['csrf_token'])) {
 }
 
 $error = '';
+$success = '';
 
 // Έλεγχος αν έγινε υποβολή της φόρμας
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -43,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = trim($_POST['password']);
 
         // Ερώτημα για ανάκτηση χρήστη βάσει email
-        $stmt = $mysqli->prepare("SELECT id, fullname, password, role, verified FROM users WHERE email = ?");
+        $stmt = $mysqli->prepare("SELECT id, fullname, password, role, email_verified FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $stmt->store_result();
@@ -59,6 +60,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Έλεγχος αν ο χρήστης έχει επιβεβαιώσει το email του
             if ($verified == 0) {
                 $error = "Πρέπει να επιβεβαιώσετε το email σας πρώτα!";
+                // Προσθήκη συνδέσμου επαναποστολής email επαλήθευσης
+                $resend_link = '<a href="' . BASE_URL . '/public/resend_verification.php?email=' . urlencode($email) . '">Αποστολή ξανά</a>';
+                $error .= " " . $resend_link;
             } elseif (password_verify($password, $hashed_password)) {
                 // Δημιουργία νέου session token
                 $session_token = bin2hex(random_bytes(32));
@@ -73,6 +77,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['fullname'] = $fullname;
                 $_SESSION['role'] = $role;
                 $_SESSION['session_token'] = $session_token;
+
+                // Αποθήκευση της ώρας σύνδεσης
+                $_SESSION['login_time'] = time();
+
+                // Προαιρετική λειτουργία "Να με θυμάσαι"
+                if (isset($_POST['remember_me']) && $_POST['remember_me'] == 1) {
+                    $remember_token = bin2hex(random_bytes(32));
+                    
+                    // Αποθήκευση του token στη βάση
+                    $remember_stmt = $mysqli->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
+                    $remember_stmt->bind_param("si", $remember_token, $id);
+                    $remember_stmt->execute();
+                    
+                    // Αποθήκευση του token σε cookie που λήγει σε 30 ημέρες
+                    setcookie('remember_token', $remember_token, time() + (86400 * 30), '/', '', true, true);
+                }
 
                 // Ανακατεύθυνση βάσει ρόλου
                 switch ($role) {
@@ -101,46 +121,127 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// Έλεγχος για επιτυχή επαλήθευση email
+if (isset($_GET['success']) && $_GET['success'] === 'verified') {
+    $success = "Το email σας επαληθεύτηκε επιτυχώς! Μπορείτε να συνδεθείτε.";
+}
+
+// Έλεγχος για μήνυμα επιτυχίας εγγραφής
+if (isset($_GET['success']) && $_GET['success'] === 'registered') {
+    $success = "Η εγγραφή σας ολοκληρώθηκε επιτυχώς! Μπορείτε να συνδεθείτε.";
+}
+
+// Τίτλος σελίδας
+$page_title = "Σύνδεση";
+$load_auth_css = true;
+$load_auth_js = true;
+
+
 // Φόρτωση του header
-require_once('../includes/header.php');
+require_once '../includes/header.php';
 ?>
 
-<main class="container" role="main">
-    <h1 class="page-title" aria-label="Σύνδεση Χρήστη">Σύνδεση Χρήστη</h1>
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <img src="<?= BASE_URL ?>/assets/images/drivetest.png" alt="DriveTest Logo" class="auth-logo">
+            <h1>Σύνδεση</h1>
+            <p>Συνδεθείτε για να αποκτήσετε πρόσβαση στην πλατφόρμα DriveTest</p>
+        </div>
+        
+        <?php if (!empty($success)): ?>
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> <?= $success ?>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (!empty($error)): ?>
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i> <?= $error ?>
+        </div>
+        <?php endif; ?>
+        
+        <form action="<?= BASE_URL ?>/public/login.php" method="post" class="auth-form">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-group">
+                    <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Εισάγετε το email σας" required autofocus value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Κωδικός</label>
+                <div class="input-group password-visibility">
+                    <span class="input-icon"><i class="fas fa-lock"></i></span>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Εισάγετε τον κωδικό σας" required>
+                    <span class="password-toggle" onclick="togglePassword('password')">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+            </div>
+            
+            <div class="form-options">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember_me" name="remember_me" value="1">
+                    <label for="remember_me">Να με θυμάσαι</label>
+                </div>
+                
+                <a href="<?= BASE_URL ?>/public/recover_password.php" class="forgot-password">Ξέχασα τον κωδικό μου</a>
+            </div>
+            
+            <button type="submit" class="btn-primary btn-block">
+                <i class="fas fa-sign-in-alt"></i> Σύνδεση
+            </button>
+        </form>
+        
+        <div class="auth-separator">
+            <span>ή</span>
+        </div>
+        
+        <div class="social-login">
+            <a href="<?= BASE_URL ?>/public/google_login.php" class="btn-social btn-google">
+                <i class="fab fa-google"></i> Σύνδεση με Google
+            </a>
+        </div>
+        
+        <div class="auth-footer">
+            <p>Δεν έχετε λογαριασμό; 
+                <a href="<?= BASE_URL ?>/public/register_user.php">Εγγραφή χρήστη</a> ή 
+                <a href="<?= BASE_URL ?>/public/register_school.php">Εγγραφή σχολής</a>
+            </p>
+            
+            <p>
+                <a href="<?= BASE_URL ?>/public/guest_test.php" class="guest-link">
+                    <i class="fas fa-user-clock"></i> Δοκιμή ως επισκέπτης
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Λειτουργία εναλλαγής ορατότητας κωδικού
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const toggle = input.nextElementSibling;
+    const icon = toggle.querySelector('i');
     
-
-    <!-- Εμφάνιση μηνύματος λάθους αν υπάρχει -->
-    <?php if (isset($error)) : ?>
-        <p class="error-message" role="alert"><?= htmlspecialchars($error) ?></p>
-    <?php endif; ?>
-
-    <form action="login.php" method="post" class="form-container" novalidate>
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-
-        <div class="form-group">
-            <label for="email" class="sr-only">Email:</label>
-            <input type="email" id="email" name="email" required aria-required="true" placeholder="Email">
-        </div>
-
-        <div class="form-group">
-            <label for="password" class="sr-only">Κωδικός:</label>
-            <input type="password" id="password" name="password" required aria-required="true" placeholder="Κωδικός">
-        </div>
-
-        <button type="submit" class="login-btn" aria-label="Σύνδεση">Σύνδεση</button>
-        <!-- Προσθέστε αυτόν τον κώδικα μετά το κουμπί "Σύνδεση" στο αρχείο login.php -->
-
-<div class="form-group text-center mt-3">
-    <a href="<?= BASE_URL ?>/public/recover_password.php" class="forgot-password">Ξέχασα τον κωδικό μου</a>
-</div>
-
-<div class="form-group text-center mt-2">
-    <a href="<?= BASE_URL ?>/public/register_user.php" class="register-link">Δεν έχετε λογαριασμό; Εγγραφείτε εδώ</a>
-</div>
-    </form>
-</main>
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = "password";
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
 
 <?php
 // Φόρτωση του footer
-require_once('../includes/footer.php');
+require_once '../includes/footer.php';
 ?>

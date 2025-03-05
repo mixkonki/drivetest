@@ -10,15 +10,14 @@ body.user-page {
 
 /* Container για το κύριο περιεχόμενο της σελίδας */
 .container {
-    max-width: 1200px; /* Μέγιστο πλάτος 1200px για καλύτερη προβολή */
+    max-width: 95%; /* Μέγιστο πλάτος 1200px για καλύτερη προβολή */
     margin: 0 auto; /* Κεντράρει το container οριζόντια */
-    background-color: white; /* Λευκό φόντο για αντίθεση */
     padding: 20px; /* Εσωτερική απόσταση 20px */
     border-radius: 8px; /* Στρογγυλεμένες γωνίες */
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Λεπτή σκίαση για 3D εμφάνιση */
 }
 
-/* Header του προφίλ χρήστη */
+/* Header του προφίλ χρήστη */  
 .header {
     background-color: #aa3636; /* Κόκκινο φόντο για το header */
     color: white; /* Λευκό κείμενο για αντίθεση */
