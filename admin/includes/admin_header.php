@@ -26,6 +26,9 @@ require_once dirname(__DIR__, 2) . '/config/config.php';
             <li><a href="<?= $config['base_url'] ?>/admin/test/manage_subcategories.php" class="nav-link" aria-label="Διαχείριση Υποκατηγοριών">Διαχείριση Υποκατηγοριών</a></li>
             <li><a href="<?= $config['base_url'] ?>/admin/test/manage_chapters.php" class="nav-link" aria-label="Διαχείριση Κεφαλαίων">Διαχείριση Κεφαλαίων</a></li>
             <li><a href="<?= $config['base_url'] ?>/admin/test/manage_questions.php" class="nav-link" aria-label="Διαχείριση Ερωτήσεων">Διαχείριση Ερωτήσεων</a></li>
+            <!-- Προσθήκη στο admin/includes/admin_header.php, στην ενότητα <ul role="navigation"> -->
+<li><a href="<?= BASE_URL ?>/admin/test/test_config.php" class="nav-link" aria-label="Ρυθμίσεις Τεστ">Ρυθμίσεις Τεστ</a></li>
+<li><a href="<?= BASE_URL ?>/admin/test/generate_test.php" class="nav-link" aria-label="Δημιουργία Τεστ">Δημιουργία Τεστ</a></li>
             <li><a href="<?= $config['base_url'] ?>/admin/settings.php" class="nav-link" aria-label="Ρυθμίσεις">Ρυθμίσεις</a></li>
             <li><a href="<?= $config['base_url'] ?>/admin/logout.php" class="nav-link logout-btn" aria-label="Αποσύνδεση">Αποσύνδεση</a></li>
         </ul>

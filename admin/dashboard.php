@@ -132,6 +132,9 @@ if ($result) {
                 <a href="test/manage_subcategories.php" class="btn-primary" role="listitem" aria-label="Διαχείριση Υποκατηγοριών">Διαχείριση Υποκατηγοριών</a>
                 <a href="test/manage_chapters.php" class="btn-primary" role="listitem" aria-label="Διαχείριση Κεφαλαίων">Διαχείριση Κεφαλαίων</a>
                 <a href="test/manage_questions.php" class="btn-primary" role="listitem" aria-label="Διαχείριση Ερωτήσεων">Διαχείριση Ερωτήσεων</a>
+                <!-- Προσθήκη στο admin/dashboard.php στην ενότητα "admin-actions" ή "quick-links" -->
+<a href="<?= BASE_URL ?>/admin/test/test_config.php" class="btn-primary" role="listitem" aria-label="Ρυθμίσεις Τεστ">⚙️ Ρυθμίσεις Τεστ</a>
+<a href="<?= BASE_URL ?>/admin/test/generate_test.php" class="btn-primary" role="listitem" aria-label="Δημιουργία Τεστ">🧩 Δημιουργία Τεστ</a>
             </div>
         </section>
 
