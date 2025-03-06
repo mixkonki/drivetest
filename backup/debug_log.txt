@@ -345,3 +345,13 @@
 [2025-03-04 23:32:29] ✅ [SUCCESS] Βρέθηκαν 2 κεφάλαια.
 [2025-03-05 06:54:31] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
 [2025-03-05 06:54:31] [WARNING] Μη εξουσιοδοτημένη πρόσβαση από IP: 127.0.0.1
+[2025-03-06 06:26:18] Users count: 6
+[2025-03-06 06:26:18] Schools count: 1
+[2025-03-06 06:26:18] Questions count: 4
+[2025-03-06 06:26:18] Active subscriptions count: 8
+[2025-03-06 06:26:18] Test results table exists: Yes
+[2025-03-06 06:26:18] Tests count: 10
+[2025-03-06 06:26:18] Revenue: 114.00 €
+[2025-03-06 06:26:18] Categories count: 6
+[2025-03-06 06:26:18] Subcategories count: 6
+[2025-03-06 06:26:18] Chapters count: 3

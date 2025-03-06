@@ -154,7 +154,7 @@
     }
     
     .buttons {
-      flex-direction: column;
+      flex-direction: row;
       gap: var(--spacing-md);
     }
     
@@ -166,3 +166,10 @@
       min-width: 100%;
     }
   }
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    }

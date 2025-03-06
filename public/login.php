@@ -191,22 +191,17 @@ require_once '../includes/header.php';
                 
                 <a href="<?= BASE_URL ?>/public/recover_password.php" class="forgot-password">Ξέχασα τον κωδικό μου</a>
             </div>
-            
+      
             <button type="submit" class="btn-primary btn-block">
                 <i class="fas fa-sign-in-alt"></i> Σύνδεση
             </button>
+           
         </form>
         
         <div class="auth-separator">
             <span>ή</span>
         </div>
-        
-        <div class="social-login">
-            <a href="<?= BASE_URL ?>/public/google_login.php" class="btn-social btn-google">
-                <i class="fab fa-google"></i> Σύνδεση με Google
-            </a>
-        </div>
-        
+              
         <div class="auth-footer">
             <p>Δεν έχετε λογαριασμό; 
                 <a href="<?= BASE_URL ?>/public/register_user.php">Εγγραφή χρήστη</a> ή 
