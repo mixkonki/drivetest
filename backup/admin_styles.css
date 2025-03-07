@@ -1294,3 +1294,44 @@ body,
 .admin-container {
     margin-top: 80px !important;
 }
+/* Στυλ για τις ταξινομημένες στήλες */
+.users-table th.sort-asc,
+.users-table th.sort-desc {
+  background-color: var(--secondary-dark);
+}
+
+.users-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Στυλ για τα tooltips */
+.user-info-tooltip .tooltip-content {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.3s, opacity 0.3s ease;
+}
+
+/* Στυλ για την ένδειξη φόρτωσης */
+.loading-data {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Στυλ για μηνύματα σφάλματος */
+.error-message {
+  text-align: center;
+  padding: 20px;
+  color: var(--danger-color);
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Στυλ για μηνύματα "κανένα αποτέλεσμα" */
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-light);
+  font-style: italic;
+}

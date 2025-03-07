@@ -208,16 +208,31 @@
     background-color: var(--primary-dark) !important;
   }
   
-  /* Admin Container */
+/* Admin Container - διορθωμένο τμήμα */
+.admin-container {
+  flex: 1;
+  max-width: calc(100% - 2 * var(--page-margin));
+  margin: 50px 50px 50px 50px; /* Αλλαγή από margin-top σε margin για σαφήνεια */
+  padding: var(--spacing-xl);
+  background: var(--card-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
+  position: relative; /* Προσθήκη για να εξασφαλιστεί το σωστό z-index */
+  z-index: 1; /* Χαμηλότερο από το header */
+}
+
+/* Διορθώσεις για κινητά */
+@media (max-width: 768px) {
   .admin-container {
-    flex: 1;
-    max-width: calc(100% - 2 * var(--page-margin));
-    margin: 80px 20px;
-    padding: var(--spacing-xl);
-    background: var(--card-background);
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--box-shadow);
+      margin: 100px auto 20px auto; /* Αύξηση του περιθωρίου για κινητά */
   }
+}
+
+@media (max-width: 576px) {
+  .admin-container {
+      margin: 120px auto 20px auto; /* Ακόμα μεγαλύτερο περιθώριο για μικρές οθόνες */
+  }
+}
   
   /* Admin Title */
   .admin-title {
@@ -663,6 +678,7 @@
     padding: var(--spacing-lg);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--box-shadow);
+
   }
   
   .search-form {
@@ -1101,7 +1117,7 @@
     0% { background-color: var(--primary-light); }
     100% { background-color: transparent; }
   }
-  
   .highlight-new {
     animation: highlightNew 2s ease;
+  }
   }
