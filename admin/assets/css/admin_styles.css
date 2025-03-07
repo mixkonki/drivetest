@@ -818,3 +818,479 @@ body,
     clip: rect(0, 0, 0, 0);
     border: 0;
 }
+/* Στυλ για τον πίνακα διαχείρισης */
+
+/* Επικεφαλίδα του dashboard */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.dashboard-title {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Container στατιστικών */
+.dashboard-stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+/* Κάρτες στατιστικών */
+.stats-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.stats-icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.users-stats .stats-icon {
+    background-color: #e3f2fd;
+    color: #2196f3;
+}
+
+.questions-stats .stats-icon {
+    background-color: #e8f5e9;
+    color: #4caf50;
+}
+
+.tests-stats .stats-icon {
+    background-color: #fff3e0;
+    color: #ff9800;
+}
+
+.subscriptions-stats .stats-icon {
+    background-color: #fce4ec;
+    color: #e91e63;
+}
+
+.stats-content {
+    flex: 1;
+}
+
+.stats-content h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.6rem 0;
+    color: #555;
+}
+
+.stats-numbers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.stats-number {
+    flex: 1;
+    min-width: 70px;
+}
+
+.stats-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.stats-label {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.stats-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.stats-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: #aa3636;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.stats-link:hover {
+    color: #8b2e2e;
+    text-decoration: underline;
+}
+
+/* Πάνελ για πρόσφατες ερωτήσεις και τεστ */
+.dashboard-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.dashboard-panel {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.panel-header {
+    padding: 1rem 1.5rem;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.panel-link {
+    font-size: 0.85rem;
+    color: #aa3636;
+    text-decoration: none;
+}
+
+.panel-link:hover {
+    text-decoration: underline;
+}
+
+.panel-content {
+    padding: 1rem 1.5rem;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    color: #777;
+    font-style: italic;
+}
+
+/* Στυλ για τις λίστες ερωτήσεων και τεστ */
+.question-list, .test-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.question-item, .test-item {
+    padding: 0.8rem;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    border-left: 3px solid #aa3636;
+    position: relative;
+}
+
+.question-text, .test-title {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    padding-right: 30px; /* Χώρος για το κουμπί επεξεργασίας */
+}
+
+.question-meta, .test-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.question-chapter, .test-category, .test-creator {
+    background-color: #eee;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+}
+
+.question-date, .test-date {
+    margin-left: auto;
+}
+
+.question-edit, .test-view {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    font-size: 1.2rem;
+    color: #555;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.question-edit:hover, .test-view:hover {
+    color: #aa3636;
+}
+
+/* Γρήγορες ενέργειες */
+.dashboard-quick-links {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.quick-links-title {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.quick-link {
+    background-color: #fff;
+    padding: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    color: #aa3636;
+}
+
+.quick-link-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.quick-link-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Απόκριση για μικρότερες οθόνες */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .dashboard-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .dashboard-actions .btn-primary {
+        width: 100%;
+    }
+    
+    .dashboard-panels {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-panel {
+        margin-bottom: 1rem;
+    }
+    
+    .quick-links-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+/* Στυλ για το μενού διαχείρισης */
+
+/* Βελτιωμένο header */
+.admin-header {
+    background: #222;
+    color: white;
+    padding: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-header .logo {
+    padding: 10px 20px;
+}
+
+.admin-header .logo img {
+    height: 40px;
+    vertical-align: middle;
+}
+
+/* Βελτιωμένο Nav */
+.admin-header nav {
+    flex: 1;
+}
+
+.admin-header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.admin-header nav ul li {
+    position: relative;
+    margin: 0;
+}
+
+.admin-header nav ul li a.nav-link {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-size: 0.95rem;
+    padding: 20px 15px;
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+}
+
+.admin-header nav ul li a.nav-link:hover,
+.admin-header nav ul li a.nav-link:focus,
+.admin-header nav ul li a.nav-link.active {
+    background-color: #333;
+    outline: none;
+}
+
+.nav-icon {
+    margin-right: 5px;
+    font-size: 1.1rem;
+}
+
+/* Dropdown styles */
+.nav-dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+}
+
+.dropdown-arrow {
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 200px;
+    background-color: #333;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 4px 4px;
+    display: none;
+    z-index: 1001;
+}
+
+.nav-dropdown.active .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu li {
+    width: 100%;
+}
+
+.dropdown-item {
+    display: flex !important;
+    align-items: center;
+    padding: 12px 15px !important;
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus,
+.dropdown-item.active {
+    background-color: #444;
+}
+
+/* Ειδικό στυλ για το κουμπί αποσύνδεσης */
+.logout-btn {
+    background-color: #aa3636;
+}
+
+.logout-btn:hover {
+    background-color: #8b2e2e !important;
+}
+
+/* Απόκριση για μικρότερες οθόνες */
+@media (max-width: 992px) {
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .admin-header nav {
+        width: 100%;
+    }
+    
+    .admin-header nav ul {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .dropdown-menu {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        padding-left: 20px;
+    }
+    
+    .dropdown-item {
+        padding-left: 25px !important;
+    }
+}
+
+/* Προσαρμογή του container για να ταιριάζει με το fixed header */
+.admin-container {
+    margin-top: 80px !important;
+}

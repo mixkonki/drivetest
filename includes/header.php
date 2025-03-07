@@ -165,7 +165,7 @@ $load_test_css = isset($load_test_css) && $load_test_css ? true : false;
                                         </a>
                                     <?php endif; ?>
                                     <div class="dropdown-divider"></div>
-                                    <a href="<?= BASE_URL ?>/public/logout.php" class="dropdown-item text-danger">
+                                    <a href="<?= BASE_URL ?>/admin/logout.php" class="dropdown-item text-danger">
                                         <i class="fas fa-sign-out-alt"></i> Αποσύνδεση
                                     </a>
                                 </div>

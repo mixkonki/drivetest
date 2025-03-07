@@ -12,7 +12,7 @@ $failed_imports = 0;
 $successfulImports = [];
 $errorLines = [];
 
-// Ανάκτηση κατηγοριών, υποκατηγοριών και κεφαλαίων για τη φόρμα
+// Ανάκτηση κατηγοριών
 $categories_query = "SELECT id, name FROM test_categories ORDER BY name";
 $categories_result = $mysqli->query($categories_query);
 $categories = $categories_result->fetch_all(MYSQLI_ASSOC);
@@ -31,9 +31,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
         } else {
             // Επεξεργασία του CSV
             $file = $_FILES['csv_file']['tmp_name'];
+            
+            // Επεξεργασία του ZIP (αν υπάρχει)
+            $media_files = [];
+            if (isset($_FILES['zip_file']) && $_FILES['zip_file']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = BASE_PATH . '/admin/test/uploads/';
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                
+                $zip = new ZipArchive();
+                if ($zip->open($_FILES['zip_file']['tmp_name']) === TRUE) {
+                    $zip->extractTo($uploadDir);
+                    for ($i = 0; $i < $zip->numFiles; $i++) {
+                        $filename = $zip->getNameIndex($i);
+                        $media_files[$filename] = $uploadDir . $filename;
+                    }
+                    $zip->close();
+                } else {
+                    $import_error = "Σφάλμα κατά την εξαγωγή του αρχείου ZIP.";
+                }
+            }
+            
             if (($handle = fopen($file, "r")) !== FALSE) {
                 // Ανάγνωση της πρώτης γραμμής (επικεφαλίδες)
                 $headers = fgetcsv($handle, 0, $delimiter);
+                
+                // Έλεγχος κωδικοποίησης και μετατροπή, αν χρειάζεται
+                $headers = array_map(function($header) {
+                    return mb_convert_encoding($header, 'UTF-8', 'UTF-8, ISO-8859-7, Windows-1253');
+                }, $headers);
                 
                 // Έλεγχος δομής αρχείου
                 $valid_format = false;
@@ -52,6 +79,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                     // Επεξεργασία κάθε γραμμής
                     while (($data = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
                         $line_number++;
+                        
+                        // Διορθώνουμε την κωδικοποίηση των δεδομένων
+                        $data = array_map(function($cell) {
+                            return mb_convert_encoding($cell, 'UTF-8', 'UTF-8, ISO-8859-7, Windows-1253');
+                        }, $data);
                         
                         // Έλεγχος αν έχουμε αρκετά δεδομένα
                         if (count($data) < 3) {
@@ -92,6 +124,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                             continue;
                         }
                         
+                        // Εύρεση εικόνων από το ZIP (αν υπάρχουν)
+                        $question_media = '';
+                        $explanation_media = '';
+                        $answer_media = [];
+                        
+                        // Χρήση του αριθμού γραμμής ως αναγνωριστικό για τις εικόνες
+                        $media_prefix = $line_number - 1; // -1 για να λάβουμε υπόψη την επικεφαλίδα
+                        
+                        if (!empty($media_files)) {
+                            // Έλεγχος για εικόνα ερώτησης (διάφορα πιθανά ονόματα)
+                            foreach (["question_$media_prefix.png", "question_$media_prefix.jpg", "q_$media_prefix.png", "q_$media_prefix.jpg"] as $possible_name) {
+                                if (isset($media_files[$possible_name])) {
+                                    $question_media = $possible_name;
+                                    break;
+                                }
+                            }
+                            
+                            // Έλεγχος για εικόνα επεξήγησης
+                            foreach (["explanation_$media_prefix.png", "explanation_$media_prefix.jpg", "exp_$media_prefix.png", "exp_$media_prefix.jpg"] as $possible_name) {
+                                if (isset($media_files[$possible_name])) {
+                                    $explanation_media = $possible_name;
+                                    break;
+                                }
+                            }
+                            
+                            // Έλεγχος για εικόνες απαντήσεων
+                            foreach ($answers as $index => $answer) {
+                                $answer_index = $index + 1;
+                                foreach (["answer_{$media_prefix}_{$answer_index}.png", "answer_{$media_prefix}_{$answer_index}.jpg", "a_{$media_prefix}_{$answer_index}.png", "a_{$media_prefix}_{$answer_index}.jpg"] as $possible_name) {
+                                    if (isset($media_files[$possible_name])) {
+                                        $answer_media[$index] = $possible_name;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        
                         // Έναρξη συναλλαγής
                         $mysqli->begin_transaction();
                         
@@ -99,11 +168,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                             // Εισαγωγή ερώτησης
                             $question_type = 'single_choice'; // Προεπιλογή: μονής επιλογής
                             $author_id = $_SESSION['user_id'];
+                            $status = 'active';
                             
-                            $question_query = "INSERT INTO questions (chapter_id, author_id, question_text, question_explanation, question_type, status) 
-                                              VALUES (?, ?, ?, ?, ?, 'active')";
+                            $question_query = "INSERT INTO questions (chapter_id, author_id, question_text, question_explanation, question_type, question_media, explanation_media, status) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                             $question_stmt = $mysqli->prepare($question_query);
-                            $question_stmt->bind_param("iisss", $chapter_id, $author_id, $question_text, $explanation, $question_type);
+                            $question_stmt->bind_param("iisssss", $chapter_id, $author_id, $question_text, $explanation, $question_type, $question_media, $explanation_media, $status);
                             
                             if ($question_stmt->execute()) {
                                 $question_id = $question_stmt->insert_id;
@@ -113,11 +183,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                                 foreach ($answers as $index => $answer_text) {
                                     if (empty(trim($answer_text))) continue;
                                     
-                                    $is_correct = ($index == $correct_answer_index - 3) ? 1 : 0; // Προσαρμογή δείκτη
+                                    $is_correct = ($index == $correct_answer_index) ? 1 : 0;
+                                    $current_answer_media = isset($answer_media[$index]) ? $answer_media[$index] : '';
                                     
-                                    $answer_query = "INSERT INTO test_answers (question_id, answer_text, is_correct) VALUES (?, ?, ?)";
+                                    $answer_query = "INSERT INTO test_answers (question_id, answer_text, is_correct, answer_media) VALUES (?, ?, ?, ?)";
                                     $answer_stmt = $mysqli->prepare($answer_query);
-                                    $answer_stmt->bind_param("isi", $question_id, $answer_text, $is_correct);
+                                    $answer_stmt->bind_param("isis", $question_id, $answer_text, $is_correct, $current_answer_media);
                                     
                                     if (!$answer_stmt->execute()) {
                                         $answer_success = false;
@@ -267,6 +338,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
             <div class="form-group full-width">
                 <label for="csv_file">Αρχείο CSV:</label>
                 <input type="file" id="csv_file" name="csv_file" accept=".csv, text/csv" required>
+                <div id="csv-preview" style="display: none;"></div>
+            </div>
+            
+            <div class="form-group full-width">
+                <label for="zip_file">Αρχείο ZIP με εικόνες (προαιρετικό):</label>
+                <input type="file" id="zip_file" name="zip_file" accept=".zip">
+                <span class="file-help">Το αρχείο ZIP μπορεί να περιέχει εικόνες με ονόματα αρχείων της μορφής: question_1.png, question_2.png, explanation_1.png, answer_1_1.png, answer_1_2.png κλπ.</span>
             </div>
             
             <div class="form-info full-width">
@@ -284,14 +362,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
 Ποια είναι η πρωτεύουσα της Ελλάδας;Η Αθήνα είναι η πρωτεύουσα της Ελλάδας από το 1834.;1;Αθήνα;Θεσσαλονίκη;Πάτρα</pre>
             </div>
             
-            <button type="submit" class="btn-primary">📤 Εισαγωγή Ερωτήσεων</button>
+            <div class="form-actions full-width">
+                <button type="submit" class="btn-primary">📤 Εισαγωγή Ερωτήσεων</button>
+                <a href="download_template.php" class="btn-secondary">📥 Κατέβασμα Προτύπου CSV</a>
+                <a href="manage_questions.php" class="btn-secondary">🔙 Επιστροφή</a>
+            </div>
         </form>
     </div>
     
     <div class="admin-section">
-        <h3>Δημιουργία Προτύπου CSV</h3>
-        <p>Κατεβάστε ένα πρότυπο αρχείο CSV για να ξεκινήσετε:</p>
-        <a href="<?= BASE_URL ?>/admin/test/download_template.php" class="btn-secondary">📥 Κατέβασμα Προτύπου CSV</a>
+        <h3>Συμβουλές για επιτυχή εισαγωγή</h3>
+        <div class="tips-container">
+            <div class="tip-item">
+                <div class="tip-icon">💡</div>
+                <div class="tip-content">
+                    <h4>Κωδικοποίηση αρχείου</h4>
+                    <p>Βεβαιωθείτε ότι το αρχείο CSV είναι αποθηκευμένο σε κωδικοποίηση UTF-8 για σωστή εμφάνιση των ελληνικών χαρακτήρων.</p>
+                </div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-icon">💡</div>
+                <div class="tip-content">
+                    <h4>Εικόνες</h4>
+                    <p>Οι εικόνες πρέπει να είναι σε μορφή PNG ή JPG και να έχουν όνομα αρχείου της μορφής: question_1.png, explanation_1.png, answer_1_1.png κλπ.</p>
+                </div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-icon">💡</div>
+                <div class="tip-content">
+                    <h4>Σωστή απάντηση</h4>
+                    <p>Η "Σωστή απάντηση" πρέπει να είναι ο αριθμός της απάντησης (ξεκινώντας από το 1), όχι το κείμενο της απάντησης.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 
@@ -299,4 +402,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
 
 <?php require_once '../includes/admin_footer.php'; ?>
 </body>
-</html>
+</html> 1:</strong> Η πρώτη επιλογή απάντησης</li>
+                    <li><strong>Απάντηση
