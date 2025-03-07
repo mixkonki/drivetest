@@ -1,0 +1,448 @@
+/* 
+ * DriveTest - Admin Dashboard CSS
+ * Ειδικά στυλ για το dashboard του admin panel
+ */
+
+/* Κεφαλίδα του dashboard */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    width: 100%;
+    background-color: var(--card-background);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+  }
+  
+  .dashboard-title {
+    font-size: var(--font-size-xl);
+    color: var(--primary-color);
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  .dashboard-actions {
+    display: flex;
+    gap: var(--spacing-md);
+  }
+  
+  /* Container στατιστικών */
+  .dashboard-stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    width: 100%;
+  }
+  
+  /* Κάρτες στατιστικών */
+  .stats-card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-lg);
+  }
+  
+  .stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+  }
+  
+  .stats-icon {
+    font-size: 2rem;
+    margin-right: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .users-stats .stats-icon {
+    background-color: #e3f2fd;
+    color: #2196f3;
+  }
+  
+  .questions-stats .stats-icon {
+    background-color: #e8f5e9;
+    color: #4caf50;
+  }
+  
+  .tests-stats .stats-icon {
+    background-color: #fff3e0;
+    color: #ff9800;
+  }
+  
+  .subscriptions-stats .stats-icon {
+    background-color: #fce4ec;
+    color: #e91e63;
+  }
+  
+  .stats-content {
+    flex: 1;
+  }
+  
+  .stats-content h3 {
+    font-size: var(--font-size-large);
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--secondary-color);
+    font-weight: 600;
+  }
+  
+  .stats-numbers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .stats-number {
+    flex: 1;
+    min-width: 70px;
+  }
+  
+  .stats-value {
+    font-size: var(--font-size-xl);
+    font-weight: bold;
+    color: var(--text-dark);
+  }
+  
+  .stats-label {
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+  }
+  
+  .stats-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .stats-link {
+    display: inline-block;
+    font-size: var(--font-size-small);
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    position: relative;
+    padding-left: var(--spacing-sm);
+  }
+  
+  .stats-link::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    transition: transform 0.3s ease;
+  }
+  
+  .stats-link:hover {
+    color: var(--primary-dark);
+    text-decoration: none;
+  }
+  
+  .stats-link:hover::before {
+    transform: translateX(3px);
+  }
+  
+  /* Πάνελ για πρόσφατες ερωτήσεις και τεστ */
+  .dashboard-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    width: 100%;
+  }
+  
+  .dashboard-panel {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .dashboard-panel:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow-lg);
+  }
+  
+  .panel-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: #f8f9fa;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .panel-title {
+    margin: 0;
+    font-size: var(--font-size-large);
+    color: var(--secondary-color);
+    font-weight: 600;
+  }
+  
+  .panel-link {
+    font-size: var(--font-size-small);
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .panel-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+  }
+  
+  .panel-content {
+    padding: var(--spacing-lg);
+    max-height: 350px;
+    overflow-y: auto;
+  }
+  
+  .empty-state {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--text-light);
+    font-style: italic;
+  }
+  
+  /* Στυλ για τις λίστες ερωτήσεων και τεστ */
+  .question-list,
+  .test-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .question-item,
+  .test-item {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    background-color: #f9f9f9;
+    border-left: 3px solid var(--primary-color);
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .question-item:hover,
+  .test-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    background-color: #f5f5f5;
+  }
+  
+  .question-text,
+  .test-title {
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+    padding-right: 30px; /* Χώρος για το κουμπί επεξεργασίας */
+    color: var(--text-dark);
+  }
+  
+  .question-meta,
+  .test-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+  }
+  
+  .question-chapter,
+  .test-category,
+  .test-creator {
+    background-color: #eee;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+  }
+  
+  .question-date,
+  .test-date {
+    margin-left: auto;
+    opacity: 0.7;
+  }
+  
+  .question-edit,
+  .test-view {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    font-size: var(--font-size-large);
+    color: var(--text-light);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+  }
+  
+  .question-edit:hover,
+  .test-view:hover {
+    color: var(--primary-color);
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  
+  /* Γρήγορες ενέργειες */
+  .dashboard-quick-links {
+    width: 100%;
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .quick-links-title {
+    font-size: var(--font-size-large);
+    color: var(--secondary-color);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 2px solid var(--border-color);
+    font-weight: 600;
+  }
+  
+  .quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--spacing-lg);
+  }
+  
+  .quick-link {
+    background-color: var(--card-background);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-dark);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .quick-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .quick-link:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-lg);
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+  
+  .quick-link:hover::before {
+    opacity: 1;
+  }
+  
+  .quick-link-icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-sm);
+    transition: transform 0.3s ease;
+  }
+  
+  .quick-link:hover .quick-link-icon {
+    transform: scale(1.1);
+  }
+  
+  .quick-link-label {
+    font-size: var(--font-size-base);
+    font-weight: 500;
+  }
+  
+  /* Media queries για κινητές συσκευές */
+  @media (max-width: 992px) {
+    .dashboard-panels {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-card {
+      padding: var(--spacing-md);
+    }
+    
+    .stats-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1.5rem;
+    }
+    
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+    }
+    
+    .dashboard-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-stats-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .dashboard-quick-links .quick-links-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stats-content h3 {
+      font-size: var(--font-size-base);
+    }
+    
+    .stats-value {
+      font-size: var(--font-size-large);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .dashboard-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .dashboard-actions .btn {
+      width: 100%;
+    }
+    
+    .dashboard-quick-links .quick-links-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-numbers {
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+  }

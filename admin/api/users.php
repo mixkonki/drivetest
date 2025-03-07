@@ -17,6 +17,54 @@ try {
     error_log("Processing action: $action", 3, "C:/wamp64/www/drivetest/debug_log.txt");
 
     switch ($action) {
+        // Προσθήκη νέας περίπτωσης για ταξινόμηση
+        case 'sort':
+            // Επικύρωση παραμέτρων ταξινόμησης
+            $valid_columns = ['id', 'fullname', 'email', 'role', 'status', 'subscription_status', 'created_at', 'school_id', 'phone'];
+            $sort_column = isset($_GET['column']) && in_array($_GET['column'], $valid_columns) ? $_GET['column'] : 'id';
+            $sort_order = isset($_GET['order']) && $_GET['order'] === 'desc' ? 'DESC' : 'ASC';
+            
+            error_log("Sorting by column: $sort_column, order: $sort_order", 3, "C:/wamp64/www/drivetest/debug_log.txt");
+            
+            // Δημιουργία του ερωτήματος ταξινόμησης
+            $query = "SELECT u.id, u.fullname, u.email, u.role, u.subscription_status, u.avatar, u.created_at, u.status, u.school_id, u.phone, s.name AS school_name 
+                      FROM users u 
+                      LEFT JOIN schools s ON u.school_id = s.id 
+                      ORDER BY u.$sort_column $sort_order";
+            
+            $result = $mysqli->query($query);
+            $roles = ['user' => 'Χρήστης', 'student' => 'Μαθητής', 'school' => 'Σχολή', 'admin' => 'Διαχειριστής'];
+            $html = '';
+            
+            if ($result->num_rows > 0) {
+                while ($user = $result->fetch_assoc()) {
+                    $avatar_url = !empty($user['avatar']) ? $config['base_url'] . '/uploads/avatars/' . basename($user['avatar']) : $config['base_url'] . '/uploads/avatars/default.png';
+                    $html .= "<tr>
+                        <td>
+                            <div class=\"user-info-tooltip\">
+                                <img src=\"" . htmlspecialchars($avatar_url) . "\" class=\"user-avatar\" alt=\"Avatar χρήστη " . htmlspecialchars($user['fullname']) . "\">
+                                <div class=\"tooltip-content\">
+                                    <strong>" . htmlspecialchars($user['fullname']) . "</strong><br>
+                                    <small>ID: " . $user['id'] . "</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><a href=\"" . $config['base_url'] . "/admin/edit_user.php?id=" . $user['id'] . "\" class=\"user-name-link\">" . htmlspecialchars($user['fullname']) . "</a></td>
+                        <td>" . htmlspecialchars($user['email']) . "</td>
+                        <td>" . htmlspecialchars($roles[$user['role']] ?? 'Άγνωστος') . "</td>
+                        <td>" . htmlspecialchars($user['school_name'] ?? 'Καμία') . "</td>
+                        <td>" . htmlspecialchars($user['subscription_status']) . "</td>
+                        <td>" . htmlspecialchars($user['phone'] ?? '') . "</td>
+                        <td>" . ($user['status'] == 'active' ? '<span class="status-active">Ενεργός</span>' : '<span class="status-inactive">Ανενεργός</span>') . "</td>
+                        <td>" . htmlspecialchars(date('d/m/Y H:i', strtotime($user['created_at']))) . "</td>
+                    </tr>";
+                }
+                echo json_encode(['success' => true, 'html' => $html]);
+            } else {
+                echo json_encode(['success' => true, 'html' => '<tr><td colspan="9">Καμία εγγραφή δεν βρέθηκε.</td></tr>']);
+            }
+            break;
+
         case 'filter':
             $query = "SELECT u.id, u.fullname, u.email, u.role, u.subscription_status, u.avatar, u.created_at, u.status, u.school_id, u.phone, s.name AS school_name 
                       FROM users u 
@@ -24,6 +72,7 @@ try {
                       WHERE 1=1";
             $params = [];
             $types = '';
+            
             if (!empty($_POST['search'])) {
                 $search = $mysqli->real_escape_string($_POST['search']);
                 $query .= " AND (u.fullname LIKE ? OR u.email LIKE ?)";
@@ -31,12 +80,21 @@ try {
                 $params[] = "%$search%";
                 $types .= 'ss';
             }
+            
             if (!empty($_POST['role'])) {
                 $role = $mysqli->real_escape_string($_POST['role']);
                 $query .= " AND u.role = ?";
                 $params[] = $role;
                 $types .= 's';
             }
+            
+            // Προσθήκη ταξινόμησης στο φιλτράρισμα
+            $valid_columns = ['id', 'fullname', 'email', 'role', 'status', 'subscription_status', 'created_at', 'school_id', 'phone'];
+            $sort_column = isset($_GET['sort']) && in_array($_GET['sort'], $valid_columns) ? $_GET['sort'] : 'id';
+            $sort_order = isset($_GET['order']) && $_GET['order'] === 'desc' ? 'DESC' : 'ASC';
+            
+            $query .= " ORDER BY u.$sort_column $sort_order";
+            
             $stmt = $mysqli->prepare($query);
             if (!empty($params)) {
                 $stmt->bind_param($types, ...$params);
@@ -45,12 +103,21 @@ try {
             $result = $stmt->get_result();
             $roles = ['user' => 'Χρήστης', 'student' => 'Μαθητής', 'school' => 'Σχολή', 'admin' => 'Διαχειριστής'];
             $html = '';
+            
             if ($result->num_rows > 0) {
                 while ($user = $result->fetch_assoc()) {
                     $avatar_url = !empty($user['avatar']) ? $config['base_url'] . '/uploads/avatars/' . basename($user['avatar']) : $config['base_url'] . '/uploads/avatars/default.png';
                     $html .= "<tr>
-                        <td><img src=\"" . htmlspecialchars($avatar_url) . "\" class=\"user-avatar\"></td>
-                        <td><a href=\"" . $config['base_url'] . "/admin/edit_user.php?id=" . $user['id'] . "\">" . htmlspecialchars($user['fullname']) . "</a></td>
+                        <td>
+                            <div class=\"user-info-tooltip\">
+                                <img src=\"" . htmlspecialchars($avatar_url) . "\" class=\"user-avatar\" alt=\"Avatar χρήστη " . htmlspecialchars($user['fullname']) . "\">
+                                <div class=\"tooltip-content\">
+                                    <strong>" . htmlspecialchars($user['fullname']) . "</strong><br>
+                                    <small>ID: " . $user['id'] . "</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><a href=\"" . $config['base_url'] . "/admin/edit_user.php?id=" . $user['id'] . "\" class=\"user-name-link\">" . htmlspecialchars($user['fullname']) . "</a></td>
                         <td>" . htmlspecialchars($user['email']) . "</td>
                         <td>" . htmlspecialchars($roles[$user['role']] ?? 'Άγνωστος') . "</td>
                         <td>" . htmlspecialchars($user['school_name'] ?? 'Καμία') . "</td>
@@ -73,20 +140,24 @@ try {
                 echo json_encode(['success' => false, 'message' => 'Μη έγκυρο ID χρήστη.']);
                 exit();
             }
+            
             $check_stmt = $mysqli->prepare("SELECT role FROM users WHERE id = ?");
             $check_stmt->bind_param("i", $id);
             $check_stmt->execute();
             $check_result = $check_stmt->get_result();
+            
             if ($check_result->num_rows === 0) {
                 echo json_encode(['success' => false, 'message' => 'Ο χρήστης δεν βρέθηκε.']);
                 $check_stmt->close();
                 exit();
             }
+            
             $user = $check_result->fetch_assoc();
             $check_stmt->close();
 
             $stmt = $mysqli->prepare("DELETE FROM users WHERE id = ?");
             $stmt->bind_param("i", $id);
+            
             if ($stmt->execute()) {
                 if ($user['role'] === 'school') {
                     $stmt_school = $mysqli->prepare("DELETE FROM schools WHERE id = ?");
