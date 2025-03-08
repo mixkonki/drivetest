@@ -1,0 +1,233 @@
+/* 
+ * DriveTest - Subscription Management CSS
+ * Στυλ για τη σελίδα διαχείρισης συνδρομών
+ */
+
+ .admin-subscription-management-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 0.6fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.subscription-column {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+}
+
+.column-header {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.column-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+
+.item-count {
+    background-color: var(--primary-color);
+    color: var(--text-white);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    padding: 15px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    background-color: #f1f1f1;
+    color: var(--text-dark);
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.admin-table th.sortable {
+    cursor: pointer;
+}
+
+.admin-table th.sortable:after {
+    content: "↕";
+    margin-left: 5px;
+    opacity: 0.5;
+}
+
+.admin-table th.sorted-asc:after {
+    content: "↑";
+    opacity: 1;
+}
+
+.admin-table th.sorted-desc:after {
+    content: "↓";
+    opacity: 1;
+}
+
+.admin-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.category-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.category-name {
+    font-weight: 500;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.duration-value {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
+
+.duration-label {
+    color: var(--text-light);
+    margin-left: 5px;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit, .btn-delete {
+    padding: 6px 10px;
+    border-radius: var(--border-radius-md);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-edit {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.btn-delete {
+    background-color: #fff5f5;
+    color: var(--danger-color);
+}
+
+.btn-edit:hover {
+    background-color: #dee2e6;
+    text-decoration: none;
+}
+
+.btn-delete:hover {
+    background-color: #ffe5e5;
+    text-decoration: none;
+}
+
+.action-icon {
+    margin-right: 4px;
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    max-width: 500px;
+}
+
+.search-form input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.empty-state {
+    padding: 30px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+.empty-state p {
+    margin-bottom: 15px;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius-md);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+    .admin-subscription-management-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-actions {
+        flex-direction: column;
+    }
+    
+    .search-form {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .actions-cell {
+        flex-direction: column;
+    }
+    
+    .admin-table th, .admin-table td {
+        padding: 8px 6px;
+    }
+}

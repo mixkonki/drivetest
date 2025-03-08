@@ -110,4 +110,164 @@ Received FILES data: Array
 
 )
 Transaction started for user ID: 19Preparing user update for ID: 19User update successful for ID: 19Starting to fetch user data for ID: 19Successfully fetched user data for ID: 19 - Name: ThessdriveStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 19Editable state for user ID 19: false[2025-03-04 22:09:53] ✅ Email sent successfully to kostas.michailidis1@gmail.com with subject: 🚗 Επιβεβαίωση Συνδρομής - DriveTest
-Processing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterStarting to fetch user data for ID: 2Successfully fetched user data for ID: 2 - Name: Νέος ΧρήστηςStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 2Editable state for user ID 2: falseStarting to fetch user data for ID: 18Successfully fetched user data for ID: 18 - Name: ΚώσταςStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 18Editable state for user ID 18: falseProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: fullname, order: DESCProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: fullname, order: DESCProcessing action: sortSorting by column: email, order: ASCProcessing action: sortSorting by column: email, order: DESCProcessing action: sortSorting by column: role, order: ASCProcessing action: sortSorting by column: role, order: DESCProcessing action: sortSorting by column: role, order: ASCProcessing action: sortSorting by column: email, order: ASCProcessing action: sortSorting by column: email, order: DESCProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: id, order: ASCProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: email, order: ASCProcessing action: sortSorting by column: role, order: ASCProcessing action: sortSorting by column: school_id, order: ASCProcessing action: sortSorting by column: subscription_status, order: ASCProcessing action: sortSorting by column: phone, order: ASCProcessing action: sortSorting by column: status, order: ASCProcessing action: sortSorting by column: created_at, order: ASCProcessing action: sortSorting by column: id, order: ASCProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: fullname, order: DESC
+Processing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterProcessing action: filterStarting to fetch user data for ID: 2Successfully fetched user data for ID: 2 - Name: Νέος ΧρήστηςStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 2Editable state for user ID 2: falseStarting to fetch user data for ID: 18Successfully fetched user data for ID: 18 - Name: ΚώσταςStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 18Editable state for user ID 18: falseProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortUnknown action: sortProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: fullname, order: DESCProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: fullname, order: DESCProcessing action: sortSorting by column: email, order: ASCProcessing action: sortSorting by column: email, order: DESCProcessing action: sortSorting by column: role, order: ASCProcessing action: sortSorting by column: role, order: DESCProcessing action: sortSorting by column: role, order: ASCProcessing action: sortSorting by column: email, order: ASCProcessing action: sortSorting by column: email, order: DESCProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: id, order: ASCProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: email, order: ASCProcessing action: sortSorting by column: role, order: ASCProcessing action: sortSorting by column: school_id, order: ASCProcessing action: sortSorting by column: subscription_status, order: ASCProcessing action: sortSorting by column: phone, order: ASCProcessing action: sortSorting by column: status, order: ASCProcessing action: sortSorting by column: created_at, order: ASCProcessing action: sortSorting by column: id, order: ASCProcessing action: sortSorting by column: fullname, order: ASCProcessing action: sortSorting by column: fullname, order: DESCStarting to fetch user data for ID: 21Successfully fetched user data for ID: 21 - Name: Κλαμα στο άπειροStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 21Editable state for user ID 21: falseProcessing action: updateStarting update for user ID: 21Received POST data: Array
+(
+    [action] => update
+    [fullname] => Κλαμα στο άπειρο
+    [email] => klama@thessdrive.gr
+    [phone] => 564566666
+    [role] => user
+    [school_id] => 
+    [license_number] => 
+    [responsible_person] => 
+    [subscription_status] => pending
+    [status] => active
+    [address] => Κύπρου, Ηλιούπολη, Ελλάδα
+    [street_number] => 4
+    [postal_code] => 
+    [city] => 
+    [latitude] => 
+    [longitude] => 
+)
+Received FILES data: Array
+(
+    [avatar] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+Transaction started for user ID: 21Preparing user update for ID: 21User update successful for ID: 21Starting to fetch user data for ID: 21Successfully fetched user data for ID: 21 - Name: Κλαμα στο άπειροStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 21Editable state for user ID 21: falseProcessing action: updateStarting update for user ID: 21Received POST data: Array
+(
+    [action] => update
+    [fullname] => Κλαμα στο άπειρο
+    [email] => klama@thessdrive.gr
+    [phone] => 564566666
+    [role] => user
+    [school_id] => 
+    [license_number] => 
+    [responsible_person] => 
+    [subscription_status] => pending
+    [status] => active
+    [address] => Κύπρου 
+    [street_number] => 4
+    [postal_code] => 562 24
+    [city] => Εύοσμος
+    [latitude] => 40.6695185
+    [longitude] => 22.9061063
+)
+Received FILES data: Array
+(
+    [avatar] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+Transaction started for user ID: 21Preparing user update for ID: 21User update successful for ID: 21Starting to fetch user data for ID: 21Successfully fetched user data for ID: 21 - Name: Κλαμα στο άπειροStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 21Editable state for user ID 21: falseProcessing action: updateStarting update for user ID: 21Received POST data: Array
+(
+    [action] => update
+    [fullname] => Κλαμα στο άπειρο
+    [email] => klama@thessdrive.gr
+    [phone] => 564566666
+    [role] => user
+    [school_id] => 
+    [license_number] => 
+    [responsible_person] => 
+    [subscription_status] => pending
+    [status] => active
+    [address] => Κύπρου
+    [street_number] => 4
+    [postal_code] => 562 24
+    [city] => Εύοσμος
+    [latitude] => 40.66951850
+    [longitude] => 22.90610630
+)
+Received FILES data: Array
+(
+    [avatar] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+Transaction started for user ID: 21Preparing user update for ID: 21User update successful for ID: 21Starting to fetch user data for ID: 21Successfully fetched user data for ID: 21 - Name: Κλαμα στο άπειροStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 21Editable state for user ID 21: falseProcessing action: updateStarting update for user ID: 21Received POST data: Array
+(
+    [action] => update
+    [fullname] => Κλαμα στο άπειρο
+    [email] => klama@thessdrive.gr
+    [phone] => 564566666
+    [role] => user
+    [school_id] => 
+    [license_number] => 
+    [responsible_person] => 
+    [subscription_status] => pending
+    [status] => active
+    [address] => Κύπρου 
+    [street_number] => 4
+    [postal_code] => 563 34
+    [city] => Ελευθέριο Κορδελιό
+    [latitude] => 40.6681151
+    [longitude] => 22.8923543
+)
+Received FILES data: Array
+(
+    [avatar] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+Transaction started for user ID: 21Preparing user update for ID: 21User update successful for ID: 21Starting to fetch user data for ID: 21Successfully fetched user data for ID: 21 - Name: Κλαμα στο άπειροStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 21Editable state for user ID 21: falseStarting to fetch user data for ID: 22Successfully fetched user data for ID: 22 - Name: Κλαμα στο άπειροStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 22Editable state for user ID 22: falseStarting to fetch user data for ID: 21Successfully fetched user data for ID: 21 - Name: Κλαμα στο άπειροStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 21Editable state for user ID 21: falseStarting to fetch user data for ID: 21Successfully fetched user data for ID: 21 - Name: Κλαμα στο άπειροStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 21Editable state for user ID 21: falseProcessing action: updateStarting update for user ID: 21Received POST data: Array
+(
+    [action] => update
+    [fullname] => Κλαμα στο άπειρο
+    [email] => klama@thessdrive.gr
+    [phone] => 564566666
+    [role] => user
+    [school_id] => 
+    [license_number] => 
+    [responsible_person] => 
+    [subscription_status] => pending
+    [status] => active
+    [address] => Κύπρου
+    [street_number] => 4
+    [postal_code] => 563 34
+    [city] => Ελευθέριο Κορδελιό
+    [latitude] => 40.66811510
+    [longitude] => 22.89235430
+)
+Received FILES data: Array
+(
+    [avatar] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+Transaction started for user ID: 21Preparing user update for ID: 21Starting to fetch user data for ID: 2Successfully fetched user data for ID: 2 - Name: Νέος ΧρήστηςStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 2Editable state for user ID 2: falseStarting to fetch user data for ID: 2Successfully fetched user data for ID: 2 - Name: Νέος ΧρήστηςStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 2Editable state for user ID 2: falseStarting to fetch user data for ID: 3Successfully fetched user data for ID: 3 - Name: Νέος ΜαθητήςStarting to fetch schools for dropdownStarting to fetch subscriptions for user ID: 3Editable state for user ID 3: false

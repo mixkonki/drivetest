@@ -211,8 +211,8 @@
 /* Admin Container - διορθωμένο τμήμα */
 .admin-container {
   flex: 1;
-  max-width: calc(100% - 2 * var(--page-margin));
-  margin: 50px 50px 50px 50px; /* Αλλαγή από margin-top σε margin για σαφήνεια */
+  max-width: 100%;	
+  margin: 10px 10px 10px 10px; /* Αλλαγή από margin-top σε margin για σαφήνεια */
   padding: var(--spacing-xl);
   background: var(--card-background);
   border-radius: var(--border-radius-lg);

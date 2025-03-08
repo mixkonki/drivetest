@@ -252,13 +252,15 @@ try {
             }
 
             error_log("Preparing user update for ID: $id", 3, "C:/wamp64/www/drivetest/debug_log.txt");
-            $stmt_user = $mysqli->prepare("UPDATE users SET fullname=?, email=?, address=?, postal_code=?, city=?, latitude=?, longitude=?, avatar=?, role=?, subscription_status=?, status=?, phone=?, school_id=? WHERE id=?");
+            // ΔΙΟΡΘΩΣΗ: Προσθήκη του 'street_number' στο ερώτημα UPDATE
+            $stmt_user = $mysqli->prepare("UPDATE users SET fullname=?, email=?, address=?, street_number=?, postal_code=?, city=?, latitude=?, longitude=?, avatar=?, role=?, subscription_status=?, status=?, phone=?, school_id=? WHERE id=?");
             if (!$stmt_user) {
                 error_log("Prepare failed for users update: " . $mysqli->error, 3, "C:/wamp64/www/drivetest/debug_log.txt");
                 throw new Exception("Prepare failed for users: " . $mysqli->error);
             }
             $school_id_final = $school_id === '' ? null : $school_id;
-            $stmt_user->bind_param("sssssssssssssi", $fullname, $email, $address, $postal_code, $city, $latitude, $longitude, $final_avatar, $role, $subscription_status, $status, $phone, $school_id_final, $id);
+            // ΔΙΟΡΘΩΣΗ: Προσθήκη του 'street_number' στις παραμέτρους και ένα επιπλέον 's' στο string τύπων
+            $stmt_user->bind_param("sssssssssssssi", $fullname, $email, $address, $street_number, $postal_code, $city, $latitude, $longitude, $final_avatar, $role, $subscription_status, $status, $phone, $school_id_final, $id);
             if (!$stmt_user->execute()) {
                 error_log("User update failed: " . $stmt_user->error, 3, "C:/wamp64/www/drivetest/debug_log.txt");
                 $mysqli->rollback();

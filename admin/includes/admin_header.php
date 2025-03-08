@@ -26,6 +26,12 @@ require_once dirname(__DIR__, 2) . '/config/config.php';
     <?php if (strpos($_SERVER['PHP_SELF'], 'users.php') !== false): ?>
     <link rel="stylesheet" href="<?= $config['base_url'] ?>/admin/assets/css/admin_users.css">
     <?php endif; ?>
+    <!-- Φόρτωση του CSS για τη διαχείριση συνδρομών (όπου χρειάζεται) -->
+    <?php if (strpos($_SERVER['PHP_SELF'], 'admin_subscriptions.php') !== false): ?>
+    <link rel="stylesheet" href="<?= $config['base_url'] ?>/admin/assets/css/subscription_management.css">
+    <?php endif; ?>
+    <!-- Φόρτωση τυχόν επιπλέον CSS που έχει οριστεί στις σελίδες -->
+<?= $additional_css ?? '' ?>
 </head>
 <body>
 <header class="admin-header" role="banner" aria-label="Admin Header">
