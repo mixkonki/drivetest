@@ -1,8 +1,8 @@
 <?php
-require_once '../config/config.php';
-require_once '../includes/db_connection.php';
-require_once 'includes/admin_auth.php';
-require_once 'includes/admin_header.php';
+require_once '../../config/config.php';
+require_once '../../includes/db_connection.php';
+require_once '../includes/admin_auth.php';
+require_once '../includes/admin_header.php';
 
 // Λειτουργία για logging
 function log_debug($message) {
@@ -120,4 +120,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
 </main>
 
-<?php require_once 'includes/admin_footer.php'; ?>
+<?php require_once '../includes/admin_footer.php'; ?>

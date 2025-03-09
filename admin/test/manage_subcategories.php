@@ -2,72 +2,125 @@
 require_once '../../config/config.php';
 require_once '../../includes/db_connection.php';
 require_once '../includes/admin_auth.php';
+
+// Λειτουργία για logging
+function log_debug($message) {
+    file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . $message . "\n", FILE_APPEND);
+}
+
+// Καταγραφή ότι φορτώθηκε η σελίδα
+log_debug("Σελίδα manage_subcategories.php φορτώθηκε");
+
+// Φόρτωση των κατηγοριών
+$query = "SELECT id, name FROM test_categories ORDER BY name";
+$result = $mysqli->query($query);
+$categories = array();
+while ($row = $result->fetch_assoc()) {
+    $categories[] = $row;
+}
+
+// Φόρτωση των υποκατηγοριών
+$query = "SELECT s.*, c.name as category_name 
+          FROM test_subcategories s 
+          JOIN test_categories c ON s.test_category_id = c.id 
+          ORDER BY c.name, s.name";
+$result = $mysqli->query($query);
+$subcategories = array();
+while ($row = $result->fetch_assoc()) {
+    $subcategories[] = $row;
+}
+
+log_debug("Φορτώθηκαν " . count($categories) . " κατηγορίες και " . count($subcategories) . " υποκατηγορίες");
+
+// Φορτώνουμε το header μετά το logging για να μην επηρεάσει την εμφάνιση σφαλμάτων
 require_once '../includes/admin_header.php';
 
-// 🔒 Έλεγχος αν ο χρήστης είναι διαχειριστής
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: " . BASE_URL . "/public/login.php");
-    exit();
+// Ανάκτηση μηνυμάτων επιτυχίας/σφάλματος
+$success_message = '';
+$error_message = '';
+
+if (isset($_GET['success'])) {
+    switch ($_GET['success']) {
+        case 'added':
+            $success_message = 'Η υποκατηγορία προστέθηκε επιτυχώς!';
+            break;
+        case 'updated':
+            $success_message = 'Η υποκατηγορία ενημερώθηκε επιτυχώς!';
+            break;
+        case 'deleted':
+            $success_message = 'Η υποκατηγορία διαγράφηκε επιτυχώς!';
+            break;
+    }
+}
+
+if (isset($_GET['error'])) {
+    $error_message = urldecode($_GET['error']);
 }
 ?>
 
 <main class="admin-container">
-    <h2 class="admin-title">📌 Διαχείριση Υποκατηγοριών</h2>
+    <div class="admin-section-header">
+        <h1 class="admin-title">Διαχείριση Υποκατηγοριών</h1>
+        
+        <div class="admin-actions">
+            <a href="add_subcategory.php" class="btn-primary"><i class="action-icon">➕</i> Προσθήκη Υποκατηγορίας</a>
+            <a href="../dashboard.php" class="btn-secondary"><i class="action-icon">🔙</i> Επιστροφή</a>
+        </div>
+    </div>
 
-    <!-- 🔹 Πίνακας Υποκατηγοριών -->
-    <table class="admin-table" id="subcategory-table">
-        <thead>
-            <tr>
-                <th>Όνομα</th>
-                <th>Κατηγορία</th>
-                <th>Περιγραφή</th>
-                <th>Εικονίδιο</th>
-                <th>Δράσεις</th>
-            </tr>
-        </thead>
-        <tbody id="subcategory-list">
-            <!-- Οι υποκατηγορίες φορτώνονται μέσω JavaScript -->
-        </tbody>
-    </table>
+    <?php if (!empty($success_message)): ?>
+    <div class="alert alert-success">
+        <strong>Επιτυχία!</strong> <?= htmlspecialchars($success_message) ?>
+    </div>
+    <?php endif; ?>
+    
+    <?php if (!empty($error_message)): ?>
+    <div class="alert alert-danger">
+        <strong>Σφάλμα!</strong> <?= htmlspecialchars($error_message) ?>
+    </div>
+    <?php endif; ?>
 
-    <button id="add-subcategory-btn" class="btn-primary">➕ Προσθήκη Νέας Υποκατηγορίας</button>
-    <button onclick="window.location.href='../dashboard.php'" class="btn-secondary">🔙 Επιστροφή στη Διαχείριση</button>
-
-    <!-- 🔹 Φόρμα για προσθήκη/επεξεργασία -->
-    <div id="subcategory-form" style="display:none;">
-        <h3 id="form-title">Προσθήκη Υποκατηγορίας</h3>
-        <form id="subcategory-form-data">
-            <input type="hidden" name="id" id="subcategory-id">
-            <div class="form-group">
-                <label for="subcategory-name">Όνομα:</label>
-                <input type="text" id="subcategory-name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="subcategory-category">Κατηγορία:</label>
-                <select id="subcategory-category" name="category_id" required>
-                    <?php
-                    $categories_query = "SELECT id, name FROM test_categories ORDER BY name ASC";
-                    $categories_result = $mysqli->query($categories_query);
-                    while ($cat = $categories_result->fetch_assoc()) {
-                        echo "<option value='{$cat['id']}'>{$cat['name']}</option>";
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="subcategory-description">Περιγραφή:</label>
-                <textarea id="subcategory-description" name="description"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="subcategory-icon">Εικονίδιο (όνομα αρχείου):</label>
-                <input type="text" id="subcategory-icon" name="icon" placeholder="π.χ. car.png">
-            </div>
-            <button type="submit" class="btn-primary">Αποθήκευση</button>
-            <button type="button" id="cancel-subcategory" class="btn-secondary">Ακύρωση</button>
-        </form>
+    <!-- Πίνακας υποκατηγοριών -->
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Υποκατηγορία</th>
+                    <th>Κατηγορία</th>
+                    <th>Περιγραφή</th>
+                    <th>Εικονίδιο</th>
+                    <th>Ενέργειες</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($subcategories)): ?>
+                <tr>
+                    <td colspan="5" class="text-center">Δεν βρέθηκαν υποκατηγορίες</td>
+                </tr>
+                <?php else: ?>
+                    <?php foreach ($subcategories as $subcategory): ?>
+                    <tr data-id="<?= $subcategory['id'] ?>">
+                        <td><?= htmlspecialchars($subcategory['name']) ?></td>
+                        <td><?= htmlspecialchars($subcategory['category_name']) ?></td>
+                        <td><?= !empty($subcategory['description']) ? htmlspecialchars($subcategory['description']) : '-' ?></td>
+                        <td>
+                            <?php if (!empty($subcategory['icon'])): ?>
+                                <img src="<?= strpos($subcategory['icon'], 'http') === 0 ? $subcategory['icon'] : $config['base_url'] . '/assets/images/' . $subcategory['icon'] ?>" 
+                                     alt="Εικονίδιο" width="30" height="30">
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <a href="edit_subcategory.php?id=<?= $subcategory['id'] ?>" class="btn-edit" title="Επεξεργασία"><i class="action-icon">✏️</i></a>
+                            <a href="delete_subcategory.php?id=<?= $subcategory['id'] ?>" class="btn-delete" title="Διαγραφή"><i class="action-icon">❌</i></a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 </main>
-
-<script src="../assets/js/subcategory_manager.js" defer></script>
 
 <?php require_once '../includes/admin_footer.php'; ?>

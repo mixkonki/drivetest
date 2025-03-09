@@ -1,61 +1,76 @@
-[2025-03-06 07:34:07] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-06 07:34:07] 🔍 [INFO] Action: list_questions
-[2025-03-06 07:34:07] ✅ [SUCCESS] Βρέθηκαν 4 ερωτήσεις.
-[2025-03-06 07:34:07] 🔍 [INFO] Action: list_subcategories
-[2025-03-06 07:34:07] ✅ [SUCCESS] Βρέθηκαν 5 υποκατηγορίες.
-[2025-03-06 07:34:14] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-06 07:34:21] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-06 07:34:21] 🔍 [INFO] Action: list_subcategories
-[2025-03-06 07:34:21] ✅ [SUCCESS] Βρέθηκαν 5 υποκατηγορίες.
-[2025-03-06 07:34:21] 🔍 [INFO] Action: list_questions
-[2025-03-06 07:34:21] ✅ [SUCCESS] Βρέθηκαν 4 ερωτήσεις.
-[2025-03-06 18:52:21] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-06 18:52:21] [WARNING] Session timeout για χρήστη ID: 1
-[2025-03-06 18:52:29] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-06 18:54:06] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-06 18:54:14] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:42:45] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:42:45] 🔍 [INFO] Action: list_questions
-[2025-03-07 13:42:45] ✅ [SUCCESS] Βρέθηκαν 4 ερωτήσεις.
-[2025-03-07 13:42:45] 🔍 [INFO] Action: list_subcategories
-[2025-03-07 13:42:45] ✅ [SUCCESS] Βρέθηκαν 5 υποκατηγορίες.
-[2025-03-07 13:42:48] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:42:54] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-🚀 [DEBUG] Ξεκινά η PHP.
-🛠️ [DEBUG] Action: {"action":"list_subcategories"}
-🚀 [DEBUG] Ξεκινά η PHP.
-🛠️ [DEBUG] Action: {"action":"list_subcategories"}
-🚀 [DEBUG] Ξεκινά η PHP.
-🛠️ [DEBUG] Action: {"action":"list"}
-🚀 [DEBUG] Ξεκινά η PHP.
-🛠️ [DEBUG] Action: {"action":"list"}
-[2025-03-07 13:43:01] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:43:03] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:43:12] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:44:08] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:44:23] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:44:27] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:45:35] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:46:14] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-07 13:46:14] 🔍 [INFO] Action: list_subcategories
-[2025-03-07 13:46:14] ✅ [SUCCESS] Βρέθηκαν 5 υποκατηγορίες.
-[2025-03-07 13:46:14] 🔍 [INFO] Action: list_questions
-[2025-03-07 13:46:14] ✅ [SUCCESS] Βρέθηκαν 4 ερωτήσεις.
-[2025-03-07 13:46:31] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-🚀 [DEBUG] Ξεκινά η PHP.
-🛠️ [DEBUG] Action: {"action":"list_chapters","subcategory_id":"13"}
-[2025-03-08 07:23:23] Attempting to edit category 3 - Name: ADR, Price: 40, Description: 
-[2025-03-08 07:23:23] New file uploaded successfully: categories/category_1741418603_9252.jpg
-[2025-03-08 07:23:23] Category 3 updated successfully
-[2025-03-08 07:24:49] Attempting to edit category 3 - Name: ADR, Price: 40, Description: 
-[2025-03-08 07:24:49] New file uploaded successfully: categories/category_1741418689_4529.jpg
-[2025-03-08 07:24:49] Category 3 updated successfully
-[2025-03-08 07:25:36] Attempting to edit category 3 - Name: ADR, Price: 40, Description: 
-[2025-03-08 07:25:36] New file uploaded successfully: categories/category_1741418736_1877.jpg
-[2025-03-08 07:25:36] Category 3 updated successfully
-[2025-03-08 07:25:52] Attempting to edit category 7 - Name: Αυτοαξιολόγηση, Price: 8, Description: 
-[2025-03-08 07:25:52] New file uploaded successfully: categories/category_1741418752_1262.jpg
-[2025-03-08 07:25:52] Category 7 updated successfully
-[2025-03-08 08:56:54] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-08 08:57:09] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
-[2025-03-09 07:13:36] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:53:43] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:53:43] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 07:53:43] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:53:43] subcategory_actions.php: Λήφθηκε αίτημα με action=list_categories
+[2025-03-09 07:53:43] subcategory_actions.php: Βρέθηκαν 6 κατηγορίες
+[2025-03-09 07:53:43] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:53:43] subcategory_actions.php: Λήφθηκε αίτημα με action=list
+[2025-03-09 07:53:43] subcategory_actions.php: Βρέθηκαν 6 υποκατηγορίες
+[2025-03-09 07:53:54] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:53:54] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 07:53:54] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:53:54] subcategory_actions.php: Λήφθηκε αίτημα με action=list_categories
+[2025-03-09 07:53:54] subcategory_actions.php: Βρέθηκαν 6 κατηγορίες
+[2025-03-09 07:53:54] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:53:54] subcategory_actions.php: Λήφθηκε αίτημα με action=list
+[2025-03-09 07:53:54] subcategory_actions.php: Βρέθηκαν 6 υποκατηγορίες
+[2025-03-09 07:54:41] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:41] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 07:54:41] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:41] subcategory_actions.php: Λήφθηκε αίτημα με action=list_categories
+[2025-03-09 07:54:41] subcategory_actions.php: Βρέθηκαν 6 κατηγορίες
+[2025-03-09 07:54:41] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:41] subcategory_actions.php: Λήφθηκε αίτημα με action=list
+[2025-03-09 07:54:41] subcategory_actions.php: Βρέθηκαν 6 υποκατηγορίες
+[2025-03-09 07:54:43] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:43] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 07:54:43] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:43] subcategory_actions.php: Λήφθηκε αίτημα με action=list_categories
+[2025-03-09 07:54:43] subcategory_actions.php: Βρέθηκαν 6 κατηγορίες
+[2025-03-09 07:54:43] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:43] subcategory_actions.php: Λήφθηκε αίτημα με action=list
+[2025-03-09 07:54:43] subcategory_actions.php: Βρέθηκαν 6 υποκατηγορίες
+[2025-03-09 07:54:50] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:50] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 07:54:50] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:50] subcategory_actions.php: Λήφθηκε αίτημα με action=list_categories
+[2025-03-09 07:54:50] subcategory_actions.php: Βρέθηκαν 6 κατηγορίες
+[2025-03-09 07:54:50] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:50] subcategory_actions.php: Λήφθηκε αίτημα με action=list
+[2025-03-09 07:54:50] subcategory_actions.php: Βρέθηκαν 6 υποκατηγορίες
+[2025-03-09 07:54:54] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:54] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 07:54:54] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:54] subcategory_actions.php: Λήφθηκε αίτημα με action=list_categories
+[2025-03-09 07:54:54] subcategory_actions.php: Βρέθηκαν 6 κατηγορίες
+[2025-03-09 07:54:54] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:54:54] subcategory_actions.php: Λήφθηκε αίτημα με action=list
+[2025-03-09 07:54:54] subcategory_actions.php: Βρέθηκαν 6 υποκατηγορίες
+[2025-03-09 08:01:30] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:30] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 08:01:30] Φορτώθηκαν 6 κατηγορίες και 6 υποκατηγορίες
+[2025-03-09 08:01:32] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:34] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:34] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 08:01:34] Φορτώθηκαν 6 κατηγορίες και 6 υποκατηγορίες
+[2025-03-09 08:01:39] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:39] Σελίδα edit_subcategory.php φορτώθηκε
+[2025-03-09 08:01:43] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:43] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 08:01:43] Φορτώθηκαν 6 κατηγορίες και 6 υποκατηγορίες
+[2025-03-09 08:01:46] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:48] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:48] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 08:01:48] Φορτώθηκαν 6 κατηγορίες και 6 υποκατηγορίες
+[2025-03-09 08:01:51] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:52] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:52] Confirming deletion of subcategory ID: 20
+[2025-03-09 08:01:52] Subcategory ID 20 deleted successfully
+[2025-03-09 08:01:52] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:52] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 08:01:52] Φορτώθηκαν 6 κατηγορίες και 5 υποκατηγορίες
+[2025-03-09 08:01:56] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:56] Σελίδα edit_subcategory.php φορτώθηκε
+[2025-03-09 08:01:58] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 08:01:58] Σελίδα manage_subcategories.php φορτώθηκε
+[2025-03-09 08:01:58] Φορτώθηκαν 6 κατηγορίες και 5 υποκατηγορίες

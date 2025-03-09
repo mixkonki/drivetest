@@ -30,6 +30,14 @@ require_once dirname(__DIR__, 2) . '/config/config.php';
     <?php if (strpos($_SERVER['PHP_SELF'], 'admin_subscriptions.php') !== false): ?>
     <link rel="stylesheet" href="<?= $config['base_url'] ?>/admin/assets/css/subscription_management.css">
     <?php endif; ?>
+
+<!-- Φόρτωση του CSS για τη διαχείριση υποκατηγοριών (όπου χρειάζεται) -->
+<?php if (strpos($_SERVER['PHP_SELF'], '/test/manage_subcategories.php') !== false || 
+          strpos($_SERVER['PHP_SELF'], '/test/add_subcategory.php') !== false || 
+          strpos($_SERVER['PHP_SELF'], '/test/edit_subcategory.php') !== false || 
+          strpos($_SERVER['PHP_SELF'], '/test/delete_subcategory.php') !== false): ?>
+<link rel="stylesheet" href="<?= $config['base_url'] ?>/admin/assets/css/subcategory_style.css">
+<?php endif; ?>
     <!-- Φόρτωση τυχόν επιπλέον CSS που έχει οριστεί στις σελίδες -->
 <?= $additional_css ?? '' ?>
 </head>
