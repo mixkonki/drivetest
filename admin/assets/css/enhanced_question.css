@@ -1,0 +1,439 @@
+/* Βελτιωμένο CSS για τη διαχείριση ερωτήσεων */
+
+/* Βασικό στυλ */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.admin-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.tab-btn.active {
+    color: #aa3636;
+    border-bottom-color: #aa3636;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px 0;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Μηνύματα ειδοποίησης */
+.alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.info-banner {
+    background-color: #e9f5fe;
+    border-left: 4px solid #17a2b8;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Τμήματα φόρμας */
+.form-section {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.form-section h3 {
+    color: #333;
+    margin-top: 0;
+    font-size: 18px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+}
+
+.form-group {
+    flex: 1 1 calc(33.333% - 20px);
+    margin: 0 10px 20px;
+    min-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .form-group {
+        flex: 1 1 calc(50% - 20px);
+    }
+}
+
+@media (max-width: 576px) {
+    .form-group {
+        flex: 1 1 100%;
+    }
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.input-with-action {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.input-with-action select {
+    flex: 1;
+}
+
+.btn-add {
+    background: #28a745;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-add:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.help-text {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Απαντήσεις */
+.answers-container {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.answer-entry {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.answer-entry:hover {
+    background-color: #f1f3f5;
+}
+
+.answer-entry .answer-text {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.answer-entry .answer-correct {
+    margin: 0 5px;
+    width: 18px;
+    height: 18px;
+}
+
+.answer-entry label {
+    margin-right: 10px;
+}
+
+.remove-answer {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.remove-answer:hover {
+    opacity: 1;
+}
+
+.add-answer-btn,
+.add-matching-pair,
+.add-ordering-item {
+    background: none;
+    border: 1px dashed #6c757d;
+    border-radius: 4px;
+    padding: 8px 15px;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.add-answer-btn:hover,
+.add-matching-pair:hover,
+.add-ordering-item:hover {
+    background-color: #f1f3f5;
+    color: #495057;
+}
+
+/* Τύποι ερωτήσεων */
+.radio-group {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.radio-option input[type="radio"] {
+    margin: 0;
+}
+
+.radio-option label {
+    margin: 0;
+    font-weight: normal;
+}
+
+.answer-text-large {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Αντιστοίχιση */
+.matching-pair {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.matching-left, .matching-right {
+    flex: 1;
+}
+
+.matching-connector {
+    font-size: 20px;
+    color: #6c757d;
+}
+
+.remove-pair {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0.7;
+}
+
+.remove-pair:hover {
+    opacity: 1;
+}
+
+/* Ταξινόμηση */
+.ordering-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    cursor: move;
+}
+
+.drag-handle {
+    color: #6c757d;
+    cursor: move;
+    font-size: 16px;
+}
+
+.remove-item {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0.7;
+}
+
+.remove-item:hover {
+    opacity: 1;
+}
+
+/* Κουμπιά ενεργειών */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-primary {
+    background-color: #aa3636;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #8a2828;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #6c757d;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 10px 0;
+}
+
+.btn-link:hover {
+    color: #5a6268;
+}
+
+/* Βοηθητικές κλάσεις */
+.hidden {
+    display: none !important;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+/* Αποτέλεσμα εισαγωγής */
+.import-results {
+    margin-top: 20px;
+}
+
+.result-block {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Ειδικές ρυθμίσεις για draggable */
+.ui-sortable-helper {
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+    opacity: 0.9;
+}
+
+.ui-sortable-placeholder {
+    visibility: visible !important;
+    border: 2px dashed #ccc;
+    background-color: #f1f3f5;
+    border-radius: 4px;
+    height: 45px;
+    margin-bottom: 10px;
+}

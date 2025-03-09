@@ -1,183 +1,251 @@
+/**
+ * DriveTest Bulk Import Scripts
+ * JavaScript για τη μαζική εισαγωγή ερωτήσεων
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Bulk Import JS loaded');
+    // Διαχείριση μεθόδου εισαγωγής
+    initImportMode();
     
-    // Αναφορές DOM
-    const categorySelect = document.getElementById('category_id');
-    const subcategorySelect = document.getElementById('subcategory_id');
-    const chapterSelect = document.getElementById('chapter_id');
-    const csvFileInput = document.getElementById('csv_file');
-    const zipFileInput = document.getElementById('zip_file');
-    const importForm = document.getElementById('bulk-import-form');
+    // Διαχείριση αλυσιδωτών dropdowns για κατηγορίες/υποκατηγορίες/κεφάλαια
+    initCategoryChain();
     
-    // Event Listeners
-    categorySelect.addEventListener('change', loadSubcategories);
-    subcategorySelect.addEventListener('change', loadChapters);
-    csvFileInput.addEventListener('change', validateCSVFile);
+    // Διαχείριση του αρχείου CSV
+    initFileUpload();
+});
+
+/**
+ * Αρχικοποίηση του τρόπου εισαγωγής
+ */
+function initImportMode() {
+    const importModeSelect = document.getElementById('import_mode');
+    const manualMappingSection = document.getElementById('manual-mapping');
     
-    // Φόρτωση υποκατηγοριών με βάση την επιλεγμένη κατηγορία
-    function loadSubcategories() {
-        const categoryId = categorySelect.value;
-        if (!categoryId) {
-            resetSelect(subcategorySelect, '-- Επιλέξτε πρώτα Κατηγορία --');
-            resetSelect(chapterSelect, '-- Επιλέξτε πρώτα Υποκατηγορία --');
-            return;
-        }
-        
-        // Ενεργοποίηση του dropdown υποκατηγοριών
-        subcategorySelect.disabled = true;
-        subcategorySelect.innerHTML = '<option value="">Φόρτωση υποκατηγοριών...</option>';
-        
-        fetch(`${getBaseUrl()}/admin/test/subcategory_actions.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `action=list`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                subcategorySelect.innerHTML = '<option value="">-- Επιλέξτε Υποκατηγορία --</option>';
-                
-                // Φιλτράρισμα μόνο των υποκατηγοριών που ανήκουν στην επιλεγμένη κατηγορία
-                const filteredSubcategories = data.subcategories.filter(
-                    subcategory => subcategory.test_category_id == categoryId
-                );
-                
-                filteredSubcategories.forEach(subcategory => {
-                    const option = document.createElement('option');
-                    option.value = subcategory.id;
-                    option.textContent = subcategory.name;
-                    subcategorySelect.appendChild(option);
-                });
-                
-                subcategorySelect.disabled = false;
-            } else {
-                console.error('Error loading subcategories:', data.message);
-                resetSelect(subcategorySelect, 'Σφάλμα φόρτωσης υποκατηγοριών');
+    if (importModeSelect && manualMappingSection) {
+        importModeSelect.addEventListener('change', function() {
+            const selectedMode = this.value;
+            
+            // Εμφάνιση/απόκρυψη ανάλογων επιλογών
+            if (selectedMode === 'manual') {
+                manualMappingSection.style.display = 'block';
+            } else if (selectedMode === 'auto') {
+                manualMappingSection.style.display = 'none';
+            } else if (selectedMode === 'predefined') {
+                manualMappingSection.style.display = 'none';
             }
-        })
-        .catch(error => {
-            console.error('AJAX error:', error);
-            resetSelect(subcategorySelect, 'Σφάλμα σύνδεσης με τον server');
+        });
+        
+        // Αρχικοποίηση με την τρέχουσα τιμή
+        const event = new Event('change');
+        importModeSelect.dispatchEvent(event);
+    }
+}
+
+/**
+ * Αρχικοποίηση αλυσιδωτών dropdowns για κατηγορίες/υποκατηγορίες/κεφάλαια
+ */
+function initCategoryChain() {
+    const defaultCategorySelect = document.getElementById('default_category_id');
+    const defaultSubcategorySelect = document.getElementById('default_subcategory_id');
+    const defaultChapterSelect = document.getElementById('default_chapter_id');
+    
+    // Διατήρηση επιλεγμένων τιμών
+    let selectedCategory = defaultCategorySelect ? defaultCategorySelect.value : '';
+    let selectedSubcategory = defaultSubcategorySelect ? defaultSubcategorySelect.value : '';
+    
+    // Συγκεντρώνουμε τις υποκατηγορίες ανά κατηγορία
+    const subcategoriesByCategory = {};
+    if (defaultSubcategorySelect) {
+        const subcategoryOptions = defaultSubcategorySelect.querySelectorAll('option');
+        subcategoryOptions.forEach(option => {
+            const categoryId = option.getAttribute('data-category');
+            if (categoryId) {
+                if (!subcategoriesByCategory[categoryId]) {
+                    subcategoriesByCategory[categoryId] = [];
+                }
+                subcategoriesByCategory[categoryId].push({
+                    value: option.value,
+                    text: option.innerText
+                });
+            }
         });
     }
     
-    // Φόρτωση κεφαλαίων με βάση την επιλεγμένη υποκατηγορία
-    function loadChapters() {
-        const subcategoryId = subcategorySelect.value;
-        if (!subcategoryId) {
-            resetSelect(chapterSelect, '-- Επιλέξτε πρώτα Υποκατηγορία --');
-            return;
-        }
-        
-        // Ενεργοποίηση του dropdown κεφαλαίων
-        chapterSelect.disabled = true;
-        chapterSelect.innerHTML = '<option value="">Φόρτωση κεφαλαίων...</option>';
-        
-        fetch(`${getBaseUrl()}/admin/test/chapter_actions.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `action=list_chapters&subcategory_id=${subcategoryId}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                chapterSelect.innerHTML = '<option value="">-- Επιλέξτε Κεφάλαιο --</option>';
-                
-                data.chapters.forEach(chapter => {
-                    const option = document.createElement('option');
-                    option.value = chapter.id;
-                    option.textContent = chapter.name;
-                    chapterSelect.appendChild(option);
+    // Συγκεντρώνουμε τα κεφάλαια ανά υποκατηγορία
+    const chaptersBySubcategory = {};
+    if (defaultChapterSelect) {
+        const chapterOptions = defaultChapterSelect.querySelectorAll('option');
+        chapterOptions.forEach(option => {
+            const subcategoryId = option.getAttribute('data-subcategory');
+            if (subcategoryId) {
+                if (!chaptersBySubcategory[subcategoryId]) {
+                    chaptersBySubcategory[subcategoryId] = [];
+                }
+                chaptersBySubcategory[subcategoryId].push({
+                    value: option.value,
+                    text: option.innerText
                 });
-                
-                chapterSelect.disabled = false;
-            } else {
-                console.error('Error loading chapters:', data.message);
-                resetSelect(chapterSelect, 'Σφάλμα φόρτωσης κεφαλαίων');
             }
-        })
-        .catch(error => {
-            console.error('AJAX error:', error);
-            resetSelect(chapterSelect, 'Σφάλμα σύνδεσης με τον server');
         });
     }
     
-    // Έλεγχος και προεπισκόπηση του CSV αρχείου
-    function validateCSVFile() {
-        if (!csvFileInput.files.length) return;
+    // Event listener για επιλογή κατηγορίας
+    if (defaultCategorySelect) {
+        defaultCategorySelect.addEventListener('change', function() {
+            selectedCategory = this.value;
+            updateSubcategories(selectedCategory);
+        });
+    }
+    
+    // Event listener για επιλογή υποκατηγορίας
+    if (defaultSubcategorySelect) {
+        defaultSubcategorySelect.addEventListener('change', function() {
+            selectedSubcategory = this.value;
+            updateChapters(selectedSubcategory);
+        });
+    }
+    
+    /**
+     * Ενημέρωση του dropdown υποκατηγοριών βάσει της επιλεγμένης κατηγορίας
+     */
+    function updateSubcategories(categoryId) {
+        if (!defaultSubcategorySelect) return;
         
-        const file = csvFileInput.files[0];
-        const reader = new FileReader();
+        // Καθαρισμός των επιλογών
+        defaultSubcategorySelect.innerHTML = '';
         
-        reader.onload = function(e) {
-            const content = e.target.result;
-            const lines = content.split(/\r\n|\n/);
+        // Προσθήκη της προεπιλεγμένης επιλογής
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = '-- Καμία --';
+        defaultSubcategorySelect.appendChild(defaultOption);
+        
+        // Προσθήκη των υποκατηγοριών της επιλεγμένης κατηγορίας
+        if (categoryId && subcategoriesByCategory[categoryId]) {
+            subcategoriesByCategory[categoryId].forEach(subcategory => {
+                const option = document.createElement('option');
+                option.value = subcategory.value;
+                option.text = subcategory.text;
+                option.setAttribute('data-category', categoryId);
+                defaultSubcategorySelect.appendChild(option);
+            });
             
-            // Έλεγχος του αρχείου CSV
-            if (lines.length < 2) {
-                alert('Το αρχείο CSV πρέπει να περιέχει τουλάχιστον μια γραμμή επικεφαλίδας και μια γραμμή δεδομένων.');
-                csvFileInput.value = '';
-                return;
-            }
+            // Ενεργοποίηση του dropdown
+            defaultSubcategorySelect.disabled = false;
+        } else {
+            // Απενεργοποίηση αν δεν υπάρχουν υποκατηγορίες
+            defaultSubcategorySelect.disabled = true;
+        }
+        
+        // Ενημέρωση κεφαλαίων (θα γίνει καθαρισμός)
+        updateChapters('');
+    }
+    
+    /**
+     * Ενημέρωση του dropdown κεφαλαίων βάσει της επιλεγμένης υποκατηγορίας
+     */
+    function updateChapters(subcategoryId) {
+        if (!defaultChapterSelect) return;
+        
+        // Καθαρισμός των επιλογών
+        defaultChapterSelect.innerHTML = '';
+        
+        // Προσθήκη της προεπιλεγμένης επιλογής
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = '-- Κανένα --';
+        defaultChapterSelect.appendChild(defaultOption);
+        
+        // Προσθήκη των κεφαλαίων της επιλεγμένης υποκατηγορίας
+        if (subcategoryId && chaptersBySubcategory[subcategoryId]) {
+            chaptersBySubcategory[subcategoryId].forEach(chapter => {
+                const option = document.createElement('option');
+                option.value = chapter.value;
+                option.text = chapter.text;
+                option.setAttribute('data-subcategory', subcategoryId);
+                defaultChapterSelect.appendChild(option);
+            });
             
-            // Έλεγχος της επικεφαλίδας
-            const header = lines[0];
-            if (!header.includes('Ερώτηση') && !header.includes('Question')) {
-                alert('Η πρώτη γραμμή του CSV πρέπει να περιέχει τις επικεφαλίδες. Δεν βρέθηκε η επικεφαλίδα "Ερώτηση" ή "Question".');
-                csvFileInput.value = '';
-                return;
-            }
-            
-            // Εμφάνιση προεπισκόπησης δεδομένων
-            const previewElement = document.getElementById('csv-preview');
-            if (previewElement) {
-                const previewRows = Math.min(lines.length, 5); // Δείχνουμε μέχρι 5 γραμμές
-                let previewHTML = '<h4>Προεπισκόπηση CSV:</h4>';
-                previewHTML += '<table class="preview-table">';
-                
-                for (let i = 0; i < previewRows; i++) {
-                    const row = lines[i].split(/;|,/); // Δοκιμάζουμε διαχωριστικά ; και ,
-                    
-                    previewHTML += '<tr>';
-                    for (const cell of row) {
-                        previewHTML += `<td>${cell}</td>`;
-                    }
-                    previewHTML += '</tr>';
+            // Ενεργοποίηση του dropdown
+            defaultChapterSelect.disabled = false;
+        } else {
+            // Απενεργοποίηση αν δεν υπάρχουν κεφάλαια
+            defaultChapterSelect.disabled = true;
+        }
+    }
+    
+    // Αρχικοποίηση των dropdowns
+    if (defaultCategorySelect && defaultCategorySelect.value) {
+        updateSubcategories(defaultCategorySelect.value);
+        
+        if (defaultSubcategorySelect && defaultSubcategorySelect.value) {
+            updateChapters(defaultSubcategorySelect.value);
+        }
+    }
+}
+
+/**
+ * Αρχικοποίηση της διαχείρισης του αρχείου CSV
+ */
+function initFileUpload() {
+    const fileInput = document.getElementById('csv_file');
+    const previewForm = document.getElementById('preview-form');
+    const hiddenFileInput = document.getElementById('csv_file_hidden');
+    
+    // Αυτόματη υποβολή της φόρμας προεπισκόπησης όταν επιλεγεί αρχείο
+    if (fileInput && previewForm) {
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                // Έλεγχος μεγέθους αρχείου
+                const maxFileSize = 10 * 1024 * 1024; // 10MB
+                if (this.files[0].size > maxFileSize) {
+                    alert('Το αρχείο είναι πολύ μεγάλο. Το μέγιστο επιτρεπόμενο μέγεθος είναι 10MB.');
+                    this.value = '';
+                    return;
                 }
                 
-                previewHTML += '</table>';
-                previewElement.innerHTML = previewHTML;
-                previewElement.style.display = 'block';
+                // Έλεγχος τύπου αρχείου
+                const fileType = this.files[0].type;
+                const isCSV = fileType === 'text/csv' || 
+                             fileType === 'application/vnd.ms-excel' || 
+                             fileType === 'application/csv' ||
+                             this.files[0].name.toLowerCase().endsWith('.csv');
+                             
+                if (!isCSV) {
+                    alert('Παρακαλώ επιλέξτε έγκυρο αρχείο CSV.');
+                    this.value = '';
+                    return;
+                }
+                
+                previewForm.submit();
             }
-        };
-        
-        reader.readAsText(file);
+        });
     }
     
-    // Βοηθητική συνάρτηση για επαναφορά επιλογής select
-    function resetSelect(selectElement, placeholder) {
-        selectElement.innerHTML = `<option value="">${placeholder}</option>`;
-        selectElement.disabled = true;
-    }
-    
-    // Βοηθητική συνάρτηση για την εύρεση του BASE_URL
-    function getBaseUrl() {
-        const baseElement = document.querySelector('base');
-        if (baseElement) return baseElement.href;
-        
-        // Fallback - extract from link or script tags
-        const scriptTags = document.querySelectorAll('script[src]');
-        for (let i = 0; i < scriptTags.length; i++) {
-            const src = scriptTags[i].getAttribute('src');
-            if (src.includes('/admin/assets/js/')) {
-                return src.split('/admin/assets/js/')[0];
+    // Παρακολούθηση των αλλαγών στις αντιστοιχίσεις στηλών
+    const columnSelects = document.querySelectorAll('select[name^="map_"]');
+    columnSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            // Αποφυγή διπλών αντιστοιχίσεων
+            const selectedValue = this.value;
+            if (selectedValue) {
+                columnSelects.forEach(otherSelect => {
+                    if (otherSelect !== this && otherSelect.value === selectedValue) {
+                        // Αν βρούμε άλλο select με την ίδια τιμή, το καθαρίζουμε
+                        otherSelect.value = '';
+                    }
+                });
             }
-        }
-        
-        return '';
+        });
+    });
+    
+    // Μεταφορά του επιλεγμένου αρχείου στο κρυφό input
+    if (hiddenFileInput && fileInput && fileInput.files.length > 0) {
+        // Δημιουργία ενός νέου DataTransfer αντικειμένου
+        const dataTransfer = new DataTransfer();
+        // Προσθήκη του επιλεγμένου αρχείου
+        dataTransfer.items.add(fileInput.files[0]);
+        // Ορισμός των αρχείων στο κρυφό input
+        hiddenFileInput.files = dataTransfer.files;
     }
-});
+}

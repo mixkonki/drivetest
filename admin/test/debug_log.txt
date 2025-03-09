@@ -35,3 +35,283 @@
 [2025-03-09 09:14:31] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
 [2025-03-09 09:14:31] [DEBUG] 🛠️ [DEBUG] Action: {"action":"list_subcategories"}
 [2025-03-09 09:14:31] [DEBUG] 🛠️ [DEBUG] Action: {"action":"list"}
+[2025-03-09 09:17:07] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 09:17:07] 🔍 [INFO] Action: list_subcategories
+[2025-03-09 09:17:07] ✅ [SUCCESS] Βρέθηκαν 5 υποκατηγορίες.
+[2025-03-09 09:17:07] 🔍 [INFO] Action: list_questions
+[2025-03-09 09:17:07] ✅ [SUCCESS] Βρέθηκαν 4 ερωτήσεις.
+[2025-03-09 09:17:09] 🔍 [INFO] Action: get_question
+[2025-03-09 09:17:09] 🔍 [INFO] Φόρτωση Ερώτησης ID: 293
+[2025-03-09 09:17:09] ✅ [SUCCESS] Βρέθηκαν 3 απαντήσεις για ερώτηση ID 293
+[2025-03-09 09:17:09] 🔍 [DEBUG] Δεδομένα ερώτησης: {
+    "id": 293,
+    "chapter_id": 2,
+    "author_id": 1,
+    "question_text": "\u03a4\u03b9 \u03b5\u03af\u03bd\u03b1\u03b9 \u03b4\u03bf\u03bc\u03b9\u03ba\u03cc \u03bc\u03b7\u03c7\u03ac\u03bd\u03b7\u03bc\u03b1;",
+    "question_explanation": "",
+    "question_type": "single_choice",
+    "image": null,
+    "video": null,
+    "audio": null,
+    "explanation_image": null,
+    "explanation_video": null,
+    "explanation_audio": null,
+    "created_at": "2025-02-21 16:16:53",
+    "status": "active",
+    "question_media": "",
+    "explanation_media": "",
+    "chapter_name": "\u03a0\u03af\u03bd\u03b1\u03ba\u03b1\u03c2 \u03911",
+    "subcategory_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ad\u03c2 \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "category_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ce\u03bd \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "answers": [
+        {
+            "answer_text": "\u039c\u03b7\u03c7\u03ac\u03bd\u03b7\u03bc\u03b1 \u03b3\u03b9\u03b1 \u03c4\u03b7\u03bd \u03b5\u03be\u03c5\u03c0\u03b7\u03c1\u03ad\u03c4\u03b7\u03c3\u03b7 \u03c4\u03c9\u03bd \u03ba\u03bf\u03b9\u03bd\u03c9\u03bd\u03b9\u03ba\u03ce\u03bd \u03b1\u03bd\u03b1\u03b3\u03ba\u03ce\u03bd.",
+            "is_correct": 0,
+            "answer_media": ""
+        },
+        {
+            "answer_text": "\u039c\u03b7\u03c7\u03ac\u03bd\u03b7\u03bc\u03b1 \u03b3\u03b9\u03b1 \u03ad\u03c1\u03b3\u03b1.",
+            "is_correct": 1,
+            "answer_media": ""
+        },
+        {
+            "answer_text": "\u039c\u03b7\u03c7\u03ac\u03bd\u03b7\u03bc\u03b1 \u03c0\u03bf\u03c5 \u03c0\u03b1\u03c1\u03ac\u03b3\u03b5\u03b9 \u03b4\u03bf\u03bc\u03b9\u03ba\u03ac \u03c3\u03c4\u03bf\u03b9\u03c7\u03b5\u03af\u03b1.",
+            "is_correct": 0,
+            "answer_media": ""
+        }
+    ]
+}
+[2025-03-09 09:17:09] 🔍 [INFO] Ερώτηση ανήκει σε: Κατηγορία: Χειριστών Μηχανημάτων Έργου, Υποκατηγορία: Χειριστές Μηχανημάτων Έργου, Κεφάλαιο: Πίνακας Α1
+[2025-03-09 09:17:09] 🔍 [INFO] Action: get_question
+[2025-03-09 09:17:09] 🔍 [INFO] Φόρτωση Ερώτησης ID: 293
+[2025-03-09 09:17:09] ✅ [SUCCESS] Βρέθηκαν 3 απαντήσεις για ερώτηση ID 293
+[2025-03-09 09:17:09] 🔍 [DEBUG] Δεδομένα ερώτησης: {
+    "id": 293,
+    "chapter_id": 2,
+    "author_id": 1,
+    "question_text": "\u03a4\u03b9 \u03b5\u03af\u03bd\u03b1\u03b9 \u03b4\u03bf\u03bc\u03b9\u03ba\u03cc \u03bc\u03b7\u03c7\u03ac\u03bd\u03b7\u03bc\u03b1;",
+    "question_explanation": "",
+    "question_type": "single_choice",
+    "image": null,
+    "video": null,
+    "audio": null,
+    "explanation_image": null,
+    "explanation_video": null,
+    "explanation_audio": null,
+    "created_at": "2025-02-21 16:16:53",
+    "status": "active",
+    "question_media": "",
+    "explanation_media": "",
+    "chapter_name": "\u03a0\u03af\u03bd\u03b1\u03ba\u03b1\u03c2 \u03911",
+    "subcategory_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ad\u03c2 \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "category_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ce\u03bd \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "answers": [
+        {
+            "answer_text": "\u039c\u03b7\u03c7\u03ac\u03bd\u03b7\u03bc\u03b1 \u03b3\u03b9\u03b1 \u03c4\u03b7\u03bd \u03b5\u03be\u03c5\u03c0\u03b7\u03c1\u03ad\u03c4\u03b7\u03c3\u03b7 \u03c4\u03c9\u03bd \u03ba\u03bf\u03b9\u03bd\u03c9\u03bd\u03b9\u03ba\u03ce\u03bd \u03b1\u03bd\u03b1\u03b3\u03ba\u03ce\u03bd.",
+            "is_correct": 0,
+            "answer_media": ""
+        },
+        {
+            "answer_text": "\u039c\u03b7\u03c7\u03ac\u03bd\u03b7\u03bc\u03b1 \u03b3\u03b9\u03b1 \u03ad\u03c1\u03b3\u03b1.",
+            "is_correct": 1,
+            "answer_media": ""
+        },
+        {
+            "answer_text": "\u039c\u03b7\u03c7\u03ac\u03bd\u03b7\u03bc\u03b1 \u03c0\u03bf\u03c5 \u03c0\u03b1\u03c1\u03ac\u03b3\u03b5\u03b9 \u03b4\u03bf\u03bc\u03b9\u03ba\u03ac \u03c3\u03c4\u03bf\u03b9\u03c7\u03b5\u03af\u03b1.",
+            "is_correct": 0,
+            "answer_media": ""
+        }
+    ]
+}
+[2025-03-09 09:17:09] 🔍 [INFO] Ερώτηση ανήκει σε: Κατηγορία: Χειριστών Μηχανημάτων Έργου, Υποκατηγορία: Χειριστές Μηχανημάτων Έργου, Κεφάλαιο: Πίνακας Α1
+[2025-03-09 09:17:09] 🔍 [INFO] Action: list_chapters
+[2025-03-09 09:17:09] 🔍 [INFO] Φόρτωση Κεφαλαίων για Υποκατηγορία ID: 13
+[2025-03-09 09:17:09] ✅ [SUCCESS] Βρέθηκαν 2 κεφάλαια.
+[2025-03-09 09:17:09] 🔍 [INFO] Action: list_chapters
+[2025-03-09 09:17:09] 🔍 [INFO] Φόρτωση Κεφαλαίων για Υποκατηγορία ID: 13
+[2025-03-09 09:17:09] ✅ [SUCCESS] Βρέθηκαν 2 κεφάλαια.
+[2025-03-09 09:17:38] 🔍 [INFO] Action: get_question
+[2025-03-09 09:17:38] 🔍 [INFO] Φόρτωση Ερώτησης ID: 292
+[2025-03-09 09:17:38] ✅ [SUCCESS] Βρέθηκαν 3 απαντήσεις για ερώτηση ID 292
+[2025-03-09 09:17:38] 🔍 [DEBUG] Δεδομένα ερώτησης: {
+    "id": 292,
+    "chapter_id": 2,
+    "author_id": 1,
+    "question_text": "\u03a4\u03b9 \u03b1\u03c0\u03bf\u03ba\u03b1\u03bb\u03bf\u03cd\u03bc\u03b5 \u03c7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ae \u03b4\u03bf\u03bc\u03b9\u03ba\u03ce\u03bd \u03bc\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd;",
+    "question_explanation": "",
+    "question_type": "single_choice",
+    "image": null,
+    "video": null,
+    "audio": null,
+    "explanation_image": null,
+    "explanation_video": null,
+    "explanation_audio": null,
+    "created_at": "2025-02-21 16:16:53",
+    "status": "active",
+    "question_media": "",
+    "explanation_media": "",
+    "chapter_name": "\u03a0\u03af\u03bd\u03b1\u03ba\u03b1\u03c2 \u03911",
+    "subcategory_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ad\u03c2 \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "category_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ce\u03bd \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "answers": [
+        {
+            "answer_text": "\u03a4\u03bf\u03bd \u03b5\u03be\u03b5\u03b9\u03b4\u03b9\u03ba\u03b5\u03c5\u03bc\u03ad\u03bd\u03bf \u03ac\u03bd\u03b8\u03c1\u03c9\u03c0\u03bf \u03cc\u03c0\u03bf\u03c5 \u03bc\u03b5 \u03c4\u03b7\u03bd \u03ba\u03b1\u03c4\u03ac\u03bb\u03bb\u03b7\u03bb\u03b7 \u03c5\u03c0\u03bf\u03b4\u03bf\u03bc\u03ae \u03c7\u03b5\u03b9\u03c1\u03af\u03b6\u03b5\u03c4\u03b1\u03b9 \u03c4\u03b1 \u03bc\u03b7\u03c7\u03b1\u03bd\u03ae\u03bc\u03b1\u03c4\u03b1 \u03c3\u03b5 \u03b5\u03c1\u03b3\u03bf\u03c4\u03b1\u03be\u03b9\u03b1\u03ba\u03bf\u03cd\u03c2 \u03c7\u03ce\u03c1\u03bf\u03c5\u03c2.",
+            "is_correct": 1,
+            "answer_media": ""
+        },
+        {
+            "answer_text": "\u03a4\u03bf\u03bd \u03ac\u03bd\u03b8\u03c1\u03c9\u03c0\u03bf \u03c0\u03bf\u03c5 \u03b1\u03c3\u03c7\u03bf\u03bb\u03b5\u03af\u03c4\u03b1\u03b9 \u03b8\u03b5\u03c9\u03c1\u03b7\u03c4\u03b9\u03ba\u03ac \u03b1\u03bb\u03bb\u03ac \u03ba\u03b1\u03b9 \u03b5\u03ba\u03c0\u03b1\u03b9\u03b4\u03b5\u03cd\u03b5\u03b9 \u03c0\u03b5\u03c1\u03af \u03c4\u03b7\u03c2 \u03c7\u03c1\u03ae\u03c3\u03b7\u03c2 \u03c4\u03c9\u03bd \u03bc\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd.",
+            "is_correct": 0,
+            "answer_media": ""
+        },
+        {
+            "answer_text": "\u03a4\u03bf\u03bd \u03c0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03cc \u03bc\u03b7\u03c7\u03b1\u03bd\u03b9\u03ba\u03cc \u03c3\u03c4\u03bf \u03b4\u03bf\u03bc\u03b9\u03ba\u03cc \u03ad\u03c1\u03b3\u03bf.",
+            "is_correct": 0,
+            "answer_media": ""
+        }
+    ]
+}
+[2025-03-09 09:17:38] 🔍 [INFO] Ερώτηση ανήκει σε: Κατηγορία: Χειριστών Μηχανημάτων Έργου, Υποκατηγορία: Χειριστές Μηχανημάτων Έργου, Κεφάλαιο: Πίνακας Α1
+[2025-03-09 09:17:38] 🔍 [INFO] Action: get_question
+[2025-03-09 09:17:38] 🔍 [INFO] Φόρτωση Ερώτησης ID: 292
+[2025-03-09 09:17:38] ✅ [SUCCESS] Βρέθηκαν 3 απαντήσεις για ερώτηση ID 292
+[2025-03-09 09:17:38] 🔍 [DEBUG] Δεδομένα ερώτησης: {
+    "id": 292,
+    "chapter_id": 2,
+    "author_id": 1,
+    "question_text": "\u03a4\u03b9 \u03b1\u03c0\u03bf\u03ba\u03b1\u03bb\u03bf\u03cd\u03bc\u03b5 \u03c7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ae \u03b4\u03bf\u03bc\u03b9\u03ba\u03ce\u03bd \u03bc\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd;",
+    "question_explanation": "",
+    "question_type": "single_choice",
+    "image": null,
+    "video": null,
+    "audio": null,
+    "explanation_image": null,
+    "explanation_video": null,
+    "explanation_audio": null,
+    "created_at": "2025-02-21 16:16:53",
+    "status": "active",
+    "question_media": "",
+    "explanation_media": "",
+    "chapter_name": "\u03a0\u03af\u03bd\u03b1\u03ba\u03b1\u03c2 \u03911",
+    "subcategory_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ad\u03c2 \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "category_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ce\u03bd \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "answers": [
+        {
+            "answer_text": "\u03a4\u03bf\u03bd \u03b5\u03be\u03b5\u03b9\u03b4\u03b9\u03ba\u03b5\u03c5\u03bc\u03ad\u03bd\u03bf \u03ac\u03bd\u03b8\u03c1\u03c9\u03c0\u03bf \u03cc\u03c0\u03bf\u03c5 \u03bc\u03b5 \u03c4\u03b7\u03bd \u03ba\u03b1\u03c4\u03ac\u03bb\u03bb\u03b7\u03bb\u03b7 \u03c5\u03c0\u03bf\u03b4\u03bf\u03bc\u03ae \u03c7\u03b5\u03b9\u03c1\u03af\u03b6\u03b5\u03c4\u03b1\u03b9 \u03c4\u03b1 \u03bc\u03b7\u03c7\u03b1\u03bd\u03ae\u03bc\u03b1\u03c4\u03b1 \u03c3\u03b5 \u03b5\u03c1\u03b3\u03bf\u03c4\u03b1\u03be\u03b9\u03b1\u03ba\u03bf\u03cd\u03c2 \u03c7\u03ce\u03c1\u03bf\u03c5\u03c2.",
+            "is_correct": 1,
+            "answer_media": ""
+        },
+        {
+            "answer_text": "\u03a4\u03bf\u03bd \u03ac\u03bd\u03b8\u03c1\u03c9\u03c0\u03bf \u03c0\u03bf\u03c5 \u03b1\u03c3\u03c7\u03bf\u03bb\u03b5\u03af\u03c4\u03b1\u03b9 \u03b8\u03b5\u03c9\u03c1\u03b7\u03c4\u03b9\u03ba\u03ac \u03b1\u03bb\u03bb\u03ac \u03ba\u03b1\u03b9 \u03b5\u03ba\u03c0\u03b1\u03b9\u03b4\u03b5\u03cd\u03b5\u03b9 \u03c0\u03b5\u03c1\u03af \u03c4\u03b7\u03c2 \u03c7\u03c1\u03ae\u03c3\u03b7\u03c2 \u03c4\u03c9\u03bd \u03bc\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd.",
+            "is_correct": 0,
+            "answer_media": ""
+        },
+        {
+            "answer_text": "\u03a4\u03bf\u03bd \u03c0\u03bf\u03bb\u03b9\u03c4\u03b9\u03ba\u03cc \u03bc\u03b7\u03c7\u03b1\u03bd\u03b9\u03ba\u03cc \u03c3\u03c4\u03bf \u03b4\u03bf\u03bc\u03b9\u03ba\u03cc \u03ad\u03c1\u03b3\u03bf.",
+            "is_correct": 0,
+            "answer_media": ""
+        }
+    ]
+}
+[2025-03-09 09:17:38] 🔍 [INFO] Ερώτηση ανήκει σε: Κατηγορία: Χειριστών Μηχανημάτων Έργου, Υποκατηγορία: Χειριστές Μηχανημάτων Έργου, Κεφάλαιο: Πίνακας Α1
+[2025-03-09 09:17:38] 🔍 [INFO] Action: list_chapters
+[2025-03-09 09:17:38] 🔍 [INFO] Φόρτωση Κεφαλαίων για Υποκατηγορία ID: 13
+[2025-03-09 09:17:38] ✅ [SUCCESS] Βρέθηκαν 2 κεφάλαια.
+[2025-03-09 09:17:38] 🔍 [INFO] Action: list_chapters
+[2025-03-09 09:17:38] 🔍 [INFO] Φόρτωση Κεφαλαίων για Υποκατηγορία ID: 13
+[2025-03-09 09:17:38] ✅ [SUCCESS] Βρέθηκαν 2 κεφάλαια.
+[2025-03-09 09:17:41] 🔍 [INFO] Action: get_question
+[2025-03-09 09:17:41] 🔍 [INFO] Φόρτωση Ερώτησης ID: 1
+[2025-03-09 09:17:41] ✅ [SUCCESS] Βρέθηκαν 3 απαντήσεις για ερώτηση ID 1
+[2025-03-09 09:17:41] 🔍 [DEBUG] Δεδομένα ερώτησης: {
+    "id": 1,
+    "chapter_id": 2,
+    "author_id": 1,
+    "question_text": "\u03b4\u03c3\u03b3\u03b1\u03b3\u03b1\u03c6",
+    "question_explanation": "\u03b1\u03b7\u03b4\u03b7\u03c6\u03b4",
+    "question_type": "single_choice",
+    "image": null,
+    "video": null,
+    "audio": null,
+    "explanation_image": null,
+    "explanation_video": null,
+    "explanation_audio": null,
+    "created_at": "2025-02-18 20:45:39",
+    "status": "active",
+    "question_media": null,
+    "explanation_media": null,
+    "chapter_name": "\u03a0\u03af\u03bd\u03b1\u03ba\u03b1\u03c2 \u03911",
+    "subcategory_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ad\u03c2 \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "category_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ce\u03bd \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "answers": [
+        {
+            "answer_text": "\u0391\u03c0\u03ac\u03bd\u03c4\u03b7\u03c3\u03b7 1",
+            "is_correct": 1,
+            "answer_media": null
+        },
+        {
+            "answer_text": "\u0391\u03c0\u03ac\u03bd\u03c4\u03b7\u03c3\u03b7 2",
+            "is_correct": 0,
+            "answer_media": null
+        },
+        {
+            "answer_text": "\u0391\u03c0\u03ac\u03bd\u03c4\u03b7\u03c3\u03b7 3",
+            "is_correct": 0,
+            "answer_media": null
+        }
+    ]
+}
+[2025-03-09 09:17:41] 🔍 [INFO] Ερώτηση ανήκει σε: Κατηγορία: Χειριστών Μηχανημάτων Έργου, Υποκατηγορία: Χειριστές Μηχανημάτων Έργου, Κεφάλαιο: Πίνακας Α1
+[2025-03-09 09:17:41] 🔍 [INFO] Action: get_question
+[2025-03-09 09:17:41] 🔍 [INFO] Φόρτωση Ερώτησης ID: 1
+[2025-03-09 09:17:41] ✅ [SUCCESS] Βρέθηκαν 3 απαντήσεις για ερώτηση ID 1
+[2025-03-09 09:17:41] 🔍 [DEBUG] Δεδομένα ερώτησης: {
+    "id": 1,
+    "chapter_id": 2,
+    "author_id": 1,
+    "question_text": "\u03b4\u03c3\u03b3\u03b1\u03b3\u03b1\u03c6",
+    "question_explanation": "\u03b1\u03b7\u03b4\u03b7\u03c6\u03b4",
+    "question_type": "single_choice",
+    "image": null,
+    "video": null,
+    "audio": null,
+    "explanation_image": null,
+    "explanation_video": null,
+    "explanation_audio": null,
+    "created_at": "2025-02-18 20:45:39",
+    "status": "active",
+    "question_media": null,
+    "explanation_media": null,
+    "chapter_name": "\u03a0\u03af\u03bd\u03b1\u03ba\u03b1\u03c2 \u03911",
+    "subcategory_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ad\u03c2 \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "category_name": "\u03a7\u03b5\u03b9\u03c1\u03b9\u03c3\u03c4\u03ce\u03bd \u039c\u03b7\u03c7\u03b1\u03bd\u03b7\u03bc\u03ac\u03c4\u03c9\u03bd \u0388\u03c1\u03b3\u03bf\u03c5",
+    "answers": [
+        {
+            "answer_text": "\u0391\u03c0\u03ac\u03bd\u03c4\u03b7\u03c3\u03b7 1",
+            "is_correct": 1,
+            "answer_media": null
+        },
+        {
+            "answer_text": "\u0391\u03c0\u03ac\u03bd\u03c4\u03b7\u03c3\u03b7 2",
+            "is_correct": 0,
+            "answer_media": null
+        },
+        {
+            "answer_text": "\u0391\u03c0\u03ac\u03bd\u03c4\u03b7\u03c3\u03b7 3",
+            "is_correct": 0,
+            "answer_media": null
+        }
+    ]
+}
+[2025-03-09 09:17:41] 🔍 [INFO] Ερώτηση ανήκει σε: Κατηγορία: Χειριστών Μηχανημάτων Έργου, Υποκατηγορία: Χειριστές Μηχανημάτων Έργου, Κεφάλαιο: Πίνακας Α1
+[2025-03-09 09:17:41] 🔍 [INFO] Action: list_chapters
+[2025-03-09 09:17:41] 🔍 [INFO] Φόρτωση Κεφαλαίων για Υποκατηγορία ID: 13
+[2025-03-09 09:17:41] ✅ [SUCCESS] Βρέθηκαν 2 κεφάλαια.
+[2025-03-09 09:17:41] 🔍 [INFO] Action: list_chapters
+[2025-03-09 09:17:41] 🔍 [INFO] Φόρτωση Κεφαλαίων για Υποκατηγορία ID: 13
+[2025-03-09 09:17:41] ✅ [SUCCESS] Βρέθηκαν 2 κεφάλαια.
+[2025-03-09 09:18:02] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 09:18:08] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 09:18:08] subcategory_actions.php: Λήφθηκε αίτημα με action=list
+[2025-03-09 09:18:08] subcategory_actions.php: Βρέθηκαν 5 υποκατηγορίες
+[2025-03-09 09:18:10] [DEBUG] 🛠️ [DEBUG] Action: {"action":"list_chapters","subcategory_id":"13"}
