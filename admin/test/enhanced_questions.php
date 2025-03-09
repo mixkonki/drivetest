@@ -1142,23 +1142,53 @@ if (!isset($_FILES['csv_file']) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_O
 function processCSVWithMapping($file, $column_mapping, $create_missing, $default_category_id, 
                           $default_subcategory_id, $default_chapter_id, $default_question_type, 
                           $delimiter, $csv_has_headers) {
-global $mysqli, $success_count, $error_count, $errors, $imported_questions, 
-       $created_categories, $created_subcategories, $created_chapters, $log_messages;
-
-// Άνοιγμα του αρχείου CSV
-$handle = fopen($file, 'r');
-if ($handle === false) {
-    $errors[] = "Αδυναμία ανάγνωσης του αρχείου CSV.";
-    log_debug("Error: Unable to read CSV file.");
-    return;
+    global $mysqli, $success_count, $error_count, $errors, $imported_questions, 
+           $created_categories, $created_subcategories, $created_chapters, $log_messages;
+    
+    // Άνοιγμα του αρχείου CSV
+    $handle = fopen($file, 'r');
+    if ($handle === false) {
+        $errors[] = "Αδυναμία ανάγνωσης του αρχείου CSV.";
+        log_debug("Error: Unable to read CSV file.");
+        return;
+    }
+    
+    // Παράλειψη της γραμμής επικεφαλίδων αν υπάρχει
+    if ($csv_has_headers) {
+        fgetcsv($handle, 0, $delimiter);
+    }
+    
+    // Επεξεργασία κάθε γραμμής
+    $line_number = $csv_has_headers ? 2 : 1;
+    
+    while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
+        try {
+            // Εξαγωγή δεδομένων με βάση το mapping
+            $question_text = isset($column_mapping['question_text']) ? clean_encoding($data[$column_mapping['question_text']]) : null;
+            $category_name = isset($column_mapping['category']) ? clean_encoding($data[$column_mapping['category']]) : null;
+            $subcategory_name = isset($column_mapping['subcategory']) ? clean_encoding($data[$column_mapping['subcategory']]) : null;
+            $chapter_name = isset($column_mapping['chapter']) ? clean_encoding($data[$column_mapping['chapter']]) : null;
+            $question_type = isset($column_mapping['question_type']) ? clean_encoding($data[$column_mapping['question_type']]) : $default_question_type;
+            $explanation = isset($column_mapping['explanation']) ? clean_encoding($data[$column_mapping['explanation']]) : '';
+            $difficulty = isset($column_mapping['difficulty']) ? intval($data[$column_mapping['difficulty']]) : 1;
+            $tags = isset($column_mapping['tags']) ? clean_encoding($data[$column_mapping['tags']]) : '';
+            
+            // Συνέχιση του κώδικα...
+            // ... (όλος ο υπόλοιπος κώδικας μέσα στο while loop)
+            
+        } catch (Exception $e) {
+            $error_count++;
+            $errors[] = [
+                'line' => $line_number,
+                'message' => $e->getMessage(),
+                'data' => implode($delimiter, $data)
+            ];
+            log_debug("Error on line $line_number: " . $e->getMessage());
+        }
+        
+        $line_number++;
+    }
+    
+    fclose($handle);
+    return $result;
 }
-
-// Παράλειψη της γραμμής επικεφαλίδων αν υπάρχει
-if ($csv_has_headers) {
-    fgetcsv($handle, 0, $delimiter);
-}
-
-// Επεξεργασία κάθε γραμμής
-$line_number = $csv_has_headers ? 2 : 1;
-while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {}
-    // Εύρεση των πεδίων με βάση την αντιστοίχιση στηλών 

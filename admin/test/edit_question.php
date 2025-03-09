@@ -1,4 +1,8 @@
+
 <?php
+
+// Ορίζουμε την κωδικοποίηση σε UTF-8
+mysqli_set_charset($mysqli, "utf8mb4");
 require_once '../../config/config.php';
 require_once '../../includes/db_connection.php';
 require_once '../includes/admin_auth.php';
@@ -21,15 +25,25 @@ $categories = $mysqli->query("SELECT id, name FROM test_categories ORDER BY name
 $chapters = $mysqli->query("SELECT id, name FROM test_chapters ORDER BY name ASC")->fetch_all(MYSQLI_ASSOC);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Καταγραφή δεδομένων για debugging
+    file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Επεξεργασία ερώτησης ID: $question_id\n", FILE_APPEND);
+    file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "POST data: " . print_r($_POST, true) . "\n", FILE_APPEND);
+    
     $chapter_id = intval($_POST['chapter_id']);
     $question_text = trim($_POST['question_text']);
-    $explanation = trim($_POST['explanation']);
+    $explanation = trim($_POST['explanation'] ?? '');
     $question_type = $_POST['question_type'] ?? 'single_choice';
     $answers = $_POST['answers'] ?? [];
     $correct_answers = $_POST['correct_answers'] ?? [];
+    
+    file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Correct answers: " . print_r($correct_answers, true) . "\n", FILE_APPEND);
 
     $uploadDir = BASE_PATH . '/admin/test/uploads/';
-    $question_media = $question['question_media'];
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    
+    $question_media = $question['question_media']; // Διατήρηση του υπάρχοντος αν δεν ανεβάσουμε νέο
     if (isset($_FILES['question_media']) && $_FILES['question_media']['error'] === UPLOAD_ERR_OK) {
         $allowedTypes = ['image/jpeg', 'image/png', 'video/mp4', 'audio/mpeg'];
         $fileType = mime_content_type($_FILES['question_media']['tmp_name']);
@@ -38,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $targetPath = $uploadDir . $fileName;
             if (move_uploaded_file($_FILES['question_media']['tmp_name'], $targetPath)) {
                 $question_media = $fileName;
+                file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Νέο media: $question_media\n", FILE_APPEND);
             }
         }
     }
@@ -45,27 +60,54 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!empty($question_text) && $chapter_id > 0) {
         $query = "UPDATE questions SET chapter_id = ?, question_text = ?, question_explanation = ?, question_type = ?, question_media = ? WHERE id = ?";
         $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("issssi", $chapter_id, $question_text, $explanation, $question_type, $question_media, $question_id);
         
-        if ($stmt->execute()) {
-            $mysqli->query("DELETE FROM test_answers WHERE question_id = $question_id");
-            foreach ($answers as $index => $answer) {
-                if (!empty($answer)) {
-                    $is_correct = in_array($index, $correct_answers) ? 1 : 0;
-                    $query = "INSERT INTO test_answers (question_id, answer_text, is_correct) VALUES (?, ?, ?)";
-                    $stmt_answer = $mysqli->prepare($query);
-                    $stmt_answer->bind_param("isi", $question_id, $answer, $is_correct);
-                    $stmt_answer->execute();
-                    $stmt_answer->close();
-                }
-            }
-            header("Location: manage_questions.php?success=updated");
-            exit();
+        if (!$stmt) {
+            file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Σφάλμα προετοιμασίας: " . $mysqli->error . "\n", FILE_APPEND);
+            $error = "❌ Σφάλμα προετοιμασίας: " . $mysqli->error;
         } else {
-            $error = "❌ Σφάλμα: " . $stmt->error;
+            $stmt->bind_param("issssi", $chapter_id, $question_text, $explanation, $question_type, $question_media, $question_id);
+            
+            if ($stmt->execute()) {
+                // Διαγραφή παλιών απαντήσεων
+                $delete_result = $mysqli->query("DELETE FROM test_answers WHERE question_id = $question_id");
+                if (!$delete_result) {
+                    file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Σφάλμα διαγραφής απαντήσεων: " . $mysqli->error . "\n", FILE_APPEND);
+                }
+                
+                // Εισαγωγή νέων απαντήσεων
+                $success_count = 0;
+                foreach ($answers as $index => $answer) {
+                    if (!empty($answer)) {
+                        $is_correct = in_array((string)$index, $correct_answers) ? 1 : 0;
+                        $query = "INSERT INTO test_answers (question_id, answer_text, is_correct) VALUES (?, ?, ?)";
+                        $stmt_answer = $mysqli->prepare($query);
+                        
+                        if (!$stmt_answer) {
+                            file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Σφάλμα προετοιμασίας απάντησης: " . $mysqli->error . "\n", FILE_APPEND);
+                            continue;
+                        }
+                        
+                        $stmt_answer->bind_param("isi", $question_id, $answer, $is_correct);
+                        if ($stmt_answer->execute()) {
+                            $success_count++;
+                        } else {
+                            file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Σφάλμα εισαγωγής απάντησης: " . $stmt_answer->error . "\n", FILE_APPEND);
+                        }
+                        $stmt_answer->close();
+                    }
+                }
+                
+                file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Επιτυχής ενημέρωση! Εισήχθησαν $success_count απαντήσεις.\n", FILE_APPEND);
+                header("Location: manage_questions.php?success=updated");
+                exit();
+            } else {
+                file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Σφάλμα εκτέλεσης: " . $stmt->error . "\n", FILE_APPEND);
+                $error = "❌ Σφάλμα: " . $stmt->error;
+            }
+            $stmt->close();
         }
-        $stmt->close();
     } else {
+        file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . "Λείπουν υποχρεωτικά πεδία. question_text: " . (empty($question_text) ? 'ΚΕΝΟ' : 'OK') . ", chapter_id: $chapter_id\n", FILE_APPEND);
         $error = "❌ Παρακαλώ συμπληρώστε όλα τα υποχρεωτικά πεδία.";
     }
 }

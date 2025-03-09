@@ -243,11 +243,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
 <head>
     <meta charset="UTF-8">
     <title>Μαζική Εισαγωγή Ερωτήσεων</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/admin/assets/css/admin_styles.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/admin/assets/css/bulk_import.css">
+     <link rel="stylesheet" href="<?= BASE_URL ?>/admin/assets/css/bulk_import.css">
 </head>
 <body>
-<?php require_once '../includes/sidebar.php'; ?>
+
 
 <main class="admin-container">
     <h2 class="admin-title">📤 Μαζική Εισαγωγή Ερωτήσεων</h2>

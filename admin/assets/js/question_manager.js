@@ -1,36 +1,161 @@
-// ✅ Αρχικοποίηση προκαθορισμένων απαντήσεων
-function initializeAnswers() {
-    let answersContainer = document.getElementById("answers-container");
-    answersContainer.innerHTML = "";
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("🔄 [INFO] question_manager.js Loaded");
 
-    for (let i = 0; i < 3; i++) {
-        addAnswerField();
+    // Φόρτωση λίστας ερωτήσεων αν βρισκόμαστε στη σελίδα διαχείρισης
+    const questionsTableBody = document.getElementById("questions-table-body");
+    if (questionsTableBody) {
+        loadQuestions();
     }
-    console.log("🔍 [INFO] Αρχικοποιήθηκαν 3 πεδία απαντήσεων.");
+
+    // Προσθήκη listener για το κουμπί προσθήκης ερώτησης (αν υπάρχει)
+    const addButton = document.getElementById("add-question-btn");
+    if (addButton) {
+        addButton.addEventListener("click", function () {
+            showQuestionForm();
+        });
+    }
+
+    // Προσθήκη listener για το κουμπί επιστροφής στη λίστα (αν υπάρχει)
+    const backButton = document.getElementById("back-to-list-btn");
+    if (backButton) {
+        backButton.addEventListener("click", function () {
+            showQuestionsList();
+        });
+    }
+
+    // Προσθήκη listener για επιλογή υποκατηγορίας (αν υπάρχει)
+    const subcategorySelect = document.getElementById("subcategory-select");
+    if (subcategorySelect) {
+        subcategorySelect.addEventListener("change", function () {
+            loadChapters(this.value);
+        });
+    }
+
+    // Προσθήκη listener για την φόρμα ερώτησης (αν υπάρχει)
+    const questionForm = document.getElementById("question-form");
+    if (questionForm) {
+        questionForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            saveQuestion();
+        });
+    }
+
+    // Προσθήκη listener για το κουμπί προσθήκης απάντησης (αν υπάρχει)
+    const addAnswerBtn = document.getElementById("add-answer-btn");
+    if (addAnswerBtn) {
+        addAnswerBtn.addEventListener("click", function () {
+            addAnswerField();
+        });
+    }
+
+    // Προσθήκη listener για επιλογή τύπου ερώτησης (αν υπάρχει)
+    const questionType = document.getElementById("question-type");
+    if (questionType) {
+        questionType.addEventListener("change", function () {
+            updateAnswersContainer(this.value);
+        });
+    }
+
+    // Φόρτωση υποκατηγοριών κατά την αρχικοποίηση
+    loadSubcategories();
+});
+
+// ✅ Φόρτωση όλων των ερωτήσεων με AJAX
+function loadQuestions() {
+    console.log("🔄 [INFO] Φόρτωση ερωτήσεων...");
+
+    fetch("question_actions.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "action=list_questions"
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("📥 [DEBUG] Response:", data);
+
+        if (data.success) {
+            let tableBody = document.getElementById("questions-table-body");
+            if (!tableBody) {
+                console.error("❌ [ERROR] Element with ID 'questions-table-body' not found");
+                return;
+            }
+            
+            tableBody.innerHTML = "";
+
+            if (data.questions.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="9" class="text-center">Δεν βρέθηκαν ερωτήσεις.</td></tr>`;
+                return;
+            }
+
+            data.questions.forEach(question => {
+                let row = document.createElement("tr");
+                
+                // Εμφάνιση των πρώτων 60 χαρακτήρων της ερώτησης
+                let questionText = question.question_text.length > 60 
+                    ? question.question_text.substring(0, 60) + "..." 
+                    : question.question_text;
+                
+                // Προετοιμασία HTML για εικονίδιο πολυμέσων
+                let mediaHtml = '';
+                if (question.question_media) {
+                    mediaHtml = '<span title="Περιλαμβάνει πολυμέσα">🖼️</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${questionText} ${mediaHtml}</td>
+                    <td>${question.category_name}<br>${question.subcategory_name}<br>${question.chapter_name}</td>
+                    <td>${question.answers_count}</td>
+                    <td>${getQuestionType(question.question_type)}</td>
+                    <td>${formatDate(question.created_at)}</td>
+                    <td>${question.status === 'active' ? '<span class="status-active">Ενεργή</span>' : '<span class="status-inactive">Ανενεργή</span>'}</td>
+                    <td>${question.author}</td>
+                    <td>-</td>
+                    <td>${question.id}</td>
+                    <td>
+                        <button class="edit-question-btn" data-id="${question.id}">✏️</button>
+                        <button class="delete-question-btn" data-id="${question.id}">❌</button>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+                
+                // Προσθήκη listeners για τα κουμπιά επεξεργασίας/διαγραφής
+                const editBtn = row.querySelector(".edit-question-btn");
+                if (editBtn) {
+                    editBtn.addEventListener("click", function() {
+                        const id = this.getAttribute("data-id");
+                        editQuestion(id);
+                    });
+                }
+                
+                const deleteBtn = row.querySelector(".delete-question-btn");
+                if (deleteBtn) {
+                    deleteBtn.addEventListener("click", function() {
+                        const id = this.getAttribute("data-id");
+                        deleteQuestion(id);
+                    });
+                }
+            });
+            
+            console.log("✅ [INFO] Ερωτήσεις φορτώθηκαν επιτυχώς");
+        } else {
+            console.error("❌ [ERROR] Σφάλμα στη φόρτωση ερωτήσεων:", data.message);
+        }
+    })
+    .catch(error => console.error("❌ [ERROR] Σφάλμα AJAX:", error));
 }
 
-// ✅ Προσθήκη πεδίου απάντησης
-function addAnswerField() {
-    let answersContainer = document.getElementById("answers-container");
-    let answerEntry = document.createElement("div");
-    answerEntry.classList.add("answer-entry");
-    answerEntry.innerHTML = `
-        <div class="form-group">
-            <label for="answer-text-${Date.now()}" class="sr-only">Απάντηση:</label>
-            <input type="text" class="answer-text" id="answer-text-${Date.now()}" placeholder="Εισάγετε απάντηση..." required>
-            <label for="answer-correct-${Date.now()}" class="sr-only">Σωστή Απάντηση:</label>
-            <input type="checkbox" class="correct-answer" id="answer-correct-${Date.now()}"> Σωστή
-            <label for="answer-media-${Date.now()}" class="sr-only">Multimedia Απάντησης:</label>
-            <input type="file" class="answer-media" id="answer-media-${Date.now()}" accept="image/*,video/*,audio/*" class="file-input">
-            <button type="button" class="delete-answer-btn btn-delete">Διαγραφή</button>
-        </div>
-    `;
-    answersContainer.appendChild(answerEntry);
-    console.log("🔍 [INFO] Προστέθηκε νέο πεδίο απάντησης.");
-}
-
-// ✅ Φόρτωση Υποκατηγοριών
+// ✅ Φόρτωση υποκατηγοριών
 function loadSubcategories() {
+    console.log("🔄 [INFO] Φόρτωση υποκατηγοριών...");
+
+    // Έλεγχος αν το select υπάρχει στη σελίδα
+    const subcategorySelect = document.getElementById("subcategory-select");
+    if (!subcategorySelect) {
+        console.log("ℹ️ [INFO] Select υποκατηγοριών δεν βρέθηκε στη σελίδα.");
+        return;
+    }
+
     fetch("question_actions.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -38,474 +163,404 @@ function loadSubcategories() {
     })
     .then(response => response.json())
     .then(data => {
+        console.log("📥 [DEBUG] Response:", data);
+
         if (data.success) {
-            let subcategorySelect = document.getElementById("subcategory-select");
-            subcategorySelect.innerHTML = '<option value="">-- Επιλέξτε Υποκατηγορία --</option>';
-            data.subcategories.forEach(sub => {
-                let option = document.createElement("option");
-                option.value = sub.id;
-                option.textContent = `${sub.category_name} / ${sub.name}`;
-                subcategorySelect.appendChild(option);
+            subcategorySelect.innerHTML = `<option value="">-- Επιλέξτε Υποκατηγορία --</option>`;
+            
+            data.subcategories.forEach(subcategory => {
+                subcategorySelect.innerHTML += `
+                    <option value="${subcategory.id}">${subcategory.category_name} - ${subcategory.name}</option>
+                `;
             });
-            console.log("✅ [SUCCESS] Φορτώθηκαν υποκατηγορίες.");
+            
+            console.log("✅ [SUCCESS] Βρέθηκαν " + data.subcategories.length + " υποκατηγορίες.");
         } else {
-            console.error("❌ [ERROR] Σφάλμα φόρτωσης υποκατηγοριών:", data.message);
-            logClientError("Σφάλμα φόρτωσης υποκατηγοριών: " + data.message);
+            console.error("❌ [ERROR] Σφάλμα στη φόρτωση υποκατηγοριών:", data.message);
         }
     })
-    .catch(error => {
-        console.error("❌ [ERROR] AJAX Σφάλμα:", error);
-        logClientError("AJAX σφάλμα κατά τη φόρτωση υποκατηγοριών: " + error.message);
-    });
+    .catch(error => console.error("❌ [ERROR] Σφάλμα AJAX:", error));
 }
 
-// ✅ Φόρτωση Κεφαλαίων
+// ✅ Φόρτωση κεφαλαίων με βάση την επιλεγμένη υποκατηγορία
 function loadChapters(subcategoryId) {
+    console.log("🔄 [INFO] Φόρτωση κεφαλαίων για υποκατηγορία ID:", subcategoryId);
+
     if (!subcategoryId) {
-        console.warn("⚠️ [WARNING] Δεν επιλέχθηκε Υποκατηγορία.");
-        return Promise.reject(new Error("Δεν επιλέχθηκε υποκατηγορία."));
+        console.log("ℹ️ [INFO] Δεν επιλέχθηκε υποκατηγορία.");
+        const chapterSelect = document.getElementById("chapter-select");
+        if (chapterSelect) {
+            chapterSelect.innerHTML = `<option value="">-- Επιλέξτε πρώτα Υποκατηγορία --</option>`;
+            chapterSelect.disabled = true;
+        }
+        return;
     }
 
-    return fetch("question_actions.php", {
+    const chapterSelect = document.getElementById("chapter-select");
+    if (!chapterSelect) {
+        console.error("❌ [ERROR] Element with ID 'chapter-select' not found");
+        return;
+    }
+
+    fetch("question_actions.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `action=list_chapters&subcategory_id=${encodeURIComponent(subcategoryId)}`
+        body: `action=list_chapters&subcategory_id=${subcategoryId}`
     })
     .then(response => response.json())
     .then(data => {
+        console.log("📥 [DEBUG] Response:", data);
+
         if (data.success) {
-            let chapterSelect = document.getElementById("chapter-select");
-            chapterSelect.innerHTML = '<option value="">-- Επιλέξτε Κεφάλαιο --</option>';
-            data.chapters.forEach(chap => {
-                let option = document.createElement("option");
-                option.value = chap.id;
-                option.textContent = chap.name;
-                chapterSelect.appendChild(option);
+            chapterSelect.innerHTML = `<option value="">-- Επιλέξτε Κεφάλαιο --</option>`;
+            
+            data.chapters.forEach(chapter => {
+                chapterSelect.innerHTML += `
+                    <option value="${chapter.id}">${chapter.name}</option>
+                `;
             });
-            console.log("✅ [SUCCESS] Φορτώθηκαν κεφάλαια για υποκατηγορία ID: " + subcategoryId);
-            return Promise.resolve(data);
+            
+            chapterSelect.disabled = false;
+            console.log("✅ [SUCCESS] Βρέθηκαν " + data.chapters.length + " κεφάλαια.");
         } else {
-            console.error("❌ [ERROR] Σφάλμα φόρτωσης κεφαλαίων:", data.message);
-            return Promise.reject(new Error(data.message));
+            console.error("❌ [ERROR] Σφάλμα στη φόρτωση κεφαλαίων:", data.message);
         }
     })
-    .catch(error => {
-        console.error("❌ [ERROR] AJAX σφάλμα:", error);
-        logClientError("AJAX σφάλμα κατά τη φόρτωση κεφαλαίων: " + error.message);
-        return Promise.reject(error);
-    });
+    .catch(error => console.error("❌ [ERROR] Σφάλμα AJAX:", error));
 }
 
-// ✅ Αποθήκευση Ερώτησης
-document.getElementById("question-form").addEventListener("submit", function (e) {
-    e.preventDefault();
+// ✅ Εμφάνιση φόρμας προσθήκης/επεξεργασίας ερώτησης
+function showQuestionForm() {
+    const listContainer = document.getElementById("question-list-container");
+    const formContainer = document.getElementById("question-form-container");
+    
+    if (listContainer && formContainer) {
+        listContainer.style.display = 'none';
+        formContainer.style.display = 'block';
+        
+        // Καθαρισμός της φόρμας
+        resetQuestionForm();
+    } else {
+        console.error("❌ [ERROR] Container elements not found");
+    }
+}
 
-    let formData = new FormData();
-    formData.append("action", "save_question");
-    formData.append("question_text", document.getElementById("question-text").value.trim());
-    formData.append("question_type", document.getElementById("question-type").value);
-    formData.append("chapter_id", document.getElementById("chapter-select").value);
-    formData.append("explanation", document.getElementById("question-explanation").value.trim());
+// ✅ Εμφάνιση λίστας ερωτήσεων
+function showQuestionsList() {
+    const listContainer = document.getElementById("question-list-container");
+    const formContainer = document.getElementById("question-form-container");
+    
+    if (listContainer && formContainer) {
+        formContainer.style.display = 'none';
+        listContainer.style.display = 'block';
+        
+        // Ανανέωση λίστας ερωτήσεων
+        loadQuestions();
+    } else {
+        console.error("❌ [ERROR] Container elements not found");
+    }
+}
 
-    // Multimedia για ερώτηση
-    let mediaInputs = {
-        'question_image': document.getElementById("question-image").files[0],
-        'question_video': document.getElementById("question-video").files[0],
-        'question_audio': document.getElementById("question-audio").files[0],
-        'explanation_image': document.getElementById("explanation-image").files[0],
-        'explanation_video': document.getElementById("explanation-video").files[0],
-        'explanation_audio': document.getElementById("explanation-audio").files[0]
-    };
-    for (let [key, file] of Object.entries(mediaInputs)) {
-        if (file) formData.append(key, file);
+// ✅ Επεξεργασία ερώτησης
+function editQuestion(questionId) {
+    console.log("✏️ [INFO] Επεξεργασία ερώτησης ID:", questionId);
+
+    fetch("question_actions.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `action=get_question&question_id=${questionId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("📥 [DEBUG] Response:", data);
+
+        if (data.success) {
+            // Εμφάνιση φόρμας
+            showQuestionForm();
+            
+            const question = data.question;
+            
+            // Συμπλήρωση πεδίων φόρμας
+            document.getElementById("question-id").textContent = question.id;
+            
+            // Επιλογή της υποκατηγορίας
+            const subcategorySelect = document.getElementById("subcategory-select");
+            if (subcategorySelect) {
+                for (let i = 0; i < subcategorySelect.options.length; i++) {
+                    const option = subcategorySelect.options[i];
+                    if (option.text.includes(question.subcategory_name)) {
+                        subcategorySelect.selectedIndex = i;
+                        break;
+                    }
+                }
+                
+                // Ενεργοποίηση του event για να φορτωθούν τα κεφάλαια
+                const event = new Event('change');
+                subcategorySelect.dispatchEvent(event);
+                
+                // Ορισμός timeout για να περιμένει να φορτωθούν τα κεφάλαια
+                setTimeout(() => {
+                    // Επιλογή του σωστού κεφαλαίου
+                    const chapterSelect = document.getElementById("chapter-select");
+                    if (chapterSelect) {
+                        for (let i = 0; i < chapterSelect.options.length; i++) {
+                            const option = chapterSelect.options[i];
+                            if (option.text === question.chapter_name) {
+                                chapterSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }, 500);
+            }
+            
+            // Συμπλήρωση κειμένου ερώτησης
+            const questionTextArea = document.getElementById("question-text");
+            if (questionTextArea) questionTextArea.value = question.question_text;
+            
+            // Επιλογή τύπου ερώτησης
+            const questionTypeSelect = document.getElementById("question-type");
+            if (questionTypeSelect) {
+                for (let i = 0; i < questionTypeSelect.options.length; i++) {
+                    const option = questionTypeSelect.options[i];
+                    if (option.value === question.question_type) {
+                        questionTypeSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+                
+                // Ενημέρωση του container απαντήσεων
+                updateAnswersContainer(question.question_type);
+            }
+            
+            // Συμπλήρωση επεξήγησης
+            const explanationTextArea = document.getElementById("question-explanation");
+            if (explanationTextArea) explanationTextArea.value = question.question_explanation;
+            
+            // Δημιουργία των πεδίων απαντήσεων
+            const answersContainer = document.getElementById("answers-container");
+            if (answersContainer) {
+                answersContainer.innerHTML = '';
+                
+                question.answers.forEach((answer, index) => {
+                    const answerHtml = `
+                        <div class="answer-entry">
+                            <textarea class="answer-text" name="answers[]">${answer.answer_text}</textarea>
+                            <div class="answer-checkbox">
+                                <input type="checkbox" name="correct_answers[]" value="${index}" ${answer.is_correct == 1 ? 'checked' : ''}>
+                                <label>Σωστή</label>
+                            </div>
+                            <button type="button" class="remove-answer-btn">❌</button>
+                        </div>
+                    `;
+                    
+                    answersContainer.insertAdjacentHTML('beforeend', answerHtml);
+                    
+                    // Προσθήκη event listener για το κουμπί διαγραφής
+                    const removeBtn = answersContainer.lastElementChild.querySelector(".remove-answer-btn");
+                    if (removeBtn) {
+                        removeBtn.addEventListener("click", function() {
+                            this.closest(".answer-entry").remove();
+                        });
+                    }
+                });
+            }
+        } else {
+            console.error("❌ [ERROR] Σφάλμα στη φόρτωση ερώτησης:", data.message);
+        }
+    })
+    .catch(error => console.error("❌ [ERROR] Σφάλμα AJAX:", error));
+}
+
+// ✅ Διαγραφή ερώτησης
+function deleteQuestion(questionId) {
+    console.log("🗑️ [INFO] Διαγραφή ερώτησης ID:", questionId);
+    
+    if (!confirm(`❓ Είστε σίγουροι ότι θέλετε να διαγράψετε την ερώτηση με ID: ${questionId};`)) {
+        return;
     }
 
-    // Απαντήσεις
-    let answers = [];
-    let correctAnswers = [];
-    let answerMedias = [];
-    document.querySelectorAll(".answer-entry").forEach((entry, index) => {
-        let answerText = entry.querySelector(".answer-text").value.trim();
-        let isCorrect = entry.querySelector(".correct-answer").checked;
-        let answerMedia = entry.querySelector(".answer-media").files[0];
-        if (answerText) {
-            answers.push(answerText);
-            if (isCorrect) correctAnswers.push(answerText);
-            if (answerMedia) answerMedias.push(answerMedia);
+    fetch("question_actions.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `action=delete_question&id=${questionId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("📥 [DEBUG] Response:", data);
+
+        if (data.success) {
+            alert("✅ Η ερώτηση διαγράφηκε επιτυχώς!");
+            loadQuestions();
+        } else {
+            alert("❌ Σφάλμα: " + data.message);
         }
-    });
-    formData.append("answers", JSON.stringify(answers));
-    formData.append("correct_answers", JSON.stringify(correctAnswers));
-    if (answerMedias.length) {
-        answerMedias.forEach((media, i) => {
-            formData.append(`answer_medias[${i}]`, media);
+    })
+    .catch(error => console.error("❌ [ERROR] Σφάλμα AJAX:", error));
+}
+
+// ✅ Καθαρισμός/επαναφορά της φόρμας
+function resetQuestionForm() {
+    const subcategorySelect = document.getElementById("subcategory-select");
+    const chapterSelect = document.getElementById("chapter-select");
+    const questionTextArea = document.getElementById("question-text");
+    const questionTypeSelect = document.getElementById("question-type");
+    const explanationTextArea = document.getElementById("question-explanation");
+    const questionId = document.getElementById("question-id");
+    const answersContainer = document.getElementById("answers-container");
+    
+    if (subcategorySelect) subcategorySelect.selectedIndex = 0;
+    if (chapterSelect) {
+        chapterSelect.innerHTML = '<option value="">-- Επιλέξτε πρώτα Υποκατηγορία --</option>';
+        chapterSelect.disabled = true;
+    }
+    if (questionTextArea) questionTextArea.value = '';
+    if (questionTypeSelect) questionTypeSelect.selectedIndex = 0;
+    if (explanationTextArea) explanationTextArea.value = '';
+    if (questionId) questionId.textContent = '#';
+    if (answersContainer) {
+        answersContainer.innerHTML = '';
+        
+        // Προσθήκη προεπιλεγμένων πεδίων απαντήσεων
+        for (let i = 0; i < 3; i++) {
+            addAnswerField();
+        }
+    }
+}
+
+// ✅ Προσθήκη πεδίου απάντησης
+function addAnswerField() {
+    const answersContainer = document.getElementById("answers-container");
+    if (!answersContainer) {
+        console.error("❌ [ERROR] Element with ID 'answers-container' not found");
+        return;
+    }
+    
+    const index = answersContainer.children.length;
+    
+    const answerHtml = `
+        <div class="answer-entry">
+            <textarea class="answer-text" name="answers[]" placeholder="Απάντηση ${index + 1}"></textarea>
+            <div class="answer-checkbox">
+                <input type="checkbox" name="correct_answers[]" value="${index}">
+                <label>Σωστή</label>
+            </div>
+            <button type="button" class="remove-answer-btn">❌</button>
+        </div>
+    `;
+    
+    answersContainer.insertAdjacentHTML('beforeend', answerHtml);
+    
+    // Προσθήκη event listener για το κουμπί διαγραφής
+    const removeBtn = answersContainer.lastElementChild.querySelector(".remove-answer-btn");
+    if (removeBtn) {
+        removeBtn.addEventListener("click", function() {
+            this.closest(".answer-entry").remove();
+            
+            // Ενημέρωση των δεικτών των υπόλοιπων απαντήσεων
+            const answerEntries = answersContainer.querySelectorAll(".answer-entry");
+            answerEntries.forEach((entry, idx) => {
+                const checkbox = entry.querySelector("input[type='checkbox']");
+                if (checkbox) checkbox.value = idx;
+                
+                const textarea = entry.querySelector("textarea");
+                if (textarea) textarea.placeholder = `Απάντηση ${idx + 1}`;
+            });
         });
     }
+}
 
+// ✅ Αποθήκευση ερώτησης
+function saveQuestion() {
+    console.log("💾 [INFO] Αποθήκευση ερώτησης...");
+    
+    const questionForm = document.getElementById("question-form");
+    if (!questionForm) {
+        console.error("❌ [ERROR] Form not found");
+        return;
+    }
+    
+    const formData = new FormData(questionForm);
+    
+    // Προσθήκη του action
+    const questionId = document.getElementById("question-id");
+    if (questionId && questionId.textContent !== '#') {
+        formData.append("action", "update_question");
+        formData.append("id", questionId.textContent);
+    } else {
+        formData.append("action", "save_question");
+    }
+    
+    // Μετατροπή των απαντήσεων σε JSON
+    const answers = [];
+    const answerEntries = document.querySelectorAll(".answer-entry");
+    const correctAnswers = [];
+    
+    answerEntries.forEach((entry, index) => {
+        const answerText = entry.querySelector(".answer-text").value;
+        const isCorrect = entry.querySelector("input[type='checkbox']").checked;
+        
+        answers.push(answerText);
+        if (isCorrect) correctAnswers.push(index.toString());
+    });
+    
+    // Αντικατάσταση των πεδίων απαντήσεων με τα JSON strings
+    formData.delete("answers[]");
+    formData.delete("correct_answers[]");
+    formData.append("answers", JSON.stringify(answers));
+    formData.append("correct_answers", JSON.stringify(correctAnswers));
+    
+    // Log για debugging των δεδομένων
+    const formObject = {};
+    formData.forEach((value, key) => {
+        formObject[key] = value;
+    });
+    console.log("📤 [DEBUG] Form data:", formObject);
+    
+    // Υποβολή των δεδομένων
     fetch("question_actions.php", {
         method: "POST",
         body: formData
     })
     .then(response => response.json())
     .then(data => {
+        console.log("📥 [DEBUG] Response:", data);
+
         if (data.success) {
-            alert("✅ Η ερώτηση αποθηκεύτηκε με επιτυχία!");
-            showQuestionList();
-            loadQuestions();
-            console.log("✅ [SUCCESS] Ερώτηση αποθηκεύτηκε με ID: " + data.question_id);
+            alert("✅ Η ερώτηση αποθηκεύτηκε επιτυχώς!");
+            showQuestionsList();
         } else {
-            alert("❌ Σφάλμα αποθήκευσης ερώτησης: " + data.message);
-            console.error("❌ [ERROR] Σφάλμα αποθήκευσης:", data.message);
-            logClientError("Σφάλμα αποθήκευσης ερώτησης: " + data.message);
+            alert("❌ Σφάλμα: " + data.message);
         }
     })
-    .catch(error => {
-        console.error("❌ [ERROR] AJAX Σφάλμα:", error);
-        logClientError("AJAX σφάλμα κατά την αποθήκευση ερώτησης: " + error.message);
-    });
-});
-
-// ✅ Φόρτωση Ερωτήσεων
-function loadQuestions() {
-    fetch("question_actions.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "action=list_questions"
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            let tableBody = document.getElementById("questions-table-body");
-            tableBody.innerHTML = "";
-            data.questions.forEach(question => {
-                let row = document.createElement("tr");
-                row.setAttribute("data-id", question.id);
-                row.innerHTML = `
-                    <td><a href="#" class="edit-question" data-id="${question.id}">${question.question_text.substring(0, 50)}${question.question_text.length > 50 ? '...' : ''}</a></td>
-                    <td>${question.category_name || '-'}</td>
-                    <td>${question.answers_count || 0}</td>
-                    <td>${question.question_type}</td>
-                    <td>${new Date(question.created_at).toLocaleDateString('el-GR')}</td>
-                    <td>${question.status || 'active'}</td>
-                    <td>${question.author || '-'}</td>
-                    <td>${question.used ? 'Ναι' : 'Όχι'}</td>
-                    <td>${question.id}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-            console.log("✅ [SUCCESS] Φορτώθηκαν " + data.questions.length + " ερωτήσεις.");
-        } else {
-            console.error("❌ [ERROR] Σφάλμα φόρτωσης ερωτήσεων:", data.message);
-            logClientError("Σφάλμα φόρτωσης ερωτήσεων: " + data.message);
-        }
-    })
-    .catch(error => {
-        console.error("❌ [ERROR] AJAX Σφάλμα:", error);
-        logClientError("AJAX σφάλμα κατά τη φόρτωση ερωτήσεων: " + error.message);
-    });
+    .catch(error => console.error("❌ [ERROR] Σφάλμα AJAX:", error));
 }
 
-// ✅ Φόρτωση Ερώτησης για Επεξεργασία
-function loadQuestionForEdit(questionId) {
-    fetch("question_actions.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `action=get_question&question_id=${encodeURIComponent(questionId)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            let question = data.question;
-
-            // Έλεγχος αν τα elements υπάρχουν
-            const questionIdElement = document.getElementById("question-id");
-            const questionText = document.getElementById("question-text");
-            const questionType = document.getElementById("question-type");
-            const questionExplanation = document.getElementById("question-explanation");
-            const subcategorySelect = document.getElementById("subcategory-select");
-            const chapterSelect = document.getElementById("chapter-select");
-
-            if (!questionIdElement || !questionText || !questionType || !questionExplanation || !subcategorySelect || !chapterSelect) {
-                console.error("❌ [ERROR] Ένα ή περισσότερα DOM elements δεν βρέθηκαν!");
-                logClientError("DOM elements δεν βρέθηκαν για ερώτηση ID: " + questionId);
-                return;
-            }
-
-            // Ρύθμιση δεδομένων
-            questionIdElement.textContent = `#${question.id}`;
-            questionText.value = question.question_text || "";
-            questionType.value = question.question_type || "single_choice";
-            questionExplanation.value = question.question_explanation || "";
-
-            // Εμφάνιση υποκατηγορίας και κεφαλαίου
-            if (question.subcategory_name && subcategorySelect) {
-                let found = false;
-                Array.from(subcategorySelect.options).forEach(option => {
-                    if (option.textContent.includes(question.subcategory_name)) {
-                        option.selected = true;
-                        found = true;
-                    }
-                });
-                if (!found) {
-                    console.warn("⚠️ [WARNING] Δεν βρέθηκε υποκατηγορία: " + question.subcategory_name);
-                }
-                console.log("🔍 [INFO] Επιλέχθηκε υποκατηγορία: " + (question.subcategory_name || 'Κενό'));
-            } else {
-                console.warn("⚠️ [WARNING] Δεν υπάρχει υποκατηγορία ή subcategorySelect για ερώτηση ID: " + questionId);
-            }
-
-            // Φόρτωση κεφαλαίων για την επιλεγμένη υποκατηγορία
-            let subcategoryId = Array.from(subcategorySelect.options).find(option => 
-                option.textContent.includes(question.subcategory_name))?.value;
-            if (subcategoryId) {
-                loadChapters(subcategoryId)
-                    .then(() => {
-                        if (question.chapter_name && chapterSelect) {
-                            let foundChapter = false;
-                            Array.from(chapterSelect.options).forEach(option => {
-                                if (option.textContent === question.chapter_name) {
-                                    option.selected = true;
-                                    foundChapter = true;
-                                }
-                            });
-                            if (!foundChapter) {
-                                console.warn("⚠️ [WARNING] Δεν βρέθηκε κεφάλαιο: " + question.chapter_name);
-                            }
-                            console.log("🔍 [INFO] Επιλέχθηκε κεφάλαιο: " + (question.chapter_name || 'Κενό'));
-                        } else {
-                            console.warn("⚠️ [WARNING] Δεν υπάρχει κεφάλαιο ή chapterSelect για ερώτηση ID: " + questionId);
-                        }
-                    })
-                    .catch(error => {
-                        console.error("❌ [ERROR] Σφάλμα φόρτωσης κεφαλαίων:", error);
-                        logClientError("Σφάλμα φόρτωσης κεφαλαίων για ερώτηση ID: " + questionId + " - " + error.message);
-                    });
-            } else {
-                console.error("❌ [ERROR] Δεν βρέθηκε ID υποκατηγορίας για: " + question.subcategory_name);
-                logClientError("Δεν βρέθηκε ID υποκατηγορίας για: " + question.subcategory_name);
-            }
-
-            // Εμφάνιση multimedia αν υπάρχει
-            let mediaInputs = {
-                'question-image': document.getElementById("question-image"),
-                'question-video': document.getElementById("question-video"),
-                'question-audio': document.getElementById("question-audio"),
-                'explanation-image': document.getElementById("explanation-image"),
-                'explanation-video': document.getElementById("explanation-video"),
-                'explanation-audio': document.getElementById("explanation-audio")
-            };
-            for (let [id, input] of Object.entries(mediaInputs)) {
-                if (input) input.value = ''; // Reset
-            }
-            if (question.question_media) console.log("🔍 [INFO] Βρέθηκε multimedia για ερώτηση: " + question.question_media);
-            if (question.explanation_media) console.log("🔍 [INFO] Βρέθηκε multimedia για επεξήγηση: " + question.explanation_media);
-            if (question.image) console.log("🔍 [INFO] Βρέθηκε εικόνα για ερώτηση: " + question.image);
-            if (question.video) console.log("🔍 [INFO] Βρέθηκε βίντεο για ερώτηση: " + question.video);
-            if (question.audio) console.log("🔍 [INFO] Βρέθηκε ήχος για ερώτηση: " + question.audio);
-            if (question.explanation_image) console.log("🔍 [INFO] Βρέθηκε εικόνα για επεξήγηση: " + question.explanation_image);
-            if (question.explanation_video) console.log("🔍 [INFO] Βρέθηκε βίντεο για επεξήγηση: " + question.explanation_video);
-            if (question.explanation_audio) console.log("🔍 [INFO] Βρέθηκε ήχος για επεξήγηση: " + question.explanation_audio);
-
-            // Καθαρισμός και φόρτωση απαντήσεων
-            let answersContainer = document.getElementById("answers-container");
-            if (!answersContainer) {
-                console.error("❌ [ERROR] Το answers-container δεν βρέθηκε!");
-                logClientError("Το answers-container δεν βρέθηκε για ερώτηση ID: " + questionId);
-                return;
-            }
-            answersContainer.innerHTML = "";
-
-            if (question.answers && Array.isArray(question.answers) && question.answers.length > 0) {
-                console.log("✅ [SUCCESS] Βρέθηκαν " + question.answers.length + " απαντήσεις για ερώτηση ID: " + questionId);
-                question.answers.forEach(answer => {
-                    addAnswerField();
-                    let entries = document.querySelectorAll(".answer-entry");
-                    let lastEntry = entries[entries.length - 1];
-                    if (lastEntry) {
-                        lastEntry.querySelector(".answer-text").value = answer.answer_text || "";
-                        lastEntry.querySelector(".correct-answer").checked = !!answer.is_correct;
-                        if (answer.answer_media) {
-                            console.log("🔍 [INFO] Βρέθηκε multimedia για απάντηση: " + answer.answer_media);
-                        }
-                    } else {
-                        console.error("❌ [ERROR] Δεν βρέθηκε τελευταίο πεδίο απάντησης!");
-                        logClientError("Δεν βρέθηκε τελευταίο πεδίο απάντησης για ερώτηση ID: " + questionId);
-                    }
-                });
-            } else {
-                console.warn("⚠️ [WARNING] Δεν βρέθηκαν απαντήσεις για ερώτηση ID: " + questionId);
-                for (let i = 0; i < 3; i++) {
-                    addAnswerField();
-                }
-            }
-
-            showQuestionForm();
-            console.log("✅ [SUCCESS] Φορτώθηκε ερώτηση με ID: " + questionId);
-        } else {
-            alert("❌ Σφάλμα φόρτωσης ερώτησης: " + data.message);
-            console.error("❌ [ERROR] Σφάλμα φόρτωσης ερώτησης:", data.message);
-            logClientError("Σφάλμα φόρτωσης ερώτησης ID: " + questionId + " - " + data.message);
-        }
-    })
-    .catch(error => {
-        console.error("❌ [ERROR] AJAX Σφάλμα:", error);
-        logClientError("AJAX σφάλμα κατά τη φόρτωση ερώτησης ID: " + questionId + " - " + error.message);
-    });
+// ✅ Ενημέρωση του container απαντήσεων με βάση τον τύπο ερώτησης
+function updateAnswersContainer(questionType) {
+    console.log("🔄 [INFO] Ενημέρωση container απαντήσεων για τύπο:", questionType);
+    
+    // Υλοποίηση για διαφορετικούς τύπους ερωτήσεων
+    // Προς το παρόν υποστηρίζουμε μόνο single_choice
 }
 
-// ✅ Εμφάνιση φόρμας και απόκρυψη λίστας
-function showQuestionForm() {
-    document.getElementById("question-list-container").style.display = "none";
-    document.getElementById("question-form-container").style.display = "block";
-    console.log("🔍 [INFO] Εμφανίστηκε η φόρμα επεξεργασίας.");
+// ✅ Βοηθητικές συναρτήσεις
+function getQuestionType(type) {
+    const types = {
+        'single_choice': 'Μονής Επιλογής',
+        'multiple_choice': 'Πολλαπλής Επιλογής',
+        'true_false': 'Σωστό/Λάθος',
+        'fill_in_blank': 'Συμπλήρωση Κενών',
+        'matching': 'Αντιστοίχιση',
+        'ordering': 'Ταξινόμηση',
+        'short_answer': 'Σύντομης Απάντησης',
+        'essay': 'Ανάπτυξης'
+    };
+    
+    return types[type] || type;
 }
 
-// ✅ Απόκρυψη φόρμας και εμφάνιση λίστας
-function showQuestionList() {
-    document.getElementById("question-list-container").style.display = "block";
-    document.getElementById("question-form-container").style.display = "none";
-    console.log("🔍 [INFO] Εμφανίστηκε η λίστα ερωτήσεων.");
-}
-
-// ✅ Κλικ σε ερώτηση για επεξεργασία
-document.getElementById("questions-table-body").addEventListener("click", function (e) {
-    if (e.target.classList.contains("edit-question")) {
-        e.preventDefault();
-        let questionId = e.target.getAttribute("data-id");
-
-        if (!questionId) {
-            console.error("❌ [ERROR] Το ID της ερώτησης δεν βρέθηκε!");
-            logClientError("Το ID της ερώτησης δεν βρέθηκε κατά το κλικ.");
-            return;
-        }
-
-        console.log("🔍 [INFO] Επιλέχθηκε Ερώτηση με ID:", questionId);
-        loadQuestionForEdit(questionId);
-    }
-});
-
-// ✅ Εμφάνιση φόρμας για προσθήκη νέας ερώτησης
-document.getElementById("add-question-btn").addEventListener("click", function () {
-    document.getElementById("question-form").reset();
-    document.getElementById("question-id").textContent = "Νέα Ερώτηση";
-    showQuestionForm();
-    console.log("🔍 [INFO] Ανοιχτή η φόρμα για νέα ερώτηση.");
-});
-
-// ✅ Επιστροφή στη λίστα ερωτήσεων
-document.getElementById("back-to-list-btn").addEventListener("click", showQuestionList);
-
-// ✅ Προσθήκη/Διαγραφή απαντήσεων
-document.getElementById("add-answer-btn").addEventListener("click", addAnswerField);
-
-document.addEventListener("click", function (e) {
-    if (e.target.classList.contains("delete-answer-btn")) {
-        e.target.closest(".answer-entry").remove();
-        console.log("🔍 [INFO] Διαγράφηκε πεδίο απάντησης.");
-    }
-});
-
-// ✅ Αρχικοποίηση της σελίδας
-document.addEventListener("DOMContentLoaded", function () {
-    initializeAnswers();
-    loadSubcategories();
-    loadQuestions();
-
-    // Φόρτωση κεφαλαίων όταν αλλάζει η υποκατηγορία
-    document.getElementById("subcategory-select").addEventListener("change", function () {
-        let subcategoryId = this.value;
-        loadChapters(subcategoryId)
-            .then(() => console.log("🔍 [INFO] Αλλαγή υποκατηγορίας σε ID: " + subcategoryId))
-            .catch(error => {
-                console.error("❌ [ERROR] Σφάλμα φόρτωσης κεφαλαίων:", error);
-                logClientError("Σφάλμα φόρτωσης κεφαλαίων για υποκατηγορία ID: " + subcategoryId + " - " + error.message);
-            });
-    });
-
-    // Προσθήκη απάντησης
-    let addAnswerBtn = document.getElementById("add-answer-btn");
-    if (addAnswerBtn) {
-        addAnswerBtn.addEventListener("click", addAnswerField);
-    } else {
-        console.error("❌ [ERROR] Το στοιχείο με ID 'add-answer-btn' δεν βρέθηκε!");
-        logClientError("Το στοιχείο με ID 'add-answer-btn' δεν βρέθηκε στη σελίδα.");
-    }
-
-    // Διαγραφή απάντησης
-    document.addEventListener("click", function (e) {
-        if (e.target.classList.contains("delete-answer-btn")) {
-            e.target.closest(".answer-entry").remove();
-            console.log("🔍 [INFO] Διαγράφηκε πεδίο απάντησης.");
-        }
-    });
-
-    // Εμφάνιση φόρμας για προσθήκη νέας ερώτησης
-    document.getElementById("add-question-btn").addEventListener("click", function () {
-        document.getElementById("question-form").reset();
-        document.getElementById("question-id").textContent = "Νέα Ερώτηση";
-        showQuestionForm();
-        console.log("🔍 [INFO] Ανοιχτή η φόρμα για νέα ερώτηση.");
-    });
-
-    // Επιστροφή στη λίστα ερωτήσεων
-    document.getElementById("back-to-list-btn").addEventListener("click", showQuestionList);
-
-    // Κλικ σε ερώτηση για επεξεργασία
-    document.getElementById("questions-table-body").addEventListener("click", function (e) {
-        if (e.target.classList.contains("edit-question")) {
-            e.preventDefault();
-            let questionId = e.target.getAttribute("data-id");
-
-            if (!questionId) {
-                console.error("❌ [ERROR] Το ID της ερώτησης δεν βρέθηκε!");
-                logClientError("Το ID της ερώτησης δεν βρέθηκε κατά το κλικ.");
-                return;
-            }
-
-            console.log("🔍 [INFO] Επιλέχθηκε Ερώτηση με ID:", questionId);
-            loadQuestionForEdit(questionId);
-        }
-    });
-});
-
-// ✅ Καταγραφή σφαλμάτων πελάτη
-function logClientError(errorMessage) {
-    fetch("question_actions.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `action=log_client_error&message=${encodeURIComponent("[" + new Date().toLocaleString() + "] " + errorMessage)}`
-    })
-    .catch(error => console.error("❌ [ERROR] Απέτυχε η καταγραφή σφάλματος πελάτη:", error));
-}
-function loadQuestions() {
-    fetch("question_actions.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "action=list_questions"
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            let tableBody = document.getElementById("questions-table-body");
-            tableBody.innerHTML = "";
-            data.questions.forEach(question => {
-                let row = document.createElement("tr");
-                row.setAttribute("data-id", question.id);
-                row.innerHTML = `
-                    <td><a href="#" class="edit-question" data-id="${question.id}">${question.question_text.substring(0, 50)}${question.question_text.length > 50 ? '...' : ''}</a>
-                        <noscript><a href="edit_question.php?id=${question.id}">Επεξεργασία</a></noscript></td>
-                    <td>${question.category_name || '-'}</td>
-                    <td>${question.answers_count || 0}</td>
-                    <td>${question.question_type}</td>
-                    <td>${new Date(question.created_at).toLocaleDateString('el-GR')}</td>
-                    <td>${question.status || 'active'}</td>
-                    <td>${question.author || '-'}</td>
-                    <td>${question.used ? 'Ναι' : 'Όχι'}</td>
-                    <td>${question.id}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-            console.log("✅ [SUCCESS] Φορτώθηκαν " + data.questions.length + " ερωτήσεις.");
-        }
-    });
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('el-GR') + ' ' + date.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' });
 }
