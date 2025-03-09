@@ -4,6 +4,8 @@
 require_once '../../config/config.php';
 require_once '../../includes/db_connection.php';
 
+
+
 header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -121,134 +123,162 @@ if ($action === 'list_questions') {
     exit();
 }
 
+// Τροποποιήστε το τμήμα save_question στο question_actions.php
+
 // ✅ Αποθήκευση Ερώτησης
 if ($action === 'save_question') {
     logMessage("🔍 [INFO] Ξεκίνησε αποθήκευση ερώτησης...");
 
+    // Βασικά δεδομένα
     $chapter_id = intval($_POST['chapter_id'] ?? 0);
     $question_text = trim($_POST['question_text'] ?? '');
     $question_explanation = trim($_POST['explanation'] ?? '');
     $question_type = $_POST['question_type'] ?? 'single_choice';
+    
+    // Επεξεργασία των απαντήσεων από το JSON
+    $answers = json_decode($_POST['answers'] ?? '[]', true);
+    $correct_answers = json_decode($_POST['correct_answers'] ?? '[]', true);
+    
+    logMessage("📊 [DEBUG] Ληφθέντα δεδομένα: chapter_id=$chapter_id, question_text=" . substr($question_text, 0, 30) . "..., answers=" . count($answers) . ", correct=" . count($correct_answers));
 
-    if (empty($question_text) || $chapter_id === 0) {
-        logMessage("❌ [ERROR] Κάποια δεδομένα λείπουν!");
-        echo json_encode(["success" => false, "message" => "Κάποια δεδομένα λείπουν!"]);
+    // Έλεγχος για υποχρεωτικά πεδία
+    $errors = [];
+    if (empty($question_text)) {
+        $errors[] = "Το κείμενο της ερώτησης είναι υποχρεωτικό";
+        logMessage("❌ [ERROR] Το κείμενο της ερώτησης είναι κενό");
+    }
+    if ($chapter_id <= 0) {
+        $errors[] = "Πρέπει να επιλέξετε κεφάλαιο";
+        logMessage("❌ [ERROR] Δεν έχει επιλεχθεί κεφάλαιο (chapter_id=$chapter_id)");
+    }
+    if (empty($answers)) {
+        $errors[] = "Πρέπει να προσθέσετε τουλάχιστον μία απάντηση";
+        logMessage("❌ [ERROR] Δεν έχουν προστεθεί απαντήσεις");
+    }
+    if (empty($correct_answers)) {
+        $errors[] = "Πρέπει να επιλέξετε τουλάχιστον μία σωστή απάντηση";
+        logMessage("❌ [ERROR] Δεν έχουν επιλεχθεί σωστές απαντήσεις");
+    }
+
+    if (!empty($errors)) {
+        $errorMessage = implode(". ", $errors);
+        logMessage("❌ [ERROR] Αποτυχία αποθήκευσης: $errorMessage");
+        echo json_encode(["success" => false, "message" => $errorMessage]);
         exit();
     }
 
-    $author_id = $_SESSION['user_id'] ?? 1;
+    // Διαχείριση αρχείου για το πολυμέσο ερώτησης
     $uploadDir = BASE_PATH . '/admin/test/uploads/';
     if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
 
-    $questionMediaPath = '';
-    if (isset($_FILES['question_media']) && $_FILES['question_media']['error'] === UPLOAD_ERR_OK) {
+    $question_media = '';
+    if (isset($_FILES['question_media']) && $_FILES['question_media']['error'] === UPLOAD_ERR_OK && $_FILES['question_media']['size'] > 0) {
         $allowedTypes = ['image/jpeg', 'image/png', 'video/mp4', 'audio/mpeg'];
         $fileType = mime_content_type($_FILES['question_media']['tmp_name']);
-        if (!in_array($fileType, $allowedTypes)) {
-            logMessage("❌ [ERROR] Μη επιτρεπτός τύπος αρχείου για ερώτηση: " . $fileType);
-            echo json_encode(["success" => false, "message" => "Μη επιτρεπτός τύπος αρχείου για ερώτηση."]);
-            exit();
-        }
-        if ($_FILES['question_media']['size'] > 10 * 1024 * 1024) { // 10MB
-            logMessage("❌ [ERROR] Το αρχείο υπερβαίνει το μέγεθος 10MB για ερώτηση.");
-            echo json_encode(["success" => false, "message" => "Το αρχείο υπερβαίνει το μέγεθος 10MB."]);
-            exit();
-        }
-        $fileName = uniqid() . '_' . basename($_FILES['question_media']['name']);
-        $targetPath = $uploadDir . $fileName;
-        if (move_uploaded_file($_FILES['question_media']['tmp_name'], $targetPath)) {
-            $questionMediaPath = $fileName;
-            logMessage("✅ [SUCCESS] Αποθηκεύτηκε multimedia για ερώτηση: " . $fileName);
+        
+        if (in_array($fileType, $allowedTypes) && $_FILES['question_media']['size'] <= 10 * 1024 * 1024) {
+            $fileName = uniqid() . '_' . basename($_FILES['question_media']['name']);
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['question_media']['tmp_name'], $targetPath)) {
+                $question_media = $fileName;
+                logMessage("✅ [SUCCESS] Αποθηκεύτηκε πολυμέσο ερώτησης: " . $fileName);
+            } else {
+                logMessage("⚠️ [WARNING] Σφάλμα αποθήκευσης πολυμέσου ερώτησης. Συνεχίζεται η αποθήκευση χωρίς πολυμέσο.");
+            }
         } else {
-            logMessage("❌ [ERROR] Σφάλμα αποθήκευσης multimedia ερώτησης: " . $_FILES['question_media']['error']);
+            logMessage("⚠️ [WARNING] Μη αποδεκτός τύπος αρχείου ή μέγεθος για το πολυμέσο ερώτησης. Συνεχίζεται η αποθήκευση χωρίς πολυμέσο.");
         }
     }
 
-    $explanationMediaPath = '';
-    if (isset($_FILES['explanation_media']) && $_FILES['explanation_media']['error'] === UPLOAD_ERR_OK) {
+    // Διαχείριση αρχείου για το πολυμέσο επεξήγησης
+    $explanation_media = '';
+    if (isset($_FILES['explanation_media']) && $_FILES['explanation_media']['error'] === UPLOAD_ERR_OK && $_FILES['explanation_media']['size'] > 0) {
         $allowedTypes = ['image/jpeg', 'image/png', 'video/mp4', 'audio/mpeg'];
         $fileType = mime_content_type($_FILES['explanation_media']['tmp_name']);
-        if (!in_array($fileType, $allowedTypes)) {
-            logMessage("❌ [ERROR] Μη επιτρεπτός τύπος αρχείου για επεξήγηση: " . $fileType);
-            echo json_encode(["success" => false, "message" => "Μη επιτρεπτός τύπος αρχείου για επεξήγηση."]);
-            exit();
-        }
-        if ($_FILES['explanation_media']['size'] > 10 * 1024 * 1024) { // 10MB
-            logMessage("❌ [ERROR] Το αρχείο υπερβαίνει το μέγεθος 10MB για επεξήγηση.");
-            echo json_encode(["success" => false, "message" => "Το αρχείο υπερβαίνει το μέγεθος 10MB."]);
-            exit();
-        }
-        $fileName = uniqid() . '_' . basename($_FILES['explanation_media']['name']);
-        $targetPath = $uploadDir . $fileName;
-        if (move_uploaded_file($_FILES['explanation_media']['tmp_name'], $targetPath)) {
-            $explanationMediaPath = $fileName;
-            logMessage("✅ [SUCCESS] Αποθηκεύτηκε multimedia για επεξήγηση: " . $fileName);
-        } else {
-            logMessage("❌ [ERROR] Σφάλμα αποθήκευσης multimedia επεξήγησης: " . $_FILES['explanation_media']['error']);
-        }
-    }
-
-    // Εισαγωγή ερώτησης στη βάση
-    $query = "INSERT INTO questions (chapter_id, question_text, question_explanation, question_type, author_id, created_at, question_media, explanation_media) 
-              VALUES (?, ?, ?, ?, ?, NOW(), ?, ?)";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("isssiss", $chapter_id, $question_text, $question_explanation, $question_type, $author_id, $questionMediaPath, $explanationMediaPath);
-
-    if ($stmt->execute()) {
-        $question_id = $stmt->insert_id;
-        logMessage("✅ [SUCCESS] Ερώτηση αποθηκεύτηκε με ID: " . $question_id);
-
-        // Διαχείριση απαντήσεων και multimedia
-        $answers = json_decode($_POST['answers'] ?? '[]', true);
-        $correct_answers = json_decode($_POST['correct_answers'] ?? '[]', true);
-        $session_id = isset($_SESSION['session_id']) ? $_SESSION['session_id'] : 0; // Σύνδεση με session
-
-        if (!empty($answers)) {
-            foreach ($answers as $index => $answer) {
-                $is_correct = in_array($answer, $correct_answers) ? 1 : 0;
-                $answerMediaPath = '';
-
-                if (isset($_FILES['answer_medias']) && isset($_FILES['answer_medias']['name'][$index]) && $_FILES['answer_medias']['error'][$index] === UPLOAD_ERR_OK) {
-                    $allowedTypes = ['image/jpeg', 'image/png', 'video/mp4', 'audio/mpeg'];
-                    $fileType = mime_content_type($_FILES['answer_medias']['tmp_name'][$index]);
-                    if (!in_array($fileType, $allowedTypes)) {
-                        logMessage("❌ [ERROR] Μη επιτρεπτός τύπος αρχείου για απάντηση: " . $fileType);
-                        continue;
-                    }
-                    if ($_FILES['answer_medias']['size'][$index] > 10 * 1024 * 1024) { // 10MB
-                        logMessage("❌ [ERROR] Το αρχείο υπερβαίνει το μέγεθος 10MB για απάντηση.");
-                        continue;
-                    }
-                    $fileName = uniqid() . '_' . basename($_FILES['answer_medias']['name'][$index]);
-                    $targetPath = $uploadDir . $fileName;
-                    if (move_uploaded_file($_FILES['answer_medias']['tmp_name'][$index], $targetPath)) {
-                        $answerMediaPath = $fileName;
-                        logMessage("✅ [SUCCESS] Αποθηκεύτηκε multimedia για απάντηση: " . $fileName);
-                    } else {
-                        logMessage("❌ [ERROR] Σφάλμα αποθήκευσης multimedia απάντησης: " . $_FILES['answer_medias']['error'][$index]);
-                    }
-                }
-
-                $query = "INSERT INTO test_answers (question_id, answer_text, is_correct, answer_media, session_id) VALUES (?, ?, ?, ?, ?)";
-                $stmt_answer = $mysqli->prepare($query);
-                $stmt_answer->bind_param("issii", $question_id, $answer, $is_correct, $answerMediaPath, $session_id);
-                if (!$stmt_answer->execute()) {
-                    logMessage("❌ [ERROR] Σφάλμα αποθήκευσης απάντησης: " . $stmt_answer->error);
-                } else {
-                    logMessage("✅ [SUCCESS] Αποθηκεύτηκε απάντηση: " . $answer);
-                }
-                $stmt_answer->close();
+        
+        if (in_array($fileType, $allowedTypes) && $_FILES['explanation_media']['size'] <= 10 * 1024 * 1024) {
+            $fileName = uniqid() . '_' . basename($_FILES['explanation_media']['name']);
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['explanation_media']['tmp_name'], $targetPath)) {
+                $explanation_media = $fileName;
+                logMessage("✅ [SUCCESS] Αποθηκεύτηκε πολυμέσο επεξήγησης: " . $fileName);
+            } else {
+                logMessage("⚠️ [WARNING] Σφάλμα αποθήκευσης πολυμέσου επεξήγησης. Συνεχίζεται η αποθήκευση χωρίς πολυμέσο.");
             }
+        } else {
+            logMessage("⚠️ [WARNING] Μη αποδεκτός τύπος αρχείου ή μέγεθος για το πολυμέσο επεξήγησης. Συνεχίζεται η αποθήκευση χωρίς πολυμέσο.");
         }
-
-        echo json_encode(["success" => true, "message" => "Η ερώτηση αποθηκεύτηκε επιτυχώς!", "question_id" => $question_id]);
-    } else {
-        logMessage("❌ [ERROR] Σφάλμα κατά την αποθήκευση ερώτησης: " . $mysqli->error);
-        echo json_encode(["success" => false, "message" => "Σφάλμα κατά την αποθήκευση ερώτησης."]);
     }
+
+    // Ορισμός του συγγραφέα και της κατάστασης
+    $author_id = $_SESSION['user_id'] ?? 1;
+    $status = 'active';
+
+    // Εισαγωγή της ερώτησης στη βάση
+    $query = "INSERT INTO questions (chapter_id, question_text, question_explanation, question_type, author_id, created_at, status, question_media, explanation_media) 
+              VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?)";
+    $stmt = $mysqli->prepare($query);
+    
+    if (!$stmt) {
+        logMessage("❌ [ERROR] Σφάλμα προετοιμασίας SQL: " . $mysqli->error);
+        echo json_encode(["success" => false, "message" => "Σφάλμα βάσης δεδομένων: " . $mysqli->error]);
+        exit();
+    }
+    
+    $stmt->bind_param("isssisss", $chapter_id, $question_text, $question_explanation, $question_type, $author_id, $status, $question_media, $explanation_media);
+    
+    if (!$stmt->execute()) {
+        logMessage("❌ [ERROR] Σφάλμα κατά την αποθήκευση ερώτησης: " . $stmt->error);
+        echo json_encode(["success" => false, "message" => "Σφάλμα κατά την αποθήκευση ερώτησης: " . $stmt->error]);
+        $stmt->close();
+        exit();
+    }
+    
+    $question_id = $stmt->insert_id;
     $stmt->close();
+    
+    logMessage("✅ [SUCCESS] Ερώτηση αποθηκεύτηκε με ID: " . $question_id);
+    
+    // Εισαγωγή των απαντήσεων
+    if (!empty($answers)) {
+        $success_count = 0;
+        $insert_query = "INSERT INTO test_answers (question_id, answer_text, is_correct) VALUES (?, ?, ?)";
+        
+        foreach ($answers as $index => $answer_text) {
+            if (empty(trim($answer_text))) continue; // Παράλειψη κενών απαντήσεων
+            
+            $stmt = $mysqli->prepare($insert_query);
+            
+            if (!$stmt) {
+                logMessage("❌ [ERROR] Σφάλμα προετοιμασίας SQL (insert answer): " . $mysqli->error);
+                continue;
+            }
+            
+            $is_correct = in_array(strval($index), $correct_answers) ? 1 : 0;
+            $stmt->bind_param("isi", $question_id, $answer_text, $is_correct);
+            
+            if ($stmt->execute()) {
+                $success_count++;
+                logMessage("✅ [SUCCESS] Απάντηση #" . ($index + 1) . " αποθηκεύτηκε επιτυχώς!");
+            } else {
+                logMessage("❌ [ERROR] Σφάλμα κατά την αποθήκευση απάντησης #" . ($index + 1) . ": " . $stmt->error);
+            }
+            
+            $stmt->close();
+        }
+        
+        logMessage("📊 [INFO] Συνολικά αποθηκεύτηκαν $success_count από " . count($answers) . " απαντήσεις.");
+    }
+    
+    echo json_encode([
+        "success" => true, 
+        "message" => "Η ερώτηση αποθηκεύτηκε επιτυχώς!", 
+        "question_id" => $question_id
+    ]);
     exit();
 }
 
@@ -305,6 +335,344 @@ if ($action === 'log_client_error') {
     $message = $_POST['message'] ?? 'Άγνωστο σφάλμα';
     logMessage("❌ [CLIENT ERROR] " . $message);
     echo json_encode(["success" => true, "message" => "Σφάλμα καταγράφηκε."]);
+    exit();
+}
+// ✅ Ενημέρωση Ερώτησης
+if ($action === 'update_question') {
+    logMessage("🔍 [INFO] Ξεκίνησε ενημέρωση ερώτησης...");
+
+    $question_id = intval($_POST['id'] ?? 0);
+    if ($question_id === 0) {
+        logMessage("❌ [ERROR] Λείπει το ID της ερώτησης!");
+        echo json_encode(["success" => false, "message" => "Λείπει το ID της ερώτησης!"]);
+        exit();
+    }
+
+    // Ανάκτηση των υπαρχόντων δεδομένων για τη σύγκριση
+    $query = "SELECT * FROM questions WHERE id = ?";
+    $stmt = $mysqli->prepare($query);
+    if (!$stmt) {
+        logMessage("❌ [ERROR] Σφάλμα προετοιμασίας SQL (get question): " . $mysqli->error);
+        echo json_encode(["success" => false, "message" => "Σφάλμα προετοιμασίας SQL."]);
+        exit();
+    }
+
+    $stmt->bind_param("i", $question_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $existing_question = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!$existing_question) {
+        logMessage("❌ [ERROR] Η ερώτηση με ID $question_id δεν βρέθηκε.");
+        echo json_encode(["success" => false, "message" => "Η ερώτηση δεν βρέθηκε."]);
+        exit();
+    }
+
+    // Βασικά δεδομένα ερώτησης
+    $chapter_id = intval($_POST['chapter_id'] ?? $existing_question['chapter_id']);
+    $question_text = trim($_POST['question_text'] ?? $existing_question['question_text']);
+    $question_explanation = trim($_POST['explanation'] ?? $existing_question['question_explanation']);
+    $question_type = $_POST['question_type'] ?? $existing_question['question_type'];
+    
+    // Επεξεργασία των απαντήσεων από το JSON
+    $answers = json_decode($_POST['answers'] ?? '[]', true);
+    $correct_answers = json_decode($_POST['correct_answers'] ?? '[]', true);
+    
+    logMessage("📊 [DEBUG] Ληφθέντα δεδομένα: chapter_id=$chapter_id, answers=" . count($answers) . ", correct=" . count($correct_answers));
+
+    // Έλεγχος για υποχρεωτικά πεδία
+    if (empty($question_text)) {
+        logMessage("❌ [ERROR] Το κείμενο της ερώτησης είναι υποχρεωτικό.");
+        echo json_encode(["success" => false, "message" => "Το κείμενο της ερώτησης είναι υποχρεωτικό."]);
+        exit();
+    }
+
+    // Διαχείριση αρχείων πολυμέσων (αν υπάρχουν)
+    $uploadDir = BASE_PATH . '/admin/test/uploads/';
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    // Διατήρηση του υπάρχοντος question_media αν δεν ανεβάσουμε νέο
+    $question_media = $existing_question['question_media']; 
+    
+    if (isset($_FILES['question_media']) && $_FILES['question_media']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'video/mp4', 'audio/mpeg'];
+        $fileType = mime_content_type($_FILES['question_media']['tmp_name']);
+        
+        if (in_array($fileType, $allowedTypes) && $_FILES['question_media']['size'] <= 10 * 1024 * 1024) {
+            $fileName = uniqid() . '_' . basename($_FILES['question_media']['name']);
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['question_media']['tmp_name'], $targetPath)) {
+                $question_media = $fileName;
+                logMessage("✅ [SUCCESS] Αποθηκεύτηκε νέο πολυμέσο ερώτησης: " . $fileName);
+                
+                // Διαγραφή του παλιού αρχείου αν υπάρχει
+                if (!empty($existing_question['question_media']) && file_exists($uploadDir . $existing_question['question_media'])) {
+                    unlink($uploadDir . $existing_question['question_media']);
+                    logMessage("🗑️ [INFO] Διαγράφηκε το παλιό πολυμέσο ερώτησης: " . $existing_question['question_media']);
+                }
+            } else {
+                logMessage("❌ [ERROR] Σφάλμα αποθήκευσης πολυμέσου ερώτησης.");
+            }
+        } else {
+            logMessage("❌ [ERROR] Μη αποδεκτός τύπος αρχείου ή μέγεθος για το πολυμέσο ερώτησης.");
+        }
+    }
+
+    // Διατήρηση του υπάρχοντος explanation_media αν δεν ανεβάσουμε νέο
+    $explanation_media = $existing_question['explanation_media'];
+    
+    if (isset($_FILES['explanation_media']) && $_FILES['explanation_media']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'video/mp4', 'audio/mpeg'];
+        $fileType = mime_content_type($_FILES['explanation_media']['tmp_name']);
+        
+        if (in_array($fileType, $allowedTypes) && $_FILES['explanation_media']['size'] <= 10 * 1024 * 1024) {
+            $fileName = uniqid() . '_' . basename($_FILES['explanation_media']['name']);
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['explanation_media']['tmp_name'], $targetPath)) {
+                $explanation_media = $fileName;
+                logMessage("✅ [SUCCESS] Αποθηκεύτηκε νέο πολυμέσο επεξήγησης: " . $fileName);
+                
+                // Διαγραφή του παλιού αρχείου αν υπάρχει
+                if (!empty($existing_question['explanation_media']) && file_exists($uploadDir . $existing_question['explanation_media'])) {
+                    unlink($uploadDir . $existing_question['explanation_media']);
+                    logMessage("🗑️ [INFO] Διαγράφηκε το παλιό πολυμέσο επεξήγησης: " . $existing_question['explanation_media']);
+                }
+            } else {
+                logMessage("❌ [ERROR] Σφάλμα αποθήκευσης πολυμέσου επεξήγησης.");
+            }
+        } else {
+            logMessage("❌ [ERROR] Μη αποδεκτός τύπος αρχείου ή μέγεθος για το πολυμέσο επεξήγησης.");
+        }
+    }
+
+    // Ενημέρωση της ερώτησης
+    $update_query = "UPDATE questions SET 
+                    chapter_id = ?, 
+                    question_text = ?, 
+                    question_explanation = ?, 
+                    question_type = ?, 
+                    question_media = ?,
+                    explanation_media = ? 
+                    WHERE id = ?";
+                    
+    $stmt = $mysqli->prepare($update_query);
+    
+    if (!$stmt) {
+        logMessage("❌ [ERROR] Σφάλμα προετοιμασίας SQL (update): " . $mysqli->error);
+        echo json_encode(["success" => false, "message" => "Σφάλμα προετοιμασίας SQL."]);
+        exit();
+    }
+    
+    $stmt->bind_param("isssssi", $chapter_id, $question_text, $question_explanation, $question_type, $question_media, $explanation_media, $question_id);
+    
+    if (!$stmt->execute()) {
+        logMessage("❌ [ERROR] Σφάλμα κατά την ενημέρωση ερώτησης: " . $stmt->error);
+        echo json_encode(["success" => false, "message" => "Σφάλμα κατά την ενημέρωση ερώτησης."]);
+        $stmt->close();
+        exit();
+    }
+    
+    $stmt->close();
+    logMessage("✅ [SUCCESS] Ερώτηση ενημερώθηκε με επιτυχία!");
+    
+    // Διαγραφή των παλιών απαντήσεων
+    $delete_query = "DELETE FROM test_answers WHERE question_id = ?";
+    $stmt = $mysqli->prepare($delete_query);
+    
+    if (!$stmt) {
+        logMessage("❌ [ERROR] Σφάλμα προετοιμασίας SQL (delete answers): " . $mysqli->error);
+        echo json_encode(["success" => false, "message" => "Σφάλμα διαγραφής παλιών απαντήσεων."]);
+        exit();
+    }
+    
+    $stmt->bind_param("i", $question_id);
+    
+    if (!$stmt->execute()) {
+        logMessage("❌ [ERROR] Σφάλμα κατά τη διαγραφή απαντήσεων: " . $stmt->error);
+        echo json_encode(["success" => false, "message" => "Σφάλμα διαγραφής παλιών απαντήσεων."]);
+        $stmt->close();
+        exit();
+    }
+    
+    $stmt->close();
+    logMessage("✅ [SUCCESS] Παλιές απαντήσεις διαγράφηκαν με επιτυχία!");
+    
+    // Εισαγωγή των νέων απαντήσεων
+    if (!empty($answers)) {
+        $success_count = 0;
+        $insert_query = "INSERT INTO test_answers (question_id, answer_text, is_correct) VALUES (?, ?, ?)";
+        
+        foreach ($answers as $index => $answer_text) {
+            if (empty(trim($answer_text))) continue; // Παράλειψη κενών απαντήσεων
+            
+            $stmt = $mysqli->prepare($insert_query);
+            
+            if (!$stmt) {
+                logMessage("❌ [ERROR] Σφάλμα προετοιμασίας SQL (insert answer): " . $mysqli->error);
+                continue;
+            }
+            
+            $is_correct = in_array(strval($index), $correct_answers) ? 1 : 0;
+            $stmt->bind_param("isi", $question_id, $answer_text, $is_correct);
+            
+            if ($stmt->execute()) {
+                $success_count++;
+                logMessage("✅ [SUCCESS] Απάντηση #" . ($index + 1) . " αποθηκεύτηκε επιτυχώς!");
+            } else {
+                logMessage("❌ [ERROR] Σφάλμα κατά την αποθήκευση απάντησης #" . ($index + 1) . ": " . $stmt->error);
+            }
+            
+            $stmt->close();
+        }
+        
+        logMessage("📊 [INFO] Συνολικά αποθηκεύτηκαν $success_count από " . count($answers) . " απαντήσεις.");
+    }
+    
+    echo json_encode([
+        "success" => true, 
+        "message" => "Η ερώτηση ενημερώθηκε επιτυχώς!"
+    ]);
+    exit();
+}
+// ✅ Διαγραφή Ερώτησης
+if ($action === 'delete_question') {
+    logMessage("🔍 [INFO] Ξεκίνησε διαγραφή ερώτησης...");
+
+    $question_id = intval($_POST['id'] ?? 0);
+    if ($question_id === 0) {
+        logMessage("❌ [ERROR] Λείπει το ID της ερώτησης!");
+        echo json_encode(["success" => false, "message" => "Λείπει το ID της ερώτησης!"]);
+        exit();
+    }
+
+    // Ανάκτηση των υπαρχόντων δεδομένων της ερώτησης
+    $query = "SELECT * FROM questions WHERE id = ?";
+    $stmt = $mysqli->prepare($query);
+    if (!$stmt) {
+        logMessage("❌ [ERROR] Σφάλμα προετοιμασίας SQL (get question): " . $mysqli->error);
+        echo json_encode(["success" => false, "message" => "Σφάλμα προετοιμασίας SQL."]);
+        exit();
+    }
+
+    $stmt->bind_param("i", $question_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $question = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!$question) {
+        logMessage("❌ [ERROR] Η ερώτηση με ID $question_id δεν βρέθηκε.");
+        echo json_encode(["success" => false, "message" => "Η ερώτηση δεν βρέθηκε."]);
+        exit();
+    }
+
+    // Έλεγχος αν η ερώτηση χρησιμοποιείται σε κάποιο τεστ
+    $check_query = "SELECT COUNT(*) as count FROM test_generation_questions WHERE question_id = ?";
+    $stmt = $mysqli->prepare($check_query);
+    if (!$stmt) {
+        logMessage("❌ [ERROR] Σφάλμα προετοιμασίας SQL (check usage): " . $mysqli->error);
+        echo json_encode(["success" => false, "message" => "Σφάλμα κατά τον έλεγχο χρήσης της ερώτησης."]);
+        exit();
+    }
+
+    $stmt->bind_param("i", $question_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $usage = $result->fetch_assoc();
+    $stmt->close();
+
+    if ($usage && $usage['count'] > 0) {
+        logMessage("⚠️ [WARNING] Η ερώτηση χρησιμοποιείται σε " . $usage['count'] . " τεστ και δεν μπορεί να διαγραφεί.");
+        echo json_encode([
+            "success" => false, 
+            "message" => "Η ερώτηση χρησιμοποιείται σε " . $usage['count'] . " τεστ και δεν μπορεί να διαγραφεί."
+        ]);
+        exit();
+    }
+
+    // Ξεκινάμε μια συναλλαγή για να εξασφαλίσουμε την ακεραιότητα των δεδομένων
+    $mysqli->begin_transaction();
+
+    try {
+        // 1. Διαγραφή των απαντήσεων
+        $delete_answers_query = "DELETE FROM test_answers WHERE question_id = ?";
+        $stmt = $mysqli->prepare($delete_answers_query);
+        if (!$stmt) {
+            throw new Exception("Σφάλμα προετοιμασίας SQL (delete answers): " . $mysqli->error);
+        }
+
+        $stmt->bind_param("i", $question_id);
+        if (!$stmt->execute()) {
+            throw new Exception("Σφάλμα κατά τη διαγραφή απαντήσεων: " . $stmt->error);
+        }
+        
+        $deleted_answers_count = $stmt->affected_rows;
+        $stmt->close();
+        logMessage("✅ [SUCCESS] Διαγράφηκαν $deleted_answers_count απαντήσεις.");
+
+        // 2. Διαγραφή της ερώτησης
+        $delete_question_query = "DELETE FROM questions WHERE id = ?";
+        $stmt = $mysqli->prepare($delete_question_query);
+        if (!$stmt) {
+            throw new Exception("Σφάλμα προετοιμασίας SQL (delete question): " . $mysqli->error);
+        }
+
+        $stmt->bind_param("i", $question_id);
+        if (!$stmt->execute()) {
+            throw new Exception("Σφάλμα κατά τη διαγραφή ερώτησης: " . $stmt->error);
+        }
+        
+        if ($stmt->affected_rows === 0) {
+            throw new Exception("Η ερώτηση δεν διαγράφηκε. Ίσως έχει ήδη διαγραφεί.");
+        }
+        
+        $stmt->close();
+        logMessage("✅ [SUCCESS] Η ερώτηση διαγράφηκε επιτυχώς.");
+
+        // 3. Διαγραφή των αρχείων πολυμέσων αν υπάρχουν
+        $uploadDir = BASE_PATH . '/admin/test/uploads/';
+
+        if (!empty($question['question_media']) && file_exists($uploadDir . $question['question_media'])) {
+            if (unlink($uploadDir . $question['question_media'])) {
+                logMessage("✅ [SUCCESS] Διαγράφηκε το αρχείο πολυμέσου ερώτησης: " . $question['question_media']);
+            } else {
+                logMessage("⚠️ [WARNING] Αδυναμία διαγραφής αρχείου πολυμέσου ερώτησης: " . $question['question_media']);
+            }
+        }
+
+        if (!empty($question['explanation_media']) && file_exists($uploadDir . $question['explanation_media'])) {
+            if (unlink($uploadDir . $question['explanation_media'])) {
+                logMessage("✅ [SUCCESS] Διαγράφηκε το αρχείο πολυμέσου επεξήγησης: " . $question['explanation_media']);
+            } else {
+                logMessage("⚠️ [WARNING] Αδυναμία διαγραφής αρχείου πολυμέσου επεξήγησης: " . $question['explanation_media']);
+            }
+        }
+
+        // Επιβεβαίωση της συναλλαγής
+        $mysqli->commit();
+        logMessage("✅ [SUCCESS] Η συναλλαγή ολοκληρώθηκε επιτυχώς!");
+        
+        echo json_encode([
+            "success" => true, 
+            "message" => "Η ερώτηση διαγράφηκε επιτυχώς!"
+        ]);
+        
+    } catch (Exception $e) {
+        // Αναίρεση της συναλλαγής σε περίπτωση σφάλματος
+        $mysqli->rollback();
+        logMessage("❌ [ERROR] Αναίρεση συναλλαγής λόγω σφάλματος: " . $e->getMessage());
+        
+        echo json_encode([
+            "success" => false, 
+            "message" => "Σφάλμα κατά τη διαγραφή ερώτησης: " . $e->getMessage()
+        ]);
+    }
+    
     exit();
 }
 

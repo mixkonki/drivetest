@@ -482,6 +482,48 @@ function saveQuestion() {
     
     const formData = new FormData(questionForm);
     
+    // Έλεγχος υποχρεωτικών πεδίων
+    const chapterSelect = document.getElementById("chapter-select");
+    const questionText = document.getElementById("question-text");
+    const answersContainer = document.getElementById("answers-container");
+    
+    let errors = [];
+    
+    if (!chapterSelect || chapterSelect.value === "") {
+        errors.push("Πρέπει να επιλέξετε κεφάλαιο");
+    }
+    
+    if (!questionText || questionText.value.trim() === "") {
+        errors.push("Το κείμενο της ερώτησης είναι υποχρεωτικό");
+    }
+    
+    const answerEntries = answersContainer ? answersContainer.querySelectorAll(".answer-entry") : [];
+    if (answerEntries.length === 0) {
+        errors.push("Πρέπει να προσθέσετε τουλάχιστον μία απάντηση");
+    }
+    
+    let hasCorrectAnswer = false;
+    answerEntries.forEach(entry => {
+        const checkbox = entry.querySelector("input[type='checkbox']");
+        if (checkbox && checkbox.checked) {
+            hasCorrectAnswer = true;
+        }
+    });
+    
+    if (!hasCorrectAnswer) {
+        errors.push("Πρέπει να επιλέξετε τουλάχιστον μία σωστή απάντηση");
+    }
+    
+    if (errors.length > 0) {
+        alert("❌ Σφάλμα: " + errors.join(". "));
+        return;
+    }
+    
+    // Προσθήκη του chapter_id από το select
+    if (chapterSelect) {
+        formData.append("chapter_id", chapterSelect.value);
+    }
+    
     // Προσθήκη του action
     const questionId = document.getElementById("question-id");
     if (questionId && questionId.textContent !== '#') {
@@ -491,17 +533,23 @@ function saveQuestion() {
         formData.append("action", "save_question");
     }
     
+    // Προσθήκη του question_text
+    if (questionText) {
+        formData.append("question_text", questionText.value);
+    }
+    
     // Μετατροπή των απαντήσεων σε JSON
     const answers = [];
-    const answerEntries = document.querySelectorAll(".answer-entry");
     const correctAnswers = [];
     
     answerEntries.forEach((entry, index) => {
         const answerText = entry.querySelector(".answer-text").value;
         const isCorrect = entry.querySelector("input[type='checkbox']").checked;
         
-        answers.push(answerText);
-        if (isCorrect) correctAnswers.push(index.toString());
+        if (answerText.trim() !== "") {
+            answers.push(answerText);
+            if (isCorrect) correctAnswers.push(index.toString());
+        }
     });
     
     // Αντικατάσταση των πεδίων απαντήσεων με τα JSON strings
@@ -533,7 +581,10 @@ function saveQuestion() {
             alert("❌ Σφάλμα: " + data.message);
         }
     })
-    .catch(error => console.error("❌ [ERROR] Σφάλμα AJAX:", error));
+    .catch(error => {
+        console.error("❌ [ERROR] Σφάλμα AJAX:", error);
+        alert("❌ Προέκυψε σφάλμα κατά την αποθήκευση. Παρακαλώ δοκιμάστε ξανά.");
+    });
 }
 
 // ✅ Ενημέρωση του container απαντήσεων με βάση τον τύπο ερώτησης
@@ -563,4 +614,21 @@ function getQuestionType(type) {
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('el-GR') + ' ' + date.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' });
+}
+// Έλεγχος για URL παράμετρο που υποδεικνύει άμεση προσθήκη ερώτησης
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('action') === 'add') {
+    // Καθυστέρηση για να βεβαιωθούμε ότι η σελίδα έχει φορτωθεί πλήρως
+    setTimeout(() => {
+        const addButton = document.getElementById("add-question-btn");
+        if (addButton) {
+            addButton.click();
+        }
+    }, 300);
+} else if (urlParams.get('action') === 'edit' && urlParams.get('id')) {
+    // Επεξεργασία συγκεκριμένης ερώτησης
+    const questionId = urlParams.get('id');
+    setTimeout(() => {
+        editQuestion(questionId);
+    }, 300);
 }

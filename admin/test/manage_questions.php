@@ -3,14 +3,59 @@ require_once '../../config/config.php';
 require_once '../../includes/db_connection.php';
 require_once '../includes/admin_auth.php';
 require_once '../includes/admin_header.php';
+
+// Μήνυμα επιτυχίας αν υπάρχει
+$success_message = '';
+if (isset($_GET['success'])) {
+    switch ($_GET['success']) {
+        case 'added':
+            $success_message = "✅ Η ερώτηση προστέθηκε επιτυχώς!";
+            break;
+        case 'updated':
+            $success_message = "✅ Η ερώτηση ενημερώθηκε επιτυχώς!";
+            break;
+        case 'deleted':
+            $success_message = "✅ Η ερώτηση διαγράφηκε επιτυχώς!";
+            break;
+    }
+}
+
+// Μήνυμα λάθους αν υπάρχει
+$error_message = '';
+if (isset($_GET['error'])) {
+    switch ($_GET['error']) {
+        case 'not_found':
+            $error_message = "❌ Η ερώτηση δεν βρέθηκε!";
+            break;
+        case 'permission':
+            $error_message = "❌ Δεν έχετε δικαιώματα για αυτή την ενέργεια!";
+            break;
+        default:
+            $error_message = "❌ Προέκυψε ένα σφάλμα!";
+    }
+}
 ?>
+
+
 <head>
     <link rel="stylesheet" href="../assets/css/question_manager.css">
 </head>
 
 <main class="admin-container">
     <h2 class="admin-title">📌 Διαχείριση Ερωτήσεων</h2>
+    ?>
 
+<?php if (!empty($success_message)): ?>
+<div class="alert alert-success">
+    <?= $success_message ?>
+</div>
+<?php endif; ?>
+
+<?php if (!empty($error_message)): ?>
+<div class="alert alert-error">
+    <?= $error_message ?>
+</div>
+<?php endif; ?>
     <div id="question-list-container">
         <table id="questions-table" class="admin-table">
             <thead>
