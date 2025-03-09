@@ -32,6 +32,9 @@ while ($row = $result->fetch_assoc()) {
 
 log_debug("Φορτώθηκαν " . count($categories) . " κατηγορίες και " . count($subcategories) . " υποκατηγορίες");
 
+// Προσθήκη CSS για το ανέβασμα εικόνων
+$additional_css = '<link rel="stylesheet" href="' . $config['base_url'] . '/admin/assets/css/subcategory_upload.css">';
+
 // Φορτώνουμε το header μετά το logging για να μην επηρεάσει την εμφάνιση σφαλμάτων
 require_once '../includes/admin_header.php';
 
@@ -64,6 +67,7 @@ if (isset($_GET['error'])) {
         
         <div class="admin-actions">
             <a href="add_subcategory.php" class="btn-primary"><i class="action-icon">➕</i> Προσθήκη Υποκατηγορίας</a>
+            <button id="add-subcategory-btn" class="btn-primary"><i class="action-icon">📝</i> Γρήγορη Προσθήκη</button>
             <a href="../dashboard.php" class="btn-secondary"><i class="action-icon">🔙</i> Επιστροφή</a>
         </div>
     </div>
@@ -92,7 +96,7 @@ if (isset($_GET['error'])) {
                     <th>Ενέργειες</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="subcategory-list">
                 <?php if (empty($subcategories)): ?>
                 <tr>
                     <td colspan="5" class="text-center">Δεν βρέθηκαν υποκατηγορίες</td>
@@ -122,5 +126,8 @@ if (isset($_GET['error'])) {
         </table>
     </div>
 </main>
+
+<!-- Φόρτωση του JavaScript για τη διαχείριση υποκατηγοριών -->
+<script src="<?= $config['base_url'] ?>/admin/assets/js/subcategory_manager.js"></script>
 
 <?php require_once '../includes/admin_footer.php'; ?>

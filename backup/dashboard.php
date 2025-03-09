@@ -180,7 +180,58 @@ $recent_tests = $recent_tests_result ? $recent_tests_result->fetch_all(MYSQLI_AS
         </div>
     </div>
 
-    
+    <div class="dashboard-panels">
+        <div class="dashboard-panel recent-questions">
+            <div class="panel-header">
+                <h3 class="panel-title">📝 Πρόσφατες Ερωτήσεις</h3>
+                <a href="test/manage_questions.php" class="panel-link">Όλες οι ερωτήσεις</a>
+            </div>
+            <div class="panel-content">
+                <?php if (empty($recent_questions)): ?>
+                    <div class="empty-state">Δεν υπάρχουν ερωτήσεις ακόμα.</div>
+                <?php else: ?>
+                    <div class="question-list">
+                        <?php foreach ($recent_questions as $question): ?>
+                            <div class="question-item">
+                                <div class="question-text"><?= htmlspecialchars(mb_substr($question['question_text'], 0, 60) . (mb_strlen($question['question_text']) > 60 ? '...' : '')) ?></div>
+                                <div class="question-meta">
+                                    <div class="question-chapter"><?= htmlspecialchars($question['chapter_name']) ?></div>
+                                    <div class="question-date"><?= date('d/m/Y', strtotime($question['created_at'])) ?></div>
+                                </div>
+                                <a href="test/edit_question.php?id=<?= $question['id'] ?>" class="question-edit">✏️</a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        
+        <div class="dashboard-panel recent-tests">
+            <div class="panel-header">
+                <h3 class="panel-title">🧩 Πρόσφατα Τεστ</h3>
+                <a href="test/generate_test.php" class="panel-link">Όλα τα τεστ</a>
+            </div>
+            <div class="panel-content">
+                <?php if (empty($recent_tests)): ?>
+                    <div class="empty-state">Δεν υπάρχουν τεστ ακόμα.</div>
+                <?php else: ?>
+                    <div class="test-list">
+                        <?php foreach ($recent_tests as $test): ?>
+                            <div class="test-item">
+                                <div class="test-title"><?= htmlspecialchars($test['test_name']) ?></div>
+                                <div class="test-meta">
+                                    <div class="test-category"><?= htmlspecialchars($test['category_name']) ?></div>
+                                    <div class="test-creator"><?= htmlspecialchars($test['creator_name']) ?></div>
+                                    <div class="test-date"><?= date('d/m/Y', strtotime($test['created_at'])) ?></div>
+                                </div>
+                                <a href="test/view_test.php?id=<?= $test['id'] ?>" class="test-view">👁️</a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
     
     <div class="dashboard-quick-links">
         <h3 class="quick-links-title">⚡ Γρήγορες Ενέργειες</h3>

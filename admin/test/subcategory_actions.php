@@ -29,6 +29,17 @@ switch ($action) {
         if ($result) {
             $subcategories = array();
             while ($row = $result->fetch_assoc()) {
+                // Προσθήκη πλήρους URL για εικόνες (για εμφάνιση στη JavaScript)
+                if (!empty($row['icon'])) {
+                    if (strpos($row['icon'], 'http') !== 0) {
+                        $row['icon_url'] = $config['base_url'] . '/assets/images/' . $row['icon'];
+                    } else {
+                        $row['icon_url'] = $row['icon'];
+                    }
+                } else {
+                    $row['icon_url'] = $config['base_url'] . '/assets/images/default.png';
+                }
+                
                 $subcategories[] = $row;
             }
             log_debug("subcategory_actions.php: Βρέθηκαν " . count($subcategories) . " υποκατηγορίες");
@@ -85,6 +96,41 @@ switch ($action) {
             exit;
         }
         
+        // Διαχείριση αρχείου εικόνας αν περιλαμβάνεται
+        if (isset($_FILES['icon_file']) && $_FILES['icon_file']['error'] === UPLOAD_ERR_OK) {
+            $upload_dir = BASE_PATH . '/assets/images/categories/';
+            
+            // Έλεγχος αν υπάρχει ο φάκελος και αν όχι, δημιουργία του
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+                log_debug("Created directory: $upload_dir");
+            }
+            
+            // Έλεγχος τύπου αρχείου
+            $filename = basename($_FILES['icon_file']['name']);
+            $file_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            $allowed_exts = array('jpg', 'jpeg', 'png', 'gif', 'svg');
+            
+            if (!in_array($file_ext, $allowed_exts)) {
+                log_debug("subcategory_actions.php: Μη επιτρεπτός τύπος αρχείου: $file_ext");
+                echo json_encode(['success' => false, 'message' => 'Invalid file type. Allowed: jpg, jpeg, png, gif, svg']);
+                exit;
+            }
+            
+            // Δημιουργία προσωρινού ονόματος αρχείου
+            $temp_filename = 'subcategory_temp_' . time() . '_' . rand(1000, 9999) . '.' . $file_ext;
+            $upload_path = $upload_dir . $temp_filename;
+            
+            if (move_uploaded_file($_FILES['icon_file']['tmp_name'], $upload_path)) {
+                $icon = 'categories/' . $temp_filename;
+                log_debug("subcategory_actions.php: Επιτυχές ανέβασμα αρχείου: $upload_path");
+            } else {
+                log_debug("subcategory_actions.php: Αποτυχία ανεβάσματος αρχείου");
+                echo json_encode(['success' => false, 'message' => 'Failed to upload file']);
+                exit;
+            }
+        }
+        
         // Εισαγωγή νέας υποκατηγορίας
         $insert_query = "INSERT INTO test_subcategories (name, description, icon, test_category_id) VALUES (?, ?, ?, ?)";
         $insert_stmt = $mysqli->prepare($insert_query);
@@ -93,10 +139,37 @@ switch ($action) {
         if ($insert_stmt->execute()) {
             $new_id = $insert_stmt->insert_id;
             log_debug("subcategory_actions.php: Νέα υποκατηγορία προστέθηκε: $name με ID: $new_id");
+            
+            // Αν έχει ανεβεί εικόνα, μετονομασία του αρχείου με το ID της νέας υποκατηγορίας
+            if (!empty($icon) && strpos($icon, 'subcategory_temp_') !== false) {
+                $old_path = $upload_dir . basename($icon);
+                $new_filename = 'subcategory_' . $new_id . '_' . time() . '.' . $file_ext;
+                $new_path = $upload_dir . $new_filename;
+                
+                if (rename($old_path, $new_path)) {
+                    $new_icon = 'categories/' . $new_filename;
+                    
+                    // Ενημέρωση του εικονιδίου στη βάση
+                    $update_icon = "UPDATE test_subcategories SET icon = ? WHERE id = ?";
+                    $stmt_update = $mysqli->prepare($update_icon);
+                    $stmt_update->bind_param("si", $new_icon, $new_id);
+                    $stmt_update->execute();
+                    $stmt_update->close();
+                    
+                    log_debug("subcategory_actions.php: Αρχείο μετονομάστηκε: $icon -> $new_icon");
+                }
+            }
+            
             echo json_encode(['success' => true, 'message' => 'Subcategory added successfully', 'id' => $new_id]);
         } else {
             log_debug("subcategory_actions.php: Σφάλμα στην προσθήκη υποκατηγορίας: " . $insert_stmt->error);
             echo json_encode(['success' => false, 'message' => 'Error adding subcategory: ' . $insert_stmt->error]);
+            
+            // Αν υπάρχει ανεβασμένο αρχείο, το διαγράφουμε
+            if (!empty($icon) && file_exists($upload_dir . basename($icon))) {
+                unlink($upload_dir . basename($icon));
+                log_debug("subcategory_actions.php: Διαγραφή προσωρινού αρχείου: " . $upload_dir . basename($icon));
+            }
         }
         $insert_stmt->close();
         break;
@@ -130,10 +203,76 @@ switch ($action) {
             exit;
         }
         
+        // Ανάκτηση του τρέχοντος εικονιδίου
+        $get_icon_query = "SELECT icon FROM test_subcategories WHERE id = ?";
+        $get_icon_stmt = $mysqli->prepare($get_icon_query);
+        $get_icon_stmt->bind_param("i", $id);
+        $get_icon_stmt->execute();
+        $current_icon = $get_icon_stmt->get_result()->fetch_assoc()['icon'] ?? '';
+        $get_icon_stmt->close();
+        
+        // Διαχείριση αρχείου εικόνας αν περιλαμβάνεται
+        if (isset($_FILES['icon_file']) && $_FILES['icon_file']['error'] === UPLOAD_ERR_OK) {
+            $upload_dir = BASE_PATH . '/assets/images/categories/';
+            
+            // Έλεγχος αν υπάρχει ο φάκελος και αν όχι, δημιουργία του
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+                log_debug("Created directory: $upload_dir");
+            }
+            
+            // Έλεγχος τύπου αρχείου
+            $filename = basename($_FILES['icon_file']['name']);
+            $file_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            $allowed_exts = array('jpg', 'jpeg', 'png', 'gif', 'svg');
+            
+            if (!in_array($file_ext, $allowed_exts)) {
+                log_debug("subcategory_actions.php: Μη επιτρεπτός τύπος αρχείου: $file_ext");
+                echo json_encode(['success' => false, 'message' => 'Invalid file type. Allowed: jpg, jpeg, png, gif, svg']);
+                exit;
+            }
+            
+            // Δημιουργία νέου ονόματος αρχείου με το ID της υποκατηγορίας
+            $new_filename = 'subcategory_' . $id . '_' . time() . '.' . $file_ext;
+            $upload_path = $upload_dir . $new_filename;
+            
+            if (move_uploaded_file($_FILES['icon_file']['tmp_name'], $upload_path)) {
+                $icon = 'categories/' . $new_filename;
+                log_debug("subcategory_actions.php: Επιτυχές ανέβασμα αρχείου: $upload_path");
+                
+                // Διαγραφή του παλιού αρχείου αν υπάρχει και δεν είναι το ίδιο
+                if (!empty($current_icon) && $current_icon !== $icon && strpos($current_icon, 'categories/') === 0) {
+                    $old_file_path = $upload_dir . str_replace('categories/', '', $current_icon);
+                    if (file_exists($old_file_path)) {
+                        unlink($old_file_path);
+                        log_debug("subcategory_actions.php: Διαγραφή παλιού αρχείου: $old_file_path");
+                    }
+                }
+            } else {
+                log_debug("subcategory_actions.php: Αποτυχία ανεβάσματος αρχείου");
+                echo json_encode(['success' => false, 'message' => 'Failed to upload file']);
+                exit;
+            }
+        }
+        
         // Ενημέρωση της υποκατηγορίας
-        $update_query = "UPDATE test_subcategories SET name = ?, description = ?, icon = ?, test_category_id = ? WHERE id = ?";
+        $update_query = "UPDATE test_subcategories SET name = ?, description = ?, test_category_id = ?";
+        $types = "ssi";
+        $params = [$name, $description, $category_id];
+        
+        // Προσθήκη του εικονιδίου αν έχει οριστεί
+        if (!empty($icon)) {
+            $update_query .= ", icon = ?";
+            $types .= "s";
+            $params[] = $icon;
+        }
+        
+        $update_query .= " WHERE id = ?";
+        $types .= "i";
+        $params[] = $id;
+        
         $update_stmt = $mysqli->prepare($update_query);
-        $update_stmt->bind_param("sssii", $name, $description, $icon, $category_id, $id);
+        $update_stmt->bind_param($types, ...$params);
         
         if ($update_stmt->execute()) {
             log_debug("subcategory_actions.php: Η υποκατηγορία με ID $id ενημερώθηκε");
@@ -141,6 +280,15 @@ switch ($action) {
         } else {
             log_debug("subcategory_actions.php: Σφάλμα στην ενημέρωση της υποκατηγορίας: " . $update_stmt->error);
             echo json_encode(['success' => false, 'message' => 'Error updating subcategory: ' . $update_stmt->error]);
+            
+            // Αν έχει ανεβεί νέο αρχείο και αποτύχει η ενημέρωση, διαγραφή του
+            if (!empty($icon) && $icon !== $current_icon && strpos($icon, 'categories/') === 0) {
+                $file_path = $upload_dir . str_replace('categories/', '', $icon);
+                if (file_exists($file_path)) {
+                    unlink($file_path);
+                    log_debug("subcategory_actions.php: Διαγραφή νέου αρχείου μετά από αποτυχία: $file_path");
+                }
+            }
         }
         $update_stmt->close();
         break;
@@ -169,6 +317,14 @@ switch ($action) {
             exit;
         }
         
+        // Ανάκτηση του εικονιδίου πριν τη διαγραφή
+        $get_icon_query = "SELECT icon FROM test_subcategories WHERE id = ?";
+        $get_icon_stmt = $mysqli->prepare($get_icon_query);
+        $get_icon_stmt->bind_param("i", $id);
+        $get_icon_stmt->execute();
+        $icon = $get_icon_stmt->get_result()->fetch_assoc()['icon'] ?? '';
+        $get_icon_stmt->close();
+        
         // Διαγραφή της υποκατηγορίας
         $delete_query = "DELETE FROM test_subcategories WHERE id = ?";
         $delete_stmt = $mysqli->prepare($delete_query);
@@ -176,6 +332,17 @@ switch ($action) {
         
         if ($delete_stmt->execute()) {
             log_debug("subcategory_actions.php: Η υποκατηγορία με ID $id διαγράφηκε επιτυχώς");
+            
+            // Διαγραφή του αρχείου εικόνας αν υπάρχει
+            if (!empty($icon) && strpos($icon, 'categories/') === 0) {
+                $upload_dir = BASE_PATH . '/assets/images/categories/';
+                $file_path = $upload_dir . str_replace('categories/', '', $icon);
+                if (file_exists($file_path)) {
+                    unlink($file_path);
+                    log_debug("subcategory_actions.php: Διαγραφή εικόνας: $file_path");
+                }
+            }
+            
             echo json_encode(['success' => true, 'message' => 'Subcategory deleted successfully']);
         } else {
             log_debug("subcategory_actions.php: Σφάλμα κατά τη διαγραφή της υποκατηγορίας: " . $delete_stmt->error);

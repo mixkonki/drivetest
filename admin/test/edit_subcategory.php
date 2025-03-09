@@ -57,7 +57,6 @@ while ($row = $categories_result->fetch_assoc()) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['name'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    $icon = trim($_POST['icon'] ?? '');
     $category_id = intval($_POST['category_id'] ?? 0);
     
     log_debug("Επεξεργασία υποκατηγορίας ID: $subcategory_id - Όνομα: $name, Κατηγορία: $category_id");
@@ -79,28 +78,86 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error_message = '🚨 Σφάλμα: Υπάρχει ήδη υποκατηγορία με αυτό το όνομα στην επιλεγμένη κατηγορία!';
             log_debug("Duplicate subcategory name found for category ID: $category_id");
         } else {
-            // Ενημέρωση της υποκατηγορίας
-            $update_query = "UPDATE test_subcategories SET name = ?, description = ?, icon = ?, test_category_id = ? WHERE id = ?";
-            $update_stmt = $mysqli->prepare($update_query);
-            $update_stmt->bind_param("sssii", $name, $description, $icon, $category_id, $subcategory_id);
+            // Διαχείριση ανεβάσματος εικόνας
+            $icon = $subcategory['icon']; // Διατήρηση του υπάρχοντος εικονιδίου εξ ορισμού
             
-            if ($update_stmt->execute()) {
-                log_debug("Subcategory ID: $subcategory_id updated successfully");
-                
-                // Ανακατεύθυνση στη σελίδα διαχείρισης υποκατηγοριών με μήνυμα επιτυχίας
-                header("Location: manage_subcategories.php?success=updated");
-                exit();
-            } else {
-                $error_message = '🚨 Σφάλμα κατά την ενημέρωση: ' . $update_stmt->error;
-                log_debug("Error updating subcategory: " . $update_stmt->error);
+            // Έλεγχος αν έχει οριστεί νέο URL εικονιδίου
+            if (isset($_POST['icon']) && !empty($_POST['icon'])) {
+                $icon = trim($_POST['icon']);
+                log_debug("Icon URL set: $icon");
             }
-            $update_stmt->close();
+            
+            // Έλεγχος αν υπάρχει ανεβασμένο αρχείο
+            if (isset($_FILES['icon_file']) && $_FILES['icon_file']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = BASE_PATH . '/assets/images/categories/';
+                
+                // Έλεγχος αν υπάρχει ο φάκελος και αν όχι, δημιουργία του
+                if (!file_exists($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                    log_debug("Created directory: $upload_dir");
+                }
+                
+                // Καθαρισμός και δημιουργία ασφαλούς ονόματος αρχείου
+                $filename = basename($_FILES['icon_file']['name']);
+                $file_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                $allowed_exts = array('jpg', 'jpeg', 'png', 'gif', 'svg');
+                
+                if (in_array($file_ext, $allowed_exts)) {
+                    // Δημιουργία μοναδικού ονόματος αρχείου
+                    $new_filename = 'subcategory_' . $subcategory_id . '_' . time() . '.' . $file_ext;
+                    $upload_path = $upload_dir . $new_filename;
+                    
+                    if (move_uploaded_file($_FILES['icon_file']['tmp_name'], $upload_path)) {
+                        $icon = 'categories/' . $new_filename;
+                        log_debug("File uploaded successfully: $icon");
+                    } else {
+                        log_debug("Upload failed: " . $_FILES['icon_file']['error']);
+                    }
+                } else {
+                    log_debug("Invalid file extension: $file_ext");
+                    $error_message = '🚨 Σφάλμα: Μη αποδεκτός τύπος αρχείου. Επιτρέπονται μόνο jpg, jpeg, png, gif, svg.';
+                }
+            }
+            
+            if (!isset($error_message)) {
+                // Ενημέρωση της υποκατηγορίας
+                $update_query = "UPDATE test_subcategories SET name = ?, description = ?, icon = ?, test_category_id = ? WHERE id = ?";
+                $update_stmt = $mysqli->prepare($update_query);
+                $update_stmt->bind_param("sssii", $name, $description, $icon, $category_id, $subcategory_id);
+                
+                if ($update_stmt->execute()) {
+                    log_debug("Subcategory ID: $subcategory_id updated successfully");
+                    
+                    // Ανακατεύθυνση στη σελίδα διαχείρισης υποκατηγοριών με μήνυμα επιτυχίας
+                    header("Location: manage_subcategories.php?success=updated");
+                    exit();
+                } else {
+                    $error_message = '🚨 Σφάλμα κατά την ενημέρωση: ' . $update_stmt->error;
+                    log_debug("Error updating subcategory: " . $update_stmt->error);
+                }
+                $update_stmt->close();
+            }
         }
     }
 }
 
+// Προετοιμασία μιας μεταβλητής για επιπλέον CSS
+$additional_css = '<link rel="stylesheet" href="' . $config['base_url'] . '/admin/assets/css/subcategory_upload.css">';
+
 // Φορτώνουμε το header μετά το logging και τους ελέγχους
 require_once '../includes/admin_header.php';
+
+// Προετοιμασία URL προεπισκόπησης εικόνας
+$icon_preview = '';
+if (!empty($subcategory['icon'])) {
+    if (strpos($subcategory['icon'], 'http://') === 0 || strpos($subcategory['icon'], 'https://') === 0) {
+        $icon_preview = $subcategory['icon'];
+    } else {
+        $icon_preview = $config['base_url'] . '/assets/images/' . $subcategory['icon'];
+    }
+} else {
+    $icon_preview = $config['base_url'] . '/assets/images/default.png';
+}
 ?>
 
 <main class="admin-container">
@@ -119,7 +176,7 @@ require_once '../includes/admin_header.php';
     <?php endif; ?>
 
     <div class="subcategory-form">
-        <form method="POST" action="edit_subcategory.php?id=<?= $subcategory_id ?>">
+        <form method="POST" action="edit_subcategory.php?id=<?= $subcategory_id ?>" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="name">Όνομα Υποκατηγορίας:</label>
                 <input type="text" id="name" name="name" value="<?= htmlspecialchars($subcategory['name']) ?>" required class="form-control">
@@ -143,15 +200,32 @@ require_once '../includes/admin_header.php';
             </div>
             
             <div class="form-group">
-                <label for="icon">Εικονίδιο (URL ή όνομα αρχείου):</label>
-                <input type="text" id="icon" name="icon" value="<?= htmlspecialchars($subcategory['icon'] ?? '') ?>" class="form-control">
-                <?php if (!empty($subcategory['icon'])): ?>
-                <div class="icon-preview">
-                    <img src="<?= strpos($subcategory['icon'], 'http') === 0 ? $subcategory['icon'] : $config['base_url'] . '/assets/images/' . $subcategory['icon'] ?>" 
-                         alt="Προεπισκόπηση εικονιδίου" width="50">
-                    <span class="icon-preview-label">Τρέχον εικονίδιο</span>
+                <label>Εικονίδιο:</label>
+                
+                <div class="icon-tabs">
+                    <div class="tab-buttons">
+                        <button type="button" id="upload-tab-btn" class="tab-btn active">Ανέβασμα Αρχείου</button>
+                        <button type="button" id="url-tab-btn" class="tab-btn">URL Εικόνας</button>
+                    </div>
+                    
+                    <div id="upload-tab" class="tab-content">
+                        <div id="icon-preview" class="preview-container">
+                            <img id="preview-image" src="<?= htmlspecialchars($icon_preview) ?>" alt="Προεπισκόπηση εικονιδίου">
+                        </div>
+                        <div class="upload-controls">
+                            <input type="file" id="icon_file" name="icon_file" accept="image/*" class="file-input">
+                            <label for="icon_file" class="upload-btn">Επιλογή Εικόνας</label>
+                        </div>
+                    </div>
+                    
+                    <div id="url-tab" class="tab-content hidden">
+                        <input type="text" id="icon" name="icon" value="<?= htmlspecialchars($subcategory['icon'] ?? '') ?>" class="form-control" placeholder="Εισάγετε URL ή όνομα αρχείου">
+                        <div class="url-preview">
+                            <img id="icon-url-preview" src="<?= htmlspecialchars($icon_preview) ?>" alt="Προεπισκόπηση εικονιδίου">
+                        </div>
+                        <small class="help-text">Μπορείτε να εισάγετε πλήρες URL (http://...) ή σχετική διαδρομή (categories/icon.png)</small>
+                    </div>
                 </div>
-                <?php endif; ?>
             </div>
             
             <div class="form-actions">
@@ -161,6 +235,9 @@ require_once '../includes/admin_header.php';
         </form>
     </div>
 </main>
+
+<!-- Φόρτωση του JavaScript για το ανέβασμα εικόνας -->
+<script src="<?= $config['base_url'] ?>/admin/assets/js/subcategory_upload.js"></script>
 
 <?php 
 require_once '../includes/admin_footer.php';
