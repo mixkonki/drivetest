@@ -44,3 +44,18 @@
 [2025-03-07 13:46:31] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
 🚀 [DEBUG] Ξεκινά η PHP.
 🛠️ [DEBUG] Action: {"action":"list_chapters","subcategory_id":"13"}
+[2025-03-08 07:23:23] Attempting to edit category 3 - Name: ADR, Price: 40, Description: 
+[2025-03-08 07:23:23] New file uploaded successfully: categories/category_1741418603_9252.jpg
+[2025-03-08 07:23:23] Category 3 updated successfully
+[2025-03-08 07:24:49] Attempting to edit category 3 - Name: ADR, Price: 40, Description: 
+[2025-03-08 07:24:49] New file uploaded successfully: categories/category_1741418689_4529.jpg
+[2025-03-08 07:24:49] Category 3 updated successfully
+[2025-03-08 07:25:36] Attempting to edit category 3 - Name: ADR, Price: 40, Description: 
+[2025-03-08 07:25:36] New file uploaded successfully: categories/category_1741418736_1877.jpg
+[2025-03-08 07:25:36] Category 3 updated successfully
+[2025-03-08 07:25:52] Attempting to edit category 7 - Name: Αυτοαξιολόγηση, Price: 8, Description: 
+[2025-03-08 07:25:52] New file uploaded successfully: categories/category_1741418752_1262.jpg
+[2025-03-08 07:25:52] Category 7 updated successfully
+[2025-03-08 08:56:54] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-08 08:57:09] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1
+[2025-03-09 07:13:36] [INFO] Έλεγχος πρόσβασης admin από IP: 127.0.0.1

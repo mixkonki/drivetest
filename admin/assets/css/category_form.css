@@ -153,7 +153,7 @@ textarea.form-control {
 /* Περιοχή ανεβάσματος εικόνας */
 .upload-container {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px;
     flex-wrap: wrap;
 }
@@ -168,6 +168,7 @@ textarea.form-control {
     align-items: center;
     overflow: hidden;
     background-color: #f8f9fa;
+    transition: all 0.3s ease;
 }
 
 .upload-preview img {
@@ -178,6 +179,10 @@ textarea.form-control {
 
 .upload-controls {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 /* Κρύβουμε το αρχικό input file */
@@ -192,19 +197,60 @@ textarea.form-control {
 
 /* Στυλ για το κουμπί επιλογής αρχείου */
 .upload-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #f8f9fa;
-    color: var(--text-dark, #333);
-    border: 1px solid var(--border-color, #ccc);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
     border-radius: var(--border-radius-md, 4px);
     cursor: pointer;
     font-weight: 500;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .upload-btn:hover {
-    background-color: #e9ecef;
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.upload-btn .icon {
+    font-size: 18px;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.file-info .file-name {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-info .file-size {
+    color: var(--text-light);
+    font-size: 12px;
+}
+
+.file-info .remove-file {
+    color: var(--danger-color);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: auto;
 }
 
 /* Στυλ για την προεπισκόπηση URL */
@@ -225,6 +271,7 @@ textarea.form-control {
     align-items: center;
     overflow: hidden;
     background-color: #f8f9fa;
+    transition: all 0.3s ease;
 }
 
 .url-preview-wrapper.error {
@@ -256,6 +303,20 @@ textarea.form-control {
 .upload-preview.highlighted {
     border-color: var(--primary-color, #aa3636);
     background-color: rgba(170, 54, 54, 0.1);
+    transform: scale(1.03);
+}
+
+.upload-message {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.icon-emoji {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 5px;
 }
 
 /* Responsive διάταξη */
@@ -269,12 +330,14 @@ textarea.form-control {
     .upload-preview,
     .url-preview-wrapper {
         margin-bottom: 15px;
+        width: 100%;
+        max-width: 200px;
     }
     
     .upload-controls,
     .url-input-wrapper {
         width: 100%;
-        text-align: center;
+        align-items: center;
     }
     
     .form-actions {

@@ -82,7 +82,7 @@ if (isset($_GET['error'])) {
         <div class="action-buttons">
             <a href="add_category.php" class="btn-primary" aria-label="Προσθήκη Νέας Κατηγορίας">➕ Προσθήκη Κατηγορίας</a>
             <a href="add_duration.php" class="btn-primary" aria-label="Προσθήκη Νέας Διάρκειας">➕ Προσθήκη Διάρκειας</a>
-            <a href="admin_dashboard.php" class="btn-secondary" aria-label="Επιστροφή στη Διαχείριση">⬅️ Επιστροφή</a>
+            <a href="dashboard.php" class="btn-secondary" aria-label="Επιστροφή στη Διαχείριση">⬅️ Επιστροφή</a>
         </div>
     </div>
 
@@ -127,10 +127,10 @@ if (isset($_GET['error'])) {
                                     </td>
                                     <td role="cell" class="actions-cell">
                                         <a href="edit_category.php?id=<?= $cat['id'] ?>" class="btn-edit" aria-label="Επεξεργασία Κατηγορίας <?= htmlspecialchars($cat['name']) ?>">
-                                            <span class="action-icon">✏️</span> Επεξεργασία
+                                            <span class="action-icon">✏️</span> 
                                         </a>
                                         <a href="delete_category.php?id=<?= $cat['id'] ?>" class="btn-delete" aria-label="Διαγραφή Κατηγορίας <?= htmlspecialchars($cat['name']) ?>">
-                                            <span class="action-icon">❌</span> Διαγραφή
+                                            <span class="action-icon">❌</span> 
                                         </a>
                                     </td>
                                 </tr>
@@ -171,10 +171,10 @@ if (isset($_GET['error'])) {
                                     </td>
                                     <td role="cell" class="actions-cell">
                                         <a href="edit_duration.php?id=<?= $dur['id'] ?>" class="btn-edit" aria-label="Επεξεργασία Διάρκειας <?= htmlspecialchars($dur['months']) ?> μηνών">
-                                            <span class="action-icon">✏️</span> Επεξεργασία
+                                            <span class="action-icon">✏️</span> 
                                         </a>
                                         <a href="delete_duration.php?id=<?= $dur['id'] ?>" class="btn-delete" aria-label="Διαγραφή Διάρκειας <?= htmlspecialchars($dur['months']) ?> μηνών">
-                                            <span class="action-icon">❌</span> Διαγραφή
+                                            <span class="action-icon">❌</span> 
                                         </a>
                                     </td>
                                 </tr>
