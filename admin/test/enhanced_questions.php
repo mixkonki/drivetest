@@ -1160,5 +1160,5 @@ if ($csv_has_headers) {
 
 // Επεξεργασία κάθε γραμμής
 $line_number = $csv_has_headers ? 2 : 1;
-
-while (($data = fgetcs
+while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {}
+    // Εύρεση των πεδίων με βάση την αντιστοίχιση στηλών 
