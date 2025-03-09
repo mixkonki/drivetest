@@ -337,6 +337,7 @@ if ($action === 'log_client_error') {
     echo json_encode(["success" => true, "message" => "Σφάλμα καταγράφηκε."]);
     exit();
 }
+
 // ✅ Ενημέρωση Ερώτησης
 if ($action === 'update_question') {
     logMessage("🔍 [INFO] Ξεκίνησε ενημέρωση ερώτησης...");
@@ -539,6 +540,7 @@ if ($action === 'update_question') {
     ]);
     exit();
 }
+
 // ✅ Διαγραφή Ερώτησης
 if ($action === 'delete_question') {
     logMessage("🔍 [INFO] Ξεκίνησε διαγραφή ερώτησης...");

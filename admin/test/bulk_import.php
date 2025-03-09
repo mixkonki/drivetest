@@ -32,17 +32,17 @@ $created_chapters = [];
 // Ανάκτηση κατηγοριών
 $categories_query = "SELECT id, name FROM test_categories ORDER BY name ASC";
 $categories_result = $mysqli->query($categories_query);
-$categories = $categories_result->fetch_all(MYSQLI_ASSOC);
+$categories = $categories_result ? $categories_result->fetch_all(MYSQLI_ASSOC) : [];
 
 // Ανάκτηση όλων των υποκατηγοριών
 $subcategories_query = "SELECT s.id, s.name, s.test_category_id FROM test_subcategories s ORDER BY s.name ASC";
 $subcategories_result = $mysqli->query($subcategories_query);
-$subcategories = $subcategories_result->fetch_all(MYSQLI_ASSOC);
+$subcategories = $subcategories_result ? $subcategories_result->fetch_all(MYSQLI_ASSOC) : [];
 
 // Ανάκτηση όλων των κεφαλαίων
 $chapters_query = "SELECT c.id, c.name, c.subcategory_id FROM test_chapters c ORDER BY c.name ASC";
 $chapters_result = $mysqli->query($chapters_query);
-$chapters = $chapters_result->fetch_all(MYSQLI_ASSOC);
+$chapters = $chapters_result ? $chapters_result->fetch_all(MYSQLI_ASSOC) : [];
 
 /**
  * Συνάρτηση για εύρεση ή δημιουργία κατηγορίας βάσει ονόματος
@@ -122,6 +122,32 @@ function findOrCreateSubcategory($mysqli, $name, $category_id) {
 }
 
 /**
+ * Καθαρισμός κωδικοποίησης για ελληνικούς χαρακτήρες
+ */
+function clean_encoding($string) {
+    if (empty($string)) {
+        return '';
+    }
+    // Αφαίρεση BOM αν υπάρχει
+    $string = str_replace("\xEF\xBB\xBF", '', $string);
+    
+    // Μετατροπή από διάφορες κωδικοποιήσεις σε UTF-8
+    $encodings = ['UTF-8', 'ISO-8859-7', 'Windows-1253'];
+    
+    // Δοκιμή διαφορετικών κωδικοποιήσεων
+    foreach ($encodings as $encoding) {
+        $decoded = @mb_convert_encoding($string, 'UTF-8', $encoding);
+        if ($decoded !== false) {
+            $string = $decoded;
+            break;
+        }
+    }
+    
+    // Καθαρισμός περιττών κενών διαστημάτων
+    return trim(preg_replace('/\s+/', ' ', $string));
+}
+
+/**
  * Συνάρτηση για εύρεση ή δημιουργία κεφαλαίου βάσει ονόματος και υποκατηγορίας
  */
 function findOrCreateChapter($mysqli, $name, $subcategory_id) {
@@ -174,44 +200,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file']) && $_FIL
         // Ανάγνωση της πρώτης γραμμής (επικεφαλίδες)
         $headers = fgetcsv($handle, 0, $delimiter);
         
-        // Έλεγχος κωδικοποίησης και μετατροπή, αν χρειάζεται
-        $headers = array_map(function($header) {
-            return mb_convert_encoding($header, 'UTF-8', 'UTF-8, ISO-8859-7, Windows-1253');
-        }, $headers);
-        
-        $file_headers = $headers;
-        logDebug("Επικεφαλίδες: " . implode(", ", $headers));
-        
-        // Έλεγχος αν το CSV έχει στήλες κατηγοριοποίησης
-        $has_categorization = false;
-        if (count($headers) >= 6) {
-            // Ελέγχουμε αν οι πρώτες τρεις στήλες είναι κατηγορία, υποκατηγορία, κεφάλαιο
-            $possible_cat_headers = ['κατηγορία', 'category', 'κατηγορια'];
-            $possible_subcat_headers = ['υποκατηγορία', 'subcategory', 'υποκατηγορια'];
-            $possible_chapter_headers = ['κεφάλαιο', 'chapter', 'κεφαλαιο'];
+        if ($headers !== FALSE) {
+            // Έλεγχος κωδικοποίησης και μετατροπή, αν χρειάζεται
+            $headers = array_map('clean_encoding', $headers);
+            $file_headers = $headers;
+            logDebug("Επικεφαλίδες: " . implode(", ", $headers));
             
-            $header0_lower = mb_strtolower($headers[0]);
-            $header1_lower = mb_strtolower($headers[1]);
-            $header2_lower = mb_strtolower($headers[2]);
-            
-            if (in_array($header0_lower, $possible_cat_headers) && 
-                in_array($header1_lower, $possible_subcat_headers) && 
-                in_array($header2_lower, $possible_chapter_headers)) {
-                $has_categorization = true;
-                logDebug("Εντοπίστηκαν στήλες κατηγοριοποίησης στο CSV");
+            // Έλεγχος αν το CSV έχει στήλες κατηγοριοποίησης
+            $has_categorization = false;
+            if (count($headers) >= 6) {
+                // Ελέγχουμε αν οι πρώτες τρεις στήλες είναι κατηγορία, υποκατηγορία, κεφάλαιο
+                $possible_cat_headers = ['κατηγορία', 'category', 'κατηγορια'];
+                $possible_subcat_headers = ['υποκατηγορία', 'subcategory', 'υποκατηγορια'];
+                $possible_chapter_headers = ['κεφάλαιο', 'chapter', 'κεφαλαιο'];
+                
+                $header0_lower = mb_strtolower($headers[0]);
+                $header1_lower = mb_strtolower($headers[1]);
+                $header2_lower = mb_strtolower($headers[2]);
+                
+                if (in_array($header0_lower, $possible_cat_headers) && 
+                    in_array($header1_lower, $possible_subcat_headers) && 
+                    in_array($header2_lower, $possible_chapter_headers)) {
+                    $has_categorization = true;
+                    logDebug("Εντοπίστηκαν στήλες κατηγοριοποίησης στο CSV");
+                }
             }
-        }
-        
-        // Λήψη των πρώτων 5 γραμμών για προεπισκόπηση
-        $row_count = 0;
-        while (($data = fgetcsv($handle, 0, $delimiter)) !== FALSE && $row_count < 5) {
-            // Διορθώνουμε την κωδικοποίηση των δεδομένων
-            $data = array_map(function($cell) {
-                return mb_convert_encoding($cell, 'UTF-8', 'UTF-8, ISO-8859-7, Windows-1253');
-            }, $data);
             
-            $previewData[] = $data;
-            $row_count++;
+            // Λήψη των πρώτων 5 γραμμών για προεπισκόπηση
+            $row_count = 0;
+            while (($data = fgetcsv($handle, 0, $delimiter)) !== FALSE && $row_count < 5) {
+                // Διορθώνουμε την κωδικοποίηση των δεδομένων
+                $data = array_map('clean_encoding', $data);
+                
+                $previewData[] = $data;
+                $row_count++;
+            }
+        } else {
+            $import_error = "Το αρχείο CSV είναι κενό ή έχει μη έγκυρη μορφή.";
+            logDebug("Σφάλμα: Κενό ή μη έγκυρο CSV");
         }
         
         fclose($handle);
@@ -221,8 +247,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file']) && $_FIL
 }
 
 // Επεξεργασία της φόρμας εισαγωγής
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) && isset($_POST['submit_import'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_import'])) {
     $use_csv_categorization = isset($_POST['use_csv_categorization']) ? $_POST['use_csv_categorization'] == 'yes' : false;
+    
+    // Έλεγχος αν έχουμε έγκυρο αρχείο CSV
+    $valid_file = false;
+    
+    if (isset($_FILES['csv_file_hidden']) && $_FILES['csv_file_hidden']['error'] === UPLOAD_ERR_OK) {
+        $tmp_file = $_FILES['csv_file_hidden']['tmp_name'];
+        $valid_file = true;
+    } elseif (isset($_FILES['csv_file']) && $_FILES['csv_file']['error'] === UPLOAD_ERR_OK) {
+        $tmp_file = $_FILES['csv_file']['tmp_name'];
+        $valid_file = true;
+    } else {
+        $import_error = "Λείπει το αρχείο CSV.";
+        logDebug("Σφάλμα: Λείπει το αρχείο CSV");
+    }
     
     // Αν δεν χρησιμοποιούμε κατηγοριοποίηση από το CSV, ελέγχουμε ότι έχουν επιλεγεί τα απαραίτητα
     if (!$use_csv_categorization) {
@@ -233,17 +273,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) &
         if ($category_id === 0 || $subcategory_id === 0 || $chapter_id === 0) {
             $import_error = "Παρακαλώ επιλέξτε κατηγορία, υποκατηγορία και κεφάλαιο ή ενεργοποιήστε την κατηγοριοποίηση από το CSV.";
             logDebug("Σφάλμα: Λείπουν υποχρεωτικά πεδία");
+            $valid_file = false;
         }
     }
     
-    if (!isset($import_error)) {
+    if ($valid_file && !isset($import_error)) {
         $delimiter = $_POST['delimiter'];
         if ($delimiter === 'tab') $delimiter = "\t";
         
         logDebug("Εισαγωγή CSV με: use_csv_categorization=" . ($use_csv_categorization ? "yes" : "no") . ", delimiter='$delimiter'");
-        
-        // Αντιγραφή του προσωρινού αρχείου
-        $tmp_file = $_FILES['csv_file_hidden']['tmp_name'];
         
         // Επεξεργασία του ZIP (αν υπάρχει)
         $media_files = [];
@@ -272,272 +310,273 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) &
             // Ανάγνωση της πρώτης γραμμής (επικεφαλίδες)
             $headers = fgetcsv($handle, 0, $delimiter);
             
-            // Έλεγχος κωδικοποίησης και μετατροπή, αν χρειάζεται
-            $headers = array_map(function($header) {
-                return mb_convert_encoding($header, 'UTF-8', 'UTF-8, ISO-8859-7, Windows-1253');
-            }, $headers);
-            
-            logDebug("Επικεφαλίδες για εισαγωγή: " . implode(", ", $headers));
-            
-            // Έλεγχος αν το CSV έχει στήλες κατηγοριοποίησης και τις χρησιμοποιούμε
-            $has_categorization = false;
-            $category_index = -1;
-            $subcategory_index = -1;
-            $chapter_index = -1;
-            $offset = 0;
-            
-            if ($use_csv_categorization && count($headers) >= 6) {
-                // Ελέγχουμε αν οι πρώτες τρεις στήλες είναι κατηγορία, υποκατηγορία, κεφάλαιο
-                $possible_cat_headers = ['κατηγορία', 'category', 'κατηγορια'];
-                $possible_subcat_headers = ['υποκατηγορία', 'subcategory', 'υποκατηγορια'];
-                $possible_chapter_headers = ['κεφάλαιο', 'chapter', 'κεφαλαιο'];
+            if ($headers !== FALSE) {
+                // Έλεγχος κωδικοποίησης και μετατροπή, αν χρειάζεται
+                $headers = array_map('clean_encoding', $headers);
                 
-                $header0_lower = mb_strtolower($headers[0]);
-                $header1_lower = mb_strtolower($headers[1]);
-                $header2_lower = mb_strtolower($headers[2]);
+                logDebug("Επικεφαλίδες για εισαγωγή: " . implode(", ", $headers));
                 
-                if (in_array($header0_lower, $possible_cat_headers) && 
-                    in_array($header1_lower, $possible_subcat_headers) && 
-                    in_array($header2_lower, $possible_chapter_headers)) {
-                    $has_categorization = true;
-                    $category_index = 0;
-                    $subcategory_index = 1;
-                    $chapter_index = 2;
-                    $offset = 3; // Μετατόπιση για τα υπόλοιπα δεδομένα
-                    logDebug("Χρήση στηλών κατηγοριοποίησης από το CSV");
+                // Έλεγχος αν το CSV έχει στήλες κατηγοριοποίησης και τις χρησιμοποιούμε
+                $has_categorization = false;
+                $category_index = -1;
+                $subcategory_index = -1;
+                $chapter_index = -1;
+                $offset = 0;
+                
+                if ($use_csv_categorization && count($headers) >= 6) {
+                    // Ελέγχουμε αν οι πρώτες τρεις στήλες είναι κατηγορία, υποκατηγορία, κεφάλαιο
+                    $possible_cat_headers = ['κατηγορία', 'category', 'κατηγορια'];
+                    $possible_subcat_headers = ['υποκατηγορία', 'subcategory', 'υποκατηγορια'];
+                    $possible_chapter_headers = ['κεφάλαιο', 'chapter', 'κεφαλαιο'];
+                    
+                    $header0_lower = mb_strtolower($headers[0]);
+                    $header1_lower = mb_strtolower($headers[1]);
+                    $header2_lower = mb_strtolower($headers[2]);
+                    
+                    if (in_array($header0_lower, $possible_cat_headers) && 
+                        in_array($header1_lower, $possible_subcat_headers) && 
+                        in_array($header2_lower, $possible_chapter_headers)) {
+                        $has_categorization = true;
+                        $category_index = 0;
+                        $subcategory_index = 1;
+                        $chapter_index = 2;
+                        $offset = 3; // Μετατόπιση για τα υπόλοιπα δεδομένα
+                        logDebug("Χρήση στηλών κατηγοριοποίησης από το CSV");
+                    }
                 }
-            }
-            
-            $question_index = $offset + 0; // Πρώτη στήλη μετά την κατηγοριοποίηση
-            $explanation_index = $offset + 1;
-            $correct_answer_index_index = $offset + 2;
-            $answers_start_index = $offset + 3;
-            
-            // Έλεγχος δομής αρχείου
-            $valid_format = false;
-            if (count($headers) >= $answers_start_index + 1) {
-                // Αναμενόμενες επικεφαλίδες για το νέο format μετά την κατηγοριοποίηση:
-                // Ερώτηση, Επεξήγηση, Σωστή απάντηση, Απάντηση 1, Απάντηση 2...
-                $header_q_lower = mb_strtolower($headers[$question_index]);
-                if (strpos($header_q_lower, 'ερώτηση') !== false || strpos($header_q_lower, 'question') !== false) {
-                    $valid_format = true;
-                }
-            }
-            
-            if (!$valid_format) {
-                $import_error = "Μη έγκυρη μορφή CSV. Βεβαιωθείτε ότι το αρχείο περιέχει τις σωστές επικεφαλίδες.";
-                logDebug("Σφάλμα: Μη έγκυρη μορφή CSV");
-            } else {
-                $line_number = 1; // Ξεκινάμε από 1 για να συμπεριλάβουμε την επικεφαλίδα
                 
-                // Επεξεργασία κάθε γραμμής
-                while (($data = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
-                    $line_number++;
-                    
-                    // Διορθώνουμε την κωδικοποίηση των δεδομένων
-                    $data = array_map(function($cell) {
-                        return mb_convert_encoding($cell, 'UTF-8', 'UTF-8, ISO-8859-7, Windows-1253');
-                    }, $data);
-                    
-                    // Έλεγχος αν έχουμε αρκετά δεδομένα
-                    if (count($data) < $answers_start_index + 1) {
-                        $errorLines[] = [
-                            'line' => $line_number,
-                            'error' => "Ανεπαρκή δεδομένα στη γραμμή",
-                            'data' => implode($delimiter, $data)
-                        ];
-                        $failed_imports++;
-                        continue;
+                $question_index = $offset + 0; // Πρώτη στήλη μετά την κατηγοριοποίηση
+                $explanation_index = $offset + 1;
+                $correct_answer_index_index = $offset + 2;
+                $answers_start_index = $offset + 3;
+                
+                // Έλεγχος δομής αρχείου
+                $valid_format = false;
+                if (count($headers) >= $answers_start_index + 1) {
+                    // Αναμενόμενες επικεφαλίδες για το νέο format μετά την κατηγοριοποίηση:
+                    // Ερώτηση, Επεξήγηση, Σωστή απάντηση, Απάντηση 1, Απάντηση 2...
+                    $header_q_lower = mb_strtolower($headers[$question_index]);
+                    if (strpos($header_q_lower, 'ερώτηση') !== false || strpos($header_q_lower, 'question') !== false) {
+                        $valid_format = true;
                     }
+                }
+                
+                if (!$valid_format) {
+                    $import_error = "Μη έγκυρη μορφή CSV. Βεβαιωθείτε ότι το αρχείο περιέχει τις σωστές επικεφαλίδες.";
+                    logDebug("Σφάλμα: Μη έγκυρη μορφή CSV");
+                } else {
+                    $line_number = 1; // Ξεκινάμε από 1 για να συμπεριλάβουμε την επικεφαλίδα
                     
-                    // Διαχείριση της κατηγοριοποίησης
-                    $current_category_id = $category_id;
-                    $current_subcategory_id = $subcategory_id;
-                    $current_chapter_id = $chapter_id;
-                    
-                    if ($has_categorization && $use_csv_categorization) {
-                        // Χρήση των δεδομένων από το CSV για κατηγοριοποίηση
-                        $category_name = isset($data[$category_index]) ? trim($data[$category_index]) : '';
-                        $subcategory_name = isset($data[$subcategory_index]) ? trim($data[$subcategory_index]) : '';
-                        $chapter_name = isset($data[$chapter_index]) ? trim($data[$chapter_index]) : '';
+                    // Επεξεργασία κάθε γραμμής
+                    while (($data = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
+                        $line_number++;
                         
-                        if (empty($category_name) || empty($subcategory_name) || empty($chapter_name)) {
+                        // Διορθώνουμε την κωδικοποίηση των δεδομένων
+                        $data = array_map('clean_encoding', $data);
+                        
+                        // Έλεγχος αν έχουμε αρκετά δεδομένα
+                        if (count($data) < $answers_start_index + 1) {
                             $errorLines[] = [
                                 'line' => $line_number,
-                                'error' => "Λείπουν δεδομένα κατηγοριοποίησης (κατηγορία/υποκατηγορία/κεφάλαιο)",
+                                'error' => "Ανεπαρκή δεδομένα στη γραμμή",
                                 'data' => implode($delimiter, $data)
                             ];
                             $failed_imports++;
                             continue;
                         }
                         
-                        // Εύρεση ή δημιουργία των απαραίτητων κατηγοριών
-                        $current_category_id = findOrCreateCategory($mysqli, $category_name);
-                        if ($current_category_id <= 0) {
-                            $errorLines[] = [
-                                'line' => $line_number,
-                                'error' => "Αδυναμία εύρεσης ή δημιουργίας κατηγορίας: $category_name",
-                                'data' => implode($delimiter, $data)
-                            ];
-                            $failed_imports++;
-                            continue;
-                        }
+                        // Διαχείριση της κατηγοριοποίησης
+                        $current_category_id = $category_id ?? 0;
+                        $current_subcategory_id = $subcategory_id ?? 0;
+                        $current_chapter_id = $chapter_id ?? 0;
                         
-                        $current_subcategory_id = findOrCreateSubcategory($mysqli, $subcategory_name, $current_category_id);
-                        if ($current_subcategory_id <= 0) {
-                            $errorLines[] = [
-                                'line' => $line_number,
-                                'error' => "Αδυναμία εύρεσης ή δημιουργίας υποκατηγορίας: $subcategory_name",
-                                'data' => implode($delimiter, $data)
-                            ];
-                            $failed_imports++;
-                            continue;
-                        }
-                        
-                        $current_chapter_id = findOrCreateChapter($mysqli, $chapter_name, $current_subcategory_id);
-                        if ($current_chapter_id <= 0) {
-                            $errorLines[] = [
-                                'line' => $line_number,
-                                'error' => "Αδυναμία εύρεσης ή δημιουργίας κεφαλαίου: $chapter_name",
-                                'data' => implode($delimiter, $data)
-                            ];
-                            $failed_imports++;
-                            continue;
-                        }
-                    }
-                    
-                    // Προετοιμασία δεδομένων
-                    $question_text = isset($data[$question_index]) ? trim($data[$question_index]) : '';
-                    $explanation = isset($data[$explanation_index]) ? trim($data[$explanation_index]) : '';
-                    $correct_answer_index = isset($data[$correct_answer_index_index]) ? (intval($data[$correct_answer_index_index]) - 1) : -1; // Μετατροπή από 1-based σε 0-based
-                    
-                    // Έλεγχος εγκυρότητας βασικών δεδομένων
-                    if (empty($question_text) || $correct_answer_index < 0 || $correct_answer_index >= count($data) - $answers_start_index) {
-                        $errorLines[] = [
-                            'line' => $line_number,
-                            'error' => "Λανθασμένος δείκτης σωστής απάντησης ή κενή ερώτηση",
-                            'data' => implode($delimiter, $data)
-                        ];
-                        $failed_imports++;
-                        continue;
-                    }
-                    
-                    // Συλλογή των απαντήσεων
-                    $answers = array_slice($data, $answers_start_index);
-                    if (empty($answers)) {
-                        $errorLines[] = [
-                            'line' => $line_number,
-                            'error' => "Δεν βρέθηκαν απαντήσεις",
-                            'data' => implode($delimiter, $data)
-                        ];
-                        $failed_imports++;
-                        continue;
-                    }
-                    
-                    // Εύρεση εικόνων από το ZIP (αν υπάρχουν)
-                    $question_media = '';
-                    $explanation_media = '';
-                    $answer_media = [];
-                    
-                    // Χρήση του αριθμού γραμμής ως αναγνωριστικό για τις εικόνες
-                    $media_prefix = $line_number - 1; // -1 για να λάβουμε υπόψη την επικεφαλίδα
-                    
-                    if (!empty($media_files)) {
-                        // Έλεγχος για εικόνα ερώτησης (διάφορα πιθανά ονόματα)
-                        foreach (["question_$media_prefix.png", "question_$media_prefix.jpg", "q_$media_prefix.png", "q_$media_prefix.jpg"] as $possible_name) {
-                            if (isset($media_files[$possible_name])) {
-                                $question_media = $possible_name;
-                                break;
+                        if ($has_categorization && $use_csv_categorization) {
+                            // Χρήση των δεδομένων από το CSV για κατηγοριοποίηση
+                            $category_name = isset($data[$category_index]) ? trim($data[$category_index]) : '';
+                            $subcategory_name = isset($data[$subcategory_index]) ? trim($data[$subcategory_index]) : '';
+                            $chapter_name = isset($data[$chapter_index]) ? trim($data[$chapter_index]) : '';
+                            
+                            if (empty($category_name) || empty($subcategory_name) || empty($chapter_name)) {
+                                $errorLines[] = [
+                                    'line' => $line_number,
+                                    'error' => "Λείπουν δεδομένα κατηγοριοποίησης (κατηγορία/υποκατηγορία/κεφάλαιο)",
+                                    'data' => implode($delimiter, $data)
+                                ];
+                                $failed_imports++;
+                                continue;
+                            }
+                            
+                            // Εύρεση ή δημιουργία των απαραίτητων κατηγοριών
+                            $current_category_id = findOrCreateCategory($mysqli, $category_name);
+                            if ($current_category_id <= 0) {
+                                $errorLines[] = [
+                                    'line' => $line_number,
+                                    'error' => "Αδυναμία εύρεσης ή δημιουργίας κατηγορίας: $category_name",
+                                    'data' => implode($delimiter, $data)
+                                ];
+                                $failed_imports++;
+                                continue;
+                            }
+                            
+                            $current_subcategory_id = findOrCreateSubcategory($mysqli, $subcategory_name, $current_category_id);
+                            if ($current_subcategory_id <= 0) {
+                                $errorLines[] = [
+                                    'line' => $line_number,
+                                    'error' => "Αδυναμία εύρεσης ή δημιουργίας υποκατηγορίας: $subcategory_name",
+                                    'data' => implode($delimiter, $data)
+                                ];
+                                $failed_imports++;
+                                continue;
+                            }
+                            
+                            $current_chapter_id = findOrCreateChapter($mysqli, $chapter_name, $current_subcategory_id);
+                            if ($current_chapter_id <= 0) {
+                                $errorLines[] = [
+                                    'line' => $line_number,
+                                    'error' => "Αδυναμία εύρεσης ή δημιουργίας κεφαλαίου: $chapter_name",
+                                    'data' => implode($delimiter, $data)
+                                ];
+                                $failed_imports++;
+                                continue;
                             }
                         }
                         
-                        // Έλεγχος για εικόνα επεξήγησης
-                        foreach (["explanation_$media_prefix.png", "explanation_$media_prefix.jpg", "exp_$media_prefix.png", "exp_$media_prefix.jpg"] as $possible_name) {
-                            if (isset($media_files[$possible_name])) {
-                                $explanation_media = $possible_name;
-                                break;
-                            }
+                        // Προετοιμασία δεδομένων
+                        $question_text = isset($data[$question_index]) ? trim($data[$question_index]) : '';
+                        $explanation = isset($data[$explanation_index]) ? trim($data[$explanation_index]) : '';
+                        $correct_answer_index = isset($data[$correct_answer_index_index]) ? (intval($data[$correct_answer_index_index]) - 1) : -1; // Μετατροπή από 1-based σε 0-based
+                        
+                        // Έλεγχος εγκυρότητας βασικών δεδομένων
+                        if (empty($question_text) || $correct_answer_index < 0 || $correct_answer_index >= count($data) - $answers_start_index) {
+                            $errorLines[] = [
+                                'line' => $line_number,
+                                'error' => "Λανθασμένος δείκτης σωστής απάντησης ή κενή ερώτηση",
+                                'data' => implode($delimiter, $data)
+                            ];
+                            $failed_imports++;
+                            continue;
                         }
                         
-                        // Έλεγχος για εικόνες απαντήσεων
-                        foreach ($answers as $index => $answer) {
-                            $answer_index = $index + 1;
-                            foreach (["answer_{$media_prefix}_{$answer_index}.png", "answer_{$media_prefix}_{$answer_index}.jpg", "a_{$media_prefix}_{$answer_index}.png", "a_{$media_prefix}_{$answer_index}.jpg"] as $possible_name) {
+                        // Συλλογή των απαντήσεων
+                        $answers = array_slice($data, $answers_start_index);
+                        if (empty($answers)) {
+                            $errorLines[] = [
+                                'line' => $line_number,
+                                'error' => "Δεν βρέθηκαν απαντήσεις",
+                                'data' => implode($delimiter, $data)
+                            ];
+                            $failed_imports++;
+                            continue;
+                        }
+                        
+                        // Εύρεση εικόνων από το ZIP (αν υπάρχουν)
+                        $question_media = '';
+                        $explanation_media = '';
+                        $answer_media = [];
+                        
+                        // Χρήση του αριθμού γραμμής ως αναγνωριστικό για τις εικόνες
+                        $media_prefix = $line_number - 1; // -1 για να λάβουμε υπόψη την επικεφαλίδα
+                        
+                        if (!empty($media_files)) {
+                            // Έλεγχος για εικόνα ερώτησης (διάφορα πιθανά ονόματα)
+                            foreach (["question_$media_prefix.png", "question_$media_prefix.jpg", "q_$media_prefix.png", "q_$media_prefix.jpg"] as $possible_name) {
                                 if (isset($media_files[$possible_name])) {
-                                    $answer_media[$index] = $possible_name;
+                                    $question_media = $possible_name;
                                     break;
                                 }
                             }
-                        }
-                    }
-                    
-                    // Έναρξη συναλλαγής
-                    $mysqli->begin_transaction();
-                    
-                    try {
-                        // Εισαγωγή ερώτησης
-                        $question_type = 'single_choice'; // Προεπιλογή: μονής επιλογής
-                        $author_id = $_SESSION['user_id'];
-                        $status = 'active';
-                        
-                        $question_query = "INSERT INTO questions (chapter_id, author_id, question_text, question_explanation, question_type, question_media, explanation_media, status)
-                                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                        $question_stmt = $mysqli->prepare($question_query);
-                        $question_stmt->bind_param("iissssss", $current_chapter_id, $author_id, $question_text, $explanation, $question_type, $question_media, $explanation_media, $status);
-                        
-                        if ($question_stmt->execute()) {
-                            $question_id = $question_stmt->insert_id;
                             
-                            // Εισαγωγή απαντήσεων
-                            $answer_success = true;
-                            foreach ($answers as $index => $answer_text) {
-                                if (empty(trim($answer_text))) continue;
-                                
-                                $is_correct = ($index == $correct_answer_index) ? 1 : 0;
-                                $current_answer_media = isset($answer_media[$index]) ? $answer_media[$index] : '';
-                                
-                                $answer_query = "INSERT INTO test_answers (question_id, answer_text, is_correct, answer_media) VALUES (?, ?, ?, ?)";
-                                $answer_stmt = $mysqli->prepare($answer_query);
-                                $answer_stmt->bind_param("isis", $question_id, $answer_text, $is_correct, $current_answer_media);
-                                
-                                if (!$answer_stmt->execute()) {
-                                    $answer_success = false;
-                                    throw new Exception("Σφάλμα εισαγωγής απάντησης: " . $answer_stmt->error);
+                            // Έλεγχος για εικόνα επεξήγησης
+                            foreach (["explanation_$media_prefix.png", "explanation_$media_prefix.jpg", "exp_$media_prefix.png", "exp_$media_prefix.jpg"] as $possible_name) {
+                                if (isset($media_files[$possible_name])) {
+                                    $explanation_media = $possible_name;
+                                    break;
                                 }
                             }
                             
-                            // Εάν όλα πήγαν καλά, επικύρωση της συναλλαγής
-                            if ($answer_success) {
-                                $mysqli->commit();
-                                $total_imported++;
-                                $successfulImports[] = [
-                                    'question_id' => $question_id,
-                                    'question_text' => $question_text
-                                ];
-                            } else {
-                                throw new Exception("Σφάλμα εισαγωγής απαντήσεων");
+                            // Έλεγχος για εικόνες απαντήσεων
+                            foreach ($answers as $index => $answer) {
+                                $answer_index = $index + 1;
+                                foreach (["answer_{$media_prefix}_{$answer_index}.png", "answer_{$media_prefix}_{$answer_index}.jpg", "a_{$media_prefix}_{$answer_index}.png", "a_{$media_prefix}_{$answer_index}.jpg"] as $possible_name) {
+                                    if (isset($media_files[$possible_name])) {
+                                        $answer_media[$index] = $possible_name;
+                                        break;
+                                    }
+                                }
                             }
-                        } else {
-                            throw new Exception("Σφάλμα εισαγωγής ερώτησης: " . $question_stmt->error);
                         }
-                    } catch (Exception $e) {
-                        // Αναίρεση της συναλλαγής σε περίπτωση σφάλματος
-                        $mysqli->rollback();
-                        $errorLines[] = [
-                            'line' => $line_number,
-                            'error' => $e->getMessage(),
-                            'data' => implode($delimiter, $data)
-                        ];
-                        $failed_imports++;
+                        
+                        // Έναρξη συναλλαγής
+                        $mysqli->begin_transaction();
+                        
+                        try {
+                            // Εισαγωγή ερώτησης
+                            $question_type = 'single_choice'; // Προεπιλογή: μονής επιλογής
+                            $author_id = $_SESSION['user_id'] ?? 1;
+                            $status = 'active';
+                            
+                            $question_query = "INSERT INTO questions (chapter_id, author_id, question_text, question_explanation, question_type, question_media, explanation_media, status)
+                                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                            $question_stmt = $mysqli->prepare($question_query);
+                            $question_stmt->bind_param("iissssss", $current_chapter_id, $author_id, $question_text, $explanation, $question_type, $question_media, $explanation_media, $status);
+                            
+                            if ($question_stmt->execute()) {
+                                $question_id = $question_stmt->insert_id;
+                                
+                                // Εισαγωγή απαντήσεων
+                                $answer_success = true;
+                                foreach ($answers as $index => $answer_text) {
+                                    if (empty(trim($answer_text))) continue;
+                                    
+                                    $is_correct = ($index == $correct_answer_index) ? 1 : 0;
+                                    $current_answer_media = isset($answer_media[$index]) ? $answer_media[$index] : '';
+                                    
+                                    $answer_query = "INSERT INTO test_answers (question_id, answer_text, is_correct, answer_media) VALUES (?, ?, ?, ?)";
+                                    $answer_stmt = $mysqli->prepare($answer_query);
+                                    $answer_stmt->bind_param("isis", $question_id, $answer_text, $is_correct, $current_answer_media);
+                                    
+                                    if (!$answer_stmt->execute()) {
+                                        $answer_success = false;
+                                        throw new Exception("Σφάλμα εισαγωγής απάντησης: " . $answer_stmt->error);
+                                    }
+                                }
+                                
+                                // Εάν όλα πήγαν καλά, επικύρωση της συναλλαγής
+                                if ($answer_success) {
+                                    $mysqli->commit();
+                                    $total_imported++;
+                                    $successfulImports[] = [
+                                        'question_id' => $question_id,
+                                        'question_text' => $question_text
+                                    ];
+                                } else {
+                                    throw new Exception("Σφάλμα εισαγωγής απαντήσεων");
+                                }
+                            } else {
+                                throw new Exception("Σφάλμα εισαγωγής ερώτησης: " . $question_stmt->error);
+                            }
+                        } catch (Exception $e) {
+                            // Αναίρεση της συναλλαγής σε περίπτωση σφάλματος
+                            $mysqli->rollback();
+                            $errorLines[] = [
+                                'line' => $line_number,
+                                'error' => $e->getMessage(),
+                                'data' => implode($delimiter, $data)
+                            ];
+                            $failed_imports++;
+                        }
+                    }
+                    
+                    if ($total_imported > 0) {
+                        $import_success = true;
                     }
                 }
-                
-                fclose($handle);
-                
-                if ($total_imported > 0) {
-                    $import_success = true;
-                }
+            } else {
+                $import_error = "Το αρχείο CSV είναι κενό ή έχει μη έγκυρη μορφή.";
+                logDebug("Σφάλμα: Κενό ή μη έγκυρο CSV");
             }
+            
+            fclose($handle);
         } else {
             $import_error = "Δεν ήταν δυνατό το άνοιγμα του αρχείου.";
             logDebug("Σφάλμα: Δεν ήταν δυνατό το άνοιγμα του αρχείου");
@@ -545,68 +584,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) &
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="el">
 <head>
     <meta charset="UTF-8">
     <title>Μαζική Εισαγωγή Ερωτήσεων</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/admin/assets/css/enhanced_bulk_import.css">
-    <style>
-        .categorization-option {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        
-        .categorization-option h4 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .radio-container {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 15px;
-        }
-        
-        .radio-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .radio-option input[type="radio"] {
-            margin: 0;
-        }
-        
-        .category-fields {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px dashed #ddd;
-        }
-        
-        .new-items-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 10px 0;
-        }
-        
-        .new-items-list li {
-            padding: 8px 12px;
-            margin-bottom: 8px;
-            background-color: #f0f8ff;
-            border-left: 3px solid #17a2b8;
-            border-radius: 3px;
-        }
-    </style>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/admin/assets/css/categorization_styles.css">
 </head>
 <body>
 <?php require_once '../includes/sidebar.php'; ?>
-
 <main class="admin-container">
     <h2 class="admin-title">📤 Μαζική Εισαγωγή Ερωτήσεων</h2>
     
@@ -718,7 +705,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) &
                     <tbody>
                         <?php foreach ($previewData as $row): ?>
                             <tr>
-                                <?php foreach ($row as $cell): ?>
+                                <?php foreach ($row as $index => $cell): ?>
                                     <td><?= htmlspecialchars($cell) ?></td>
                                 <?php endforeach; ?>
                                 
@@ -742,9 +729,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) &
                     // Έλεγχος αν το CSV έχει στήλες κατηγοριοποίησης
                     $has_categorization_columns = false;
                     if (count($file_headers) >= 3) {
-                        $header0_lower = mb_strtolower($file_headers[0]);
-                        $header1_lower = mb_strtolower($file_headers[1]);
-                        $header2_lower = mb_strtolower($file_headers[2]);
+                        $header0_lower = mb_strtolower($file_headers[0] ?? '');
+                        $header1_lower = mb_strtolower($file_headers[1] ?? '');
+                        $header2_lower = mb_strtolower($file_headers[2] ?? '');
                         
                         $possible_cat_headers = ['κατηγορία', 'category', 'κατηγορια'];
                         $possible_subcat_headers = ['υποκατηγορία', 'subcategory', 'υποκατηγορια'];
@@ -785,7 +772,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) &
                             <select name="subcategory_id" id="subcategory_id" required disabled>
                                 <option value="">-- Επιλέξτε πρώτα Κατηγορία --</option>
                                 <?php foreach ($subcategories as $subcategory): ?>
-                                    <option value="<?= $subcategory['id'] ?>" data-category="<?= $subcategory['test_category_id'] ?>"><?= htmlspecialchars($subcategory['name']) ?></option>
+                                    <option value="<?= $subcategory['id'] ?>" data-category="<?= $subcategory['test_category_id'] ?>" style="display:none;"><?= htmlspecialchars($subcategory['name']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -795,7 +782,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) &
                             <select name="chapter_id" id="chapter_id" required disabled>
                                 <option value="">-- Επιλέξτε πρώτα Υποκατηγορία --</option>
                                 <?php foreach ($chapters as $chapter): ?>
-                                    <option value="<?= $chapter['id'] ?>" data-subcategory="<?= $chapter['subcategory_id'] ?>"><?= htmlspecialchars($chapter['name']) ?></option>
+                                    <option value="<?= $chapter['id'] ?>" data-subcategory="<?= $chapter['subcategory_id'] ?>" style="display:none;"><?= htmlspecialchars($chapter['name']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -803,7 +790,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) &
                 </div>
                 
                 <!-- Κρυφά πεδία για τη διατήρηση των δεδομένων από την προεπισκόπηση -->
-                <input type="hidden" name="delimiter" value="<?= htmlspecialchars($_POST['delimiter']) ?>">
+                <input type="hidden" name="delimiter" value="<?= htmlspecialchars($_POST['delimiter'] ?? ';') ?>">
                 <input type="file" name="csv_file_hidden" id="csv_file_hidden" style="display: none;">
                 <input type="hidden" name="submit_import" value="1">
                 
@@ -919,127 +906,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file_hidden']) &
         </div>
     <?php endif; ?>
 </main>
-
 <?php require_once '../includes/admin_footer.php'; ?>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    initCategoryChain();
-    initCategorizationOptions();
-    
-    function initCategorizationOptions() {
-        const useCSVYes = document.getElementById('use_csv_yes');
-        const useCSVNo = document.getElementById('use_csv_no');
-        const categoryFields = document.getElementById('category-selection-fields');
-        
-        if (useCSVYes && useCSVNo && categoryFields) {
-            useCSVYes.addEventListener('change', function() {
-                if (this.checked) {
-                    categoryFields.style.display = 'none';
-                }
-            });
-            
-            useCSVNo.addEventListener('change', function() {
-                if (this.checked) {
-                    categoryFields.style.display = 'block';
-                }
-            });
-        }
-    }
-    
-    function initCategoryChain() {
-        const categorySelect = document.getElementById('category_id');
-        const subcategorySelect = document.getElementById('subcategory_id');
-        const chapterSelect = document.getElementById('chapter_id');
-        
-        if (categorySelect) {
-            categorySelect.addEventListener('change', function() {
-                const categoryId = this.value;
-                
-                // Καθαρισμός και απενεργοποίηση των εξαρτημένων dropdown
-                if (subcategorySelect) {
-                    subcategorySelect.innerHTML = '<option value="">-- Επιλέξτε Υποκατηγορία --</option>';
-                    subcategorySelect.disabled = (categoryId === '');
-                    
-                    // Φίλτρο υποκατηγοριών βάσει της επιλεγμένης κατηγορίας
-                    if (categoryId !== '') {
-                        const options = document.querySelectorAll('select[name="subcategory_id"] option[data-category]');
-                        const fragment = document.createDocumentFragment();
-                        
-                        // Προσθήκη του προεπιλεγμένου option
-                        const defaultOption = document.createElement('option');
-                        defaultOption.value = '';
-                        defaultOption.textContent = '-- Επιλέξτε Υποκατηγορία --';
-                        fragment.appendChild(defaultOption);
-                        
-                        // Προσθήκη των σχετικών υποκατηγοριών
-                        options.forEach(function(option) {
-                            if (option.getAttribute('data-category') === categoryId) {
-                                fragment.appendChild(option.cloneNode(true));
-                            }
-                        });
-                        
-                        subcategorySelect.innerHTML = '';
-                        subcategorySelect.appendChild(fragment);
-                    }
-                }
-                
-                if (chapterSelect) {
-                    chapterSelect.innerHTML = '<option value="">-- Επιλέξτε πρώτα Υποκατηγορία --</option>';
-                    chapterSelect.disabled = true;
-                }
-            });
-        }
-        
-        if (subcategorySelect) {
-            subcategorySelect.addEventListener('change', function() {
-                const subcategoryId = this.value;
-                
-                // Καθαρισμός και απενεργοποίηση του dropdown κεφαλαίων
-                if (chapterSelect) {
-                    chapterSelect.innerHTML = '<option value="">-- Επιλέξτε Κεφάλαιο --</option>';
-                    chapterSelect.disabled = (subcategoryId === '');
-                    
-                    // Φίλτρο κεφαλαίων βάσει της επιλεγμένης υποκατηγορίας
-                    if (subcategoryId !== '') {
-                        const options = document.querySelectorAll('select[name="chapter_id"] option[data-subcategory]');
-                        const fragment = document.createDocumentFragment();
-                        
-                        // Προσθήκη του προεπιλεγμένου option
-                        const defaultOption = document.createElement('option');
-                        defaultOption.value = '';
-                        defaultOption.textContent = '-- Επιλέξτε Κεφάλαιο --';
-                        fragment.appendChild(defaultOption);
-                        
-                        // Προσθήκη των σχετικών κεφαλαίων
-                        options.forEach(function(option) {
-                            if (option.getAttribute('data-subcategory') === subcategoryId) {
-                                fragment.appendChild(option.cloneNode(true));
-                            }
-                        });
-                        
-                        chapterSelect.innerHTML = '';
-                        chapterSelect.appendChild(fragment);
-                    }
-                }
-            });
-        }
-        
-        // Διαχείριση μεταφοράς του αρχείου CSV στο κρυφό input
-        const fileInput = document.getElementById('csv_file');
-        const hiddenFileInput = document.getElementById('csv_file_hidden');
-        
-        if (fileInput && fileInput.files && fileInput.files[0] && hiddenFileInput) {
-            try {
-                const fileTransfer = new DataTransfer();
-                fileTransfer.items.add(fileInput.files[0]);
-                hiddenFileInput.files = fileTransfer.files;
-            } catch (e) {
-                console.error("Σφάλμα μεταφοράς αρχείου:", e);
-            }
-        }
-    }
-});
-</script>
+<!-- Φόρτωση των εξωτερικών αρχείων JavaScript -->
+<script src="<?= BASE_URL ?>/admin/assets/js/bulk_import.js"></script>
+<script src="<?= BASE_URL ?>/admin/assets/js/bulk_import_categorization.js"></script>
+
 </body>
 </html>
