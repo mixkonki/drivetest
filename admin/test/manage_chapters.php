@@ -9,35 +9,51 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: " . BASE_URL . "/public/login.php");
     exit();
 }
+
+// Προσθήκη του ειδικού CSS για τη διαχείριση κεφαλαίων
+$additional_css = '<link rel="stylesheet" href="' . BASE_URL . '/admin/assets/css/chapter_management.css">';
 ?>
 
-<h2>📌 Διαχείριση Κεφαλαίων Τεστ</h2>
+<main class="admin-container">
+    <div class="admin-section-header">
+        <h2 class="admin-title">📚 Διαχείριση Κεφαλαίων</h2>
+        <div class="admin-actions">
+            <button id="add-chapter-btn" class="btn-primary">➕ Προσθήκη Νέου Κεφαλαίου</button>
+            <a href="../dashboard.php" class="btn-secondary">🔙 Επιστροφή στο Dashboard</a>
+        </div>
+    </div>
 
-<!-- 🔹 Πίνακας Κεφαλαίων -->
-<table border="1" id="chapter-table">
-    <thead>
-        <tr>
-            <th>Όνομα</th>
-            <th>Υποκατηγορία</th>
-            <th>Περιγραφή</th>
-            <th>Δράσεις</th>
-        </tr>
-    </thead>
-    <tbody id="chapter-list">
-        <!-- Τα κεφάλαια φορτώνονται μέσω JavaScript -->
-    </tbody>
-</table>
+    <?php if(isset($_GET['success'])): ?>
+        <div class="alert alert-success">
+            <p><?= htmlspecialchars($_GET['success']) ?></p>
+        </div>
+    <?php endif; ?>
+    
+    <?php if(isset($_GET['error'])): ?>
+        <div class="alert alert-danger">
+            <p><?= htmlspecialchars($_GET['error']) ?></p>
+        </div>
+    <?php endif; ?>
 
-<button id="add-chapter-btn" class="btn-primary">➕ Προσθήκη Νέου Κεφαλαίου</button>
-<button onclick="window.location.href='../dashboard.php'" class="btn-secondary">🔙 Επιστροφή στη Διαχείριση</button>
+    <div class="table-responsive">
+        <table class="admin-table" id="chapter-table">
+            <thead>
+                <tr>
+                    <th>Όνομα</th>
+                    <th>Υποκατηγορία</th>
+                    <th>Περιγραφή</th>
+                    <th>Εικονίδιο</th>
+                    <th>Ενέργειες</th>
+                </tr>
+            </thead>
+            <tbody id="chapter-list">
+                <!-- Τα κεφάλαια φορτώνονται μέσω JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</main>
 
-<!-- 🔹 Σωστή τοποθέτηση JavaScript -->
-<script src="../assets/js/chapter_manager.js" defer></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    loadSubcategories();
-    loadChapters(); // 🔹 Βεβαιώσου ότι φορτώνονται και τα κεφάλαια
-});
-</script>
+<script src="../assets/js/chapter_manager.js"></script>
+<script src="../assets/js/chapter_upload.js"></script>
 
 <?php require_once '../includes/admin_footer.php'; ?>

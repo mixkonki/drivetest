@@ -1,0 +1,575 @@
+/* 
+ * DriveTest - Chapter Management CSS
+ * Στυλ για τη διαχείριση κεφαλαίων
+ */
+
+ .admin-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.chapter-form {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.chapter-form h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-large);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-sm);
+}
+
+/* Προεπισκόπηση εικονιδίου */
+.icon-preview {
+    display: flex;
+    align-items: center;
+    margin-top: var(--spacing-sm);
+    gap: var(--spacing-sm);
+}
+
+.icon-preview img {
+    border: 1px solid var(--border-color);
+    padding: 5px;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius-sm);
+}
+
+.icon-preview-label {
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+}
+
+/* Προσαρμογές για τον πίνακα κεφαλαίων */
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: var(--spacing-xl);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.admin-table th {
+    background-color: var(--secondary-color);
+    color: var(--text-white);
+    text-align: left;
+    padding: var(--spacing-md);
+    font-weight: 600;
+}
+
+.admin-table td {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.admin-table tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.admin-table tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Στυλ για κουμπιά ενεργειών */
+.btn-edit, 
+.btn-delete {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: var(--font-size-large);
+    text-decoration: none;
+    display: inline-block;
+    margin-right: var(--spacing-sm);
+    transition: all 0.3s ease;
+}
+
+.btn-edit {
+    color: var(--info-color);
+}
+
+.btn-delete {
+    color: var(--danger-color);
+}
+
+.btn-edit:hover {
+    color: #0b7dda;
+    transform: scale(1.1);
+}
+
+.btn-delete:hover {
+    color: #d32f2f;
+    transform: scale(1.1);
+}
+
+.action-icon {
+    margin-right: var(--spacing-xs);
+}
+
+/* Στυλ για τη φόρμα */
+.form-control {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    margin-top: var(--spacing-xs);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+/* Ειδοποιήσεις */
+.alert {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid var(--success-color);
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid var(--danger-color);
+}
+
+/* Επιπλέον στυλ */
+.text-center {
+    text-align: center;
+}
+
+/* Πίνακας επιβεβαίωσης διαγραφής */
+.confirmation-container {
+    background-color: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    padding: 30px;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.confirmation-header {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.confirmation-icon {
+    margin: 20px auto;
+    width: 80px;
+    height: 80px;
+    background-color: #fff5f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #ffebeb;
+}
+
+.warning-icon {
+    font-size: 40px;
+    color: var(--danger-color);
+}
+
+.confirmation-content {
+    margin-bottom: 30px;
+}
+
+.chapter-preview {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 20px;
+    gap: 15px;
+    justify-content: center;
+}
+
+.chapter-icon-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chapter-icon {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.chapter-details {
+    text-align: left;
+}
+
+.chapter-name {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.chapter-parent {
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.confirmation-message {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: var(--text-dark);
+}
+
+.confirmation-message strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.confirmation-warning {
+    background-color: #fff5f5;
+    padding: 12px;
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid var(--danger-color);
+    color: var(--text-dark);
+    text-align: left;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.confirmation-question {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Στυλ για το ανέβασμα εικόνων */
+.icon-tabs {
+    margin-top: var(--spacing-sm);
+}
+
+.tab-buttons {
+    display: flex;
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    color: var(--text-light);
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    color: var(--primary-color);
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    font-weight: 500;
+}
+
+.tab-content {
+    padding: var(--spacing-md);
+    background-color: #f9f9f9;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.tab-content.hidden {
+    display: none;
+}
+
+.preview-container {
+    width: 150px;
+    height: 150px;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-md);
+    margin: 0 auto var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.preview-container.highlighted {
+    border-color: var(--primary-color);
+    background-color: #f0f0f0;
+}
+
+.preview-container img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.upload-message {
+    text-align: center;
+    color: var(--text-light);
+    font-size: var(--font-size-small);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1;
+}
+
+.icon-emoji {
+    font-size: 24px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.upload-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+    position: relative;
+}
+
+.file-input {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.upload-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-base);
+    transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+    background-color: var(--secondary-dark);
+}
+
+.upload-btn .icon {
+    margin-right: 5px;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: #f0f0f0;
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-small);
+}
+
+.file-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: var(--spacing-xs);
+}
+
+.file-size {
+    margin-right: var(--spacing-xs);
+    color: var(--text-light);
+}
+
+.remove-file {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--danger-color);
+    padding: 2px 5px;
+    font-size: var(--font-size-base);
+    transition: all 0.2s ease;
+}
+
+.remove-file:hover {
+    color: #d32f2f;
+}
+
+.url-preview {
+    width: 100px;
+    height: 100px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    margin: var(--spacing-sm) 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    overflow: hidden;
+}
+
+.url-preview img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.url-preview-wrapper.error {
+    border-color: var(--danger-color);
+}
+
+.help-text {
+    display: block;
+    color: var(--text-light);
+    font-size: var(--font-size-small);
+    margin-top: var(--spacing-xs);
+}
+
+/* Στυλ για τον πίνακα διαχείρισης */
+.icon-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.browse-icon-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    align-self: flex-start;
+}
+
+.browse-icon-btn:hover {
+    background-color: var(--secondary-dark);
+}
+
+/* Ένδειξη φόρτωσης για τις γραμμές του πίνακα */
+tr.loading {
+    position: relative;
+    opacity: 0.7;
+}
+
+tr.loading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.5) url('../../assets/images/loading.gif') no-repeat center center;
+    background-size: 30px;
+}
+
+/* Απόκριση για κινητές συσκευές */
+@media (max-width: 768px) {
+    .admin-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .admin-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    
+    .admin-actions a,
+    .admin-actions button {
+        width: 100%;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
+    
+    .confirmation-actions {
+        flex-direction: column;
+    }
+    
+    .btn-danger,
+    .btn-secondary {
+        width: 100%;
+    }
+    
+    .preview-container {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .url-preview {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .tab-btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 14px;
+    }
+    
+    .upload-btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 14px;
+    }
+}

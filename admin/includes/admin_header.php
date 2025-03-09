@@ -38,6 +38,13 @@ require_once dirname(__DIR__, 2) . '/config/config.php';
           strpos($_SERVER['PHP_SELF'], '/test/delete_subcategory.php') !== false): ?>
 <link rel="stylesheet" href="<?= $config['base_url'] ?>/admin/assets/css/subcategory_style.css">
 <?php endif; ?>
+<!-- Φόρτωση του CSS για τη διαχείριση κεφαλαίων (όπου χρειάζεται) -->
+<?php if (strpos($_SERVER['PHP_SELF'], '/test/manage_chapters.php') !== false || 
+          strpos($_SERVER['PHP_SELF'], '/test/add_chapter.php') !== false || 
+          strpos($_SERVER['PHP_SELF'], '/test/edit_chapter.php') !== false || 
+          strpos($_SERVER['PHP_SELF'], '/test/delete_chapter.php') !== false): ?>
+<link rel="stylesheet" href="<?= $config['base_url'] ?>/admin/assets/css/chapter_management.css">
+<?php endif; ?>
     <!-- Φόρτωση τυχόν επιπλέον CSS που έχει οριστεί στις σελίδες -->
 <?= $additional_css ?? '' ?>
 </head>
