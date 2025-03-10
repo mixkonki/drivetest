@@ -1,398 +1,356 @@
 /**
- * DriveTest Bulk Import Scripts - Ευέλικτη έκδοση
+ * DriveTest Bulk Import Scripts - Ενοποιημένη έκδοση
  * JavaScript για τη μαζική εισαγωγή ερωτήσεων
  */
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log("🔄 Bulk Import JS loaded");
     
-    // Διαχείριση μεθόδου εισαγωγής
-    initImportMode();
-    
-    // Διαχείριση αλυσιδωτών dropdowns για κατηγορίες/υποκατηγορίες/κεφάλαια
-    initCategoryChain();
-    
-    // Διαχείριση του αρχείου CSV
-    initFileUpload();
-    
-    // Αναζήτηση στοιχείων αφού φορτωθεί η σελίδα
+    // Αναζήτηση στοιχείων
     examinePageStructure();
+    
+    // Διαχείριση αρχείου CSV για την αρχική φόρμα
+    const fileInput = document.getElementById('csv_file');
+    if (fileInput) {
+        initFileUpload();
+    }
+    
+    // Έλεγχος αν είμαστε σε κατάσταση προεπισκόπησης
+    const previewModeElements = [
+        document.querySelector(".preview-table-container"),
+        document.getElementById("csv_file_hidden"),
+        document.querySelector('input[name="use_csv_categorization"]'),
+        document.getElementById('category_id')
+    ];
+    console.log("🔍 Preview mode elements:", previewModeElements.map(el => el !== null));
+    const isPreviewMode = previewModeElements.some(element => element !== null);
+    
+    if (isPreviewMode) {
+        console.log("✅ Βρισκόμαστε σε κατάσταση προεπισκόπησης");
+        initCategorization();
+        initCategoryChain();
+        initNewItemCreation();
+        initFileTransfer();
+        initFormValidation();
+    } else {
+        console.log("ℹ️ Δεν είμαστε σε κατάσταση προεπισκόπησης");
+    }
 });
 
 /**
- * Εξέταση της δομής της σελίδας για διάγνωση προβλημάτων
+ * Εξέταση της δομής της σελίδας
  */
 function examinePageStructure() {
-    console.log("📋 Εξέταση δομής σελίδας για διάγνωση προβλημάτων");
-    
-    // Βρες όλα τα select της σελίδας
+    console.log("📋 Εξέταση δομής σελίδας");
     const allSelects = document.querySelectorAll('select');
-    console.log(`📋 Βρέθηκαν ${allSelects.length} select στη σελίδα`);
-    
+    console.log(`📋 Βρέθηκαν ${allSelects.length} select`);
     allSelects.forEach((select, index) => {
-        const id = select.id || 'Χωρίς ID';
-        const name = select.name || 'Χωρίς name';
-        const options = select.querySelectorAll('option').length;
-        console.log(`📋 Select #${index+1}: ID="${id}", name="${name}", options=${options}`);
-        
-        // Αν είναι πιθανό dropdown κατηγορίας/υποκατηγορίας/κεφαλαίου
-        if (id.toLowerCase().includes('category') || 
-            id.toLowerCase().includes('subcategory') || 
-            id.toLowerCase().includes('chapter') ||
-            name.toLowerCase().includes('category') || 
-            name.toLowerCase().includes('subcategory') || 
-            name.toLowerCase().includes('chapter')) {
-            console.log(`   📌 Πιθανό dropdown για υλοποίηση αλυσίδας`);
+        console.log(`📋 Select #${index+1}: ID="${select.id || 'Χωρίς ID'}", name="${select.name || 'Χωρίς name'}", options=${select.options.length}`);
+    });
+    const formElement = document.querySelector('form');
+    console.log(formElement ? `📋 Βρέθηκε φόρμα: action="${formElement.action}", method="${formElement.method}"` : "⚠️ Δεν βρέθηκε φόρμα");
+}
+
+/**
+ * Διαχείριση επιλογών κατηγοριοποίησης
+ */
+function initCategorization() {
+    const useCSVYes = document.getElementById('use_csv_yes');
+    const useCSVNo = document.getElementById('use_csv_no');
+    const categoryFields = document.getElementById('category-selection-fields');
+    
+    if (!useCSVYes || !useCSVNo || !categoryFields) {
+        console.log("⚠️ Δεν βρέθηκαν στοιχεία κατηγοριοποίησης");
+        return;
+    }
+    
+    console.log("✅ Αρχικοποίηση επιλογών κατηγοριοποίησης");
+    
+    useCSVYes.addEventListener('change', function() {
+        if (this.checked) {
+            categoryFields.style.display = 'none';
+            toggleRequiredAttributes(false);
         }
     });
     
-    // Επιπλέον έλεγχοι
-    const formElement = document.querySelector('form');
-    if (formElement) {
-        console.log(`📋 Βρέθηκε φόρμα με action="${formElement.action}", method="${formElement.method}"`);
-    } else {
-        console.log(`⚠️ Δεν βρέθηκε φόρμα στη σελίδα`);
-    }
-}
-
-/**
- * Αρχικοποίηση του τρόπου εισαγωγής
- */
-function initImportMode() {
-    const importModeSelect = document.getElementById('import_mode');
-    const manualMappingSection = document.getElementById('manual-mapping');
+    useCSVNo.addEventListener('change', function() {
+        if (this.checked) {
+            categoryFields.style.display = 'block';
+            toggleRequiredAttributes(true);
+        }
+    });
     
-    if (importModeSelect && manualMappingSection) {
-        importModeSelect.addEventListener('change', function() {
-            const selectedMode = this.value;
-            
-            // Εμφάνιση/απόκρυψη ανάλογων επιλογών
-            if (selectedMode === 'manual') {
-                manualMappingSection.style.display = 'block';
-            } else if (selectedMode === 'auto') {
-                manualMappingSection.style.display = 'none';
-            } else if (selectedMode === 'predefined') {
-                manualMappingSection.style.display = 'none';
-            }
-        });
-        
-        // Αρχικοποίηση με την τρέχουσα τιμή
-        const event = new Event('change');
-        importModeSelect.dispatchEvent(event);
+    if (useCSVYes.checked) {
+        categoryFields.style.display = 'none';
+        toggleRequiredAttributes(false);
+    } else {
+        categoryFields.style.display = 'block';
+        toggleRequiredAttributes(true);
+    }
+    
+    function toggleRequiredAttributes(enable) {
+        const selects = ['category_id', 'subcategory_id', 'chapter_id'].map(id => document.getElementById(id));
+        selects.forEach(select => { if (select) select.required = enable; });
     }
 }
 
 /**
- * Αρχικοποίηση αλυσιδωτών dropdowns για κατηγορίες/υποκατηγορίες/κεφάλαια
+ * Αρχικοποίηση αλυσιδωτών dropdowns
  */
 function initCategoryChain() {
-    console.log("🔄 Αρχικοποίηση αλυσιδωτών dropdowns");
+    const categorySelect = document.getElementById('category_id');
+    const subcategorySelect = document.getElementById('subcategory_id');
+    const chapterSelect = document.getElementById('chapter_id');
     
-    // Ευέλικτη αναζήτηση των select στοιχείων
-    const categorySelect = findSelectByIdentifiers(['category', 'κατηγορία'], ['subcategory', 'υποκατηγορία', 'chapter', 'κεφάλαιο']);
-    const subcategorySelect = findSelectByIdentifiers(['subcategory', 'υποκατηγορία'], ['chapter', 'κεφάλαιο']);
-    const chapterSelect = findSelectByIdentifiers(['chapter', 'κεφάλαιο'], []);
-    
-    console.log(`📋 Εντοπίστηκαν dropdowns: Category=${categorySelect ? 'Ναι' : 'Όχι'}, Subcategory=${subcategorySelect ? 'Ναι' : 'Όχι'}, Chapter=${chapterSelect ? 'Ναι' : 'Όχι'}`);
-    
-    if (categorySelect) {
-        console.log(`✅ Βρέθηκε το select κατηγορίας με ID="${categorySelect.id}", name="${categorySelect.name}"`);
-        
-        // Εκκαθάριση και απενεργοποίηση των dropdown που εξαρτώνται
-        if (subcategorySelect) {
-            subcategorySelect.innerHTML = '<option value="">-- Επιλέξτε πρώτα Κατηγορία --</option>';
-            subcategorySelect.disabled = true;
-        }
-        
-        if (chapterSelect) {
-            chapterSelect.innerHTML = '<option value="">-- Επιλέξτε πρώτα Υποκατηγορία --</option>';
-            chapterSelect.disabled = true;
-        }
-        
-        // Προσθήκη listener για αλλαγές στην κατηγορία
-        categorySelect.addEventListener('change', function() {
-            const categoryId = this.value;
-            console.log(`🔄 Επιλέχθηκε κατηγορία με ID: ${categoryId}`);
-            
-            if (categoryId) {
-                // Φόρτωση υποκατηγοριών για τη επιλεγμένη κατηγορία
-                loadSubcategories(categoryId, subcategorySelect);
-            } else {
-                // Εκκαθάριση και απενεργοποίηση των εξαρτημένων dropdown
-                if (subcategorySelect) {
-                    subcategorySelect.innerHTML = '<option value="">-- Επιλέξτε πρώτα Κατηγορία --</option>';
-                    subcategorySelect.disabled = true;
-                }
-                
-                if (chapterSelect) {
-                    chapterSelect.innerHTML = '<option value="">-- Επιλέξτε πρώτα Υποκατηγορία --</option>';
-                    chapterSelect.disabled = true;
-                }
-            }
-        });
-    } else {
-        console.log("⚠️ Το select κατηγορίας δε βρέθηκε");
-    }
-    
-    // Προσθήκη listener για αλλαγές στην υποκατηγορία
-    if (subcategorySelect) {
-        console.log(`✅ Βρέθηκε το select υποκατηγορίας με ID="${subcategorySelect.id}", name="${subcategorySelect.name}"`);
-        
-        subcategorySelect.addEventListener('change', function() {
-            const subcategoryId = this.value;
-            console.log(`🔄 Επιλέχθηκε υποκατηγορία με ID: ${subcategoryId}`);
-            
-            if (subcategoryId) {
-                // Φόρτωση κεφαλαίων για την επιλεγμένη υποκατηγορία
-                loadChapters(subcategoryId, chapterSelect);
-            } else {
-                // Εκκαθάριση και απενεργοποίηση του dropdown κεφαλαίων
-                if (chapterSelect) {
-                    chapterSelect.innerHTML = '<option value="">-- Επιλέξτε πρώτα Υποκατηγορία --</option>';
-                    chapterSelect.disabled = true;
-                }
-            }
-        });
-    } else {
-        console.log("⚠️ Το select υποκατηγορίας δε βρέθηκε");
-    }
-    
-    if (chapterSelect) {
-        console.log(`✅ Βρέθηκε το select κεφαλαίου με ID="${chapterSelect.id}", name="${chapterSelect.name}"`);
-    } else {
-        console.log("⚠️ Το select κεφαλαίου δε βρέθηκε");
-    }
-    
-    // Αν το categorySelect έχει ήδη επιλεγμένη τιμή
-    if (categorySelect && categorySelect.value) {
-        console.log("🔄 Το categorySelect έχει ήδη τιμή, πυροδοτείται η αλλαγή");
-        const event = new Event('change');
-        categorySelect.dispatchEvent(event);
-    }
-}
-
-/**
- * Βρίσκει ένα select στοιχείο βάσει λέξεων-κλειδιών στο id ή name
- * @param {Array} includeTerms - Λέξεις που πρέπει να περιλαμβάνονται
- * @param {Array} excludeTerms - Λέξεις που δεν πρέπει να περιλαμβάνονται
- * @returns {HTMLElement|null} - Το select στοιχείο ή null
- */
-function findSelectByIdentifiers(includeTerms, excludeTerms) {
-    const allSelects = document.querySelectorAll('select');
-    
-    for (let select of allSelects) {
-        const id = (select.id || '').toLowerCase();
-        const name = (select.name || '').toLowerCase();
-        
-        // Έλεγχος αν περιλαμβάνει τις απαιτούμενες λέξεις
-        const hasIncludeTerm = includeTerms.some(term => 
-            id.includes(term.toLowerCase()) || name.includes(term.toLowerCase())
-        );
-        
-        // Έλεγχος αν ΔΕΝ περιλαμβάνει τις εξαιρούμενες λέξεις
-        const hasExcludeTerm = excludeTerms.some(term => 
-            id.includes(term.toLowerCase()) || name.includes(term.toLowerCase())
-        );
-        
-        if (hasIncludeTerm && !hasExcludeTerm) {
-            return select;
-        }
-    }
-    
-    return null;
-}
-
-/**
- * Φόρτωση υποκατηγοριών για συγκεκριμένη κατηγορία
- * @param {string} categoryId - Το ID της επιλεγμένης κατηγορίας
- * @param {HTMLElement} subcategorySelect - Το select της υποκατηγορίας
- */
-function loadSubcategories(categoryId, subcategorySelect) {
-    console.log(`🔄 Φόρτωση υποκατηγοριών για κατηγορία ID: ${categoryId}`);
-    
-    if (!subcategorySelect) {
-        console.error("❌ Το select υποκατηγορίας δε βρέθηκε");
+    if (!categorySelect || !subcategorySelect || !chapterSelect) {
+        console.log("❗ Δεν βρέθηκαν όλα τα dropdowns");
         return;
     }
     
-    // Αρχικοποίηση του dropdown
-    subcategorySelect.innerHTML = '<option value="">-- Φόρτωση... --</option>';
-    subcategorySelect.disabled = true;
+    console.log("✅ Αρχικοποίηση αλυσιδωτών dropdowns");
     
-    // Κάνουμε το AJAX αίτημα για να πάρουμε τις υποκατηγορίες
-    fetch('question_actions.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'action=list_subcategories'
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("📥 Λήφθηκαν δεδομένα υποκατηγοριών:", data);
+    // Αποθήκευση των αρχικών επιλογών από το DOM
+    const subcategoryOptions = Array.from(subcategorySelect.querySelectorAll('option[data-category]'));
+    const chapterOptions = Array.from(chapterSelect.querySelectorAll('option[data-subcategory]'));
+    console.log(`📋 Αρχικές υποκατηγορίες: ${subcategoryOptions.length}, κεφάλαια: ${chapterOptions.length}`);
+    
+    // Αρχικοποίηση
+    resetSubcategoryDropdown();
+    resetChapterDropdown();
+    
+    categorySelect.addEventListener('change', function() {
+        const categoryId = this.value;
+        console.log(`🔄 Επιλέχθηκε κατηγορία: ${categoryId}`);
         
-        if (data.success) {
-            // Καθαρισμός του dropdown
-            subcategorySelect.innerHTML = '<option value="">-- Επιλέξτε Υποκατηγορία --</option>';
-            
-            // Φιλτράρισμα των υποκατηγοριών για τη συγκεκριμένη κατηγορία
-            const filteredSubcategories = data.subcategories.filter(subcategory => {
-                // Ελέγχουμε διάφορα πιθανά ονόματα πεδίων
-                const subCategoryId = subcategory.test_category_id || subcategory.category_id;
-                return String(subCategoryId) === String(categoryId);
-            });
-            
-            console.log(`📊 Βρέθηκαν ${filteredSubcategories.length} υποκατηγορίες για την κατηγορία ${categoryId}`);
-            
-            // Προσθήκη των υποκατηγοριών στο dropdown
-            filteredSubcategories.forEach(subcategory => {
-                const option = document.createElement('option');
-                option.value = subcategory.id;
-                option.text = subcategory.name || subcategory.subcategory_name;
-                option.setAttribute('data-category', categoryId);
-                subcategorySelect.appendChild(option);
-            });
-            
-            // Ενεργοποίηση του dropdown
+        resetSubcategoryDropdown();
+        resetChapterDropdown();
+        
+        if (categoryId) {
+            console.log(`🔍 Φιλτράρισμα υποκατηγοριών για categoryId: ${categoryId}`);
+            filterOptions(subcategorySelect, subcategoryOptions, 'data-category', categoryId);
             subcategorySelect.disabled = false;
-            
-            // Αν δεν βρέθηκαν υποκατηγορίες
-            if (filteredSubcategories.length === 0) {
-                subcategorySelect.innerHTML = '<option value="">-- Δεν βρέθηκαν υποκατηγορίες --</option>';
-            }
-        } else {
-            console.error("❌ Σφάλμα κατά τη φόρτωση υποκατηγοριών:", data.message);
-            subcategorySelect.innerHTML = '<option value="">-- Σφάλμα φόρτωσης --</option>';
         }
-    })
-    .catch(error => {
-        console.error("❌ Σφάλμα AJAX κατά τη φόρτωση υποκατηγοριών:", error);
-        subcategorySelect.innerHTML = '<option value="">-- Σφάλμα επικοινωνίας --</option>';
     });
-}
-
-/**
- * Φόρτωση κεφαλαίων για συγκεκριμένη υποκατηγορία
- * @param {string} subcategoryId - Το ID της επιλεγμένης υποκατηγορίας
- * @param {HTMLElement} chapterSelect - Το select του κεφαλαίου
- */
-function loadChapters(subcategoryId, chapterSelect) {
-    console.log(`🔄 Φόρτωση κεφαλαίων για υποκατηγορία ID: ${subcategoryId}`);
     
-    if (!chapterSelect) {
-        console.error("❌ Το select κεφαλαίου δε βρέθηκε");
-        return;
+    subcategorySelect.addEventListener('change', function() {
+        const subcategoryId = this.value;
+        console.log(`🔄 Επιλέχθηκε υποκατηγορία: ${subcategoryId}`);
+        
+        resetChapterDropdown();
+        
+        if (subcategoryId === "new") {
+            console.log("🔄 Επιλογή δημιουργίας νέας υποκατηγορίας");
+            showNewItemForm('subcategory');
+        } else if (subcategoryId) {
+            console.log(`🔍 Φιλτράρισμα κεφαλαίων για subcategoryId: ${subcategoryId}`);
+            filterOptions(chapterSelect, chapterOptions, 'data-subcategory', subcategoryId);
+            chapterSelect.disabled = false;
+        }
+    });
+    
+    chapterSelect.addEventListener('change', function() {
+        const chapterId = this.value;
+        console.log(`🔄 Επιλέχθηκε κεφάλαιο: ${chapterId}`);
+        
+        if (chapterId === "new") {
+            console.log("🔄 Επιλογή δημιουργίας νέου κεφαλαίου");
+            showNewItemForm('chapter');
+        }
+    });
+    
+    if (categorySelect.value) {
+        console.log(`📋 Προεπιλεγμένη κατηγορία: ${categorySelect.value}`);
+        categorySelect.dispatchEvent(new Event('change'));
+        if (subcategorySelect.value) {
+            console.log(`📋 Προεπιλεγμένη υποκατηγορία: ${subcategorySelect.value}`);
+            subcategorySelect.dispatchEvent(new Event('change'));
+        }
     }
     
-    // Αρχικοποίηση του dropdown
-    chapterSelect.innerHTML = '<option value="">-- Φόρτωση... --</option>';
-    chapterSelect.disabled = true;
+    function resetSubcategoryDropdown() {
+        subcategorySelect.innerHTML = '<option value="">-- Επιλέξτε Υποκατηγορία --</option>';
+        subcategorySelect.disabled = true;
+        console.log("🔄 Επαναφορά dropdown υποκατηγοριών");
+    }
     
-    // Κάνουμε το AJAX αίτημα για να πάρουμε τα κεφάλαια
-    fetch('question_actions.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'action=list_chapters&subcategory_id=' + subcategoryId
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("📥 Λήφθηκαν δεδομένα κεφαλαίων:", data);
+    function resetChapterDropdown() {
+        chapterSelect.innerHTML = '<option value="">-- Επιλέξτε Κεφάλαιο --</option>';
+        chapterSelect.disabled = true;
+        console.log("🔄 Επαναφορά dropdown κεφαλαίων");
+    }
+    
+    function filterOptions(select, options, dataAttr, value) {
+        select.innerHTML = '<option value="">-- Επιλέξτε --</option>';
+        console.log(`🔍 Συνολικές επιλογές για ${select.id}: ${options.length}`);
         
-        if (data.success) {
-            // Καθαρισμός του dropdown
-            chapterSelect.innerHTML = '<option value="">-- Επιλέξτε Κεφάλαιο --</option>';
-            
-            // Προσθήκη των κεφαλαίων στο dropdown
-            data.chapters.forEach(chapter => {
-                const option = document.createElement('option');
-                option.value = chapter.id;
-                option.text = chapter.name;
-                option.setAttribute('data-subcategory', subcategoryId);
-                chapterSelect.appendChild(option);
-            });
-            
-            // Ενεργοποίηση του dropdown
-            chapterSelect.disabled = false;
-            
-            // Αν δεν βρέθηκαν κεφάλαια
-            if (data.chapters.length === 0) {
-                chapterSelect.innerHTML = '<option value="">-- Δεν βρέθηκαν κεφάλαια --</option>';
+        let foundOptions = 0;
+        options.forEach(opt => {
+            const attrValue = opt.getAttribute(dataAttr);
+            if (attrValue === value) {
+                const clone = opt.cloneNode(true);
+                clone.style.display = 'block';
+                select.appendChild(clone);
+                foundOptions++;
             }
-        } else {
-            console.error("❌ Σφάλμα κατά τη φόρτωση κεφαλαίων:", data.message);
-            chapterSelect.innerHTML = '<option value="">-- Σφάλμα φόρτωσης --</option>';
+        });
+        
+        console.log(`✅ Βρέθηκαν ${foundOptions} επιλογές για ${dataAttr}=${value}`);
+        
+        if (foundOptions === 0) {
+            console.log("⚠️ Καμία επιλογή δεν βρέθηκε");
         }
-    })
-    .catch(error => {
-        console.error("❌ Σφάλμα AJAX κατά τη φόρτωση κεφαλαίων:", error);
-        chapterSelect.innerHTML = '<option value="">-- Σφάλμα επικοινωνίας --</option>';
-    });
+        
+        const newOption = document.createElement('option');
+        newOption.value = "new";
+        newOption.textContent = "+ Δημιουργία Νέου";
+        select.appendChild(newOption);
+    }
 }
 
 /**
- * Αρχικοποίηση της διαχείρισης του αρχείου CSV
+ * Διαχείριση αρχείου CSV
  */
 function initFileUpload() {
     const fileInput = document.getElementById('csv_file');
     const previewForm = document.getElementById('preview-form');
+    
+    if (!fileInput || !previewForm) return;
+    
+    console.log("✅ Αρχικοποίηση διαχείρισης αρχείου CSV");
+    
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            if (this.files[0].size > 10 * 1024 * 1024) {
+                alert('Το αρχείο είναι πολύ μεγάλο (max 10MB).');
+                this.value = '';
+                return;
+            }
+            if (!this.files[0].name.toLowerCase().endsWith('.csv')) {
+                alert('Επιλέξτε έγκυρο αρχείο CSV.');
+                this.value = '';
+                return;
+            }
+            console.log("📤 Υποβολή φόρμας προεπισκόπησης");
+            previewForm.submit();
+        }
+    });
+}
+
+/**
+ * Μεταφορά αρχείου στο κρυφό input
+ */
+function initFileTransfer() {
+    const fileInput = document.getElementById('csv_file');
     const hiddenFileInput = document.getElementById('csv_file_hidden');
     
-    // Αυτόματη υποβολή της φόρμας προεπισκόπησης όταν επιλεγεί αρχείο
-    if (fileInput && previewForm) {
-        fileInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                // Έλεγχος μεγέθους αρχείου
-                const maxFileSize = 10 * 1024 * 1024; // 10MB
-                if (this.files[0].size > maxFileSize) {
-                    alert('Το αρχείο είναι πολύ μεγάλο. Το μέγιστο επιτρεπόμενο μέγεθος είναι 10MB.');
-                    this.value = '';
-                    return;
-                }
-                
-                // Έλεγχος τύπου αρχείου
-                const fileType = this.files[0].type;
-                const isCSV = fileType === 'text/csv' || 
-                             fileType === 'application/vnd.ms-excel' || 
-                             fileType === 'application/csv' ||
-                             this.files[0].name.toLowerCase().endsWith('.csv');
-                             
-                if (!isCSV) {
-                    alert('Παρακαλώ επιλέξτε έγκυρο αρχείο CSV.');
-                    this.value = '';
-                    return;
-                }
-                
-                previewForm.submit();
-            }
-        });
+    if (!hiddenFileInput || !fileInput || !fileInput.files[0]) {
+        console.log("⚠️ Δεν βρέθηκαν στοιχεία για μεταφορά αρχείου");
+        return;
     }
     
-    // Παρακολούθηση των αλλαγών στις αντιστοιχίσεις στηλών
-    const columnSelects = document.querySelectorAll('select[name^="map_"]');
-    columnSelects.forEach(select => {
-        select.addEventListener('change', function() {
-            // Αποφυγή διπλών αντιστοιχίσεων
-            const selectedValue = this.value;
-            if (selectedValue) {
-                columnSelects.forEach(otherSelect => {
-                    if (otherSelect !== this && otherSelect.value === selectedValue) {
-                        // Αν βρούμε άλλο select με την ίδια τιμή, το καθαρίζουμε
-                        otherSelect.value = '';
-                    }
-                });
-            }
-        });
-    });
-    
-    // Μεταφορά του επιλεγμένου αρχείου στο κρυφό input
-    if (hiddenFileInput && fileInput && fileInput.files.length > 0) {
-        // Δημιουργία ενός νέου DataTransfer αντικειμένου
+    console.log("🔄 Μεταφορά αρχείου");
+    try {
         const dataTransfer = new DataTransfer();
-        // Προσθήκη του επιλεγμένου αρχείου
         dataTransfer.items.add(fileInput.files[0]);
-        // Ορισμός των αρχείων στο κρυφό input
         hiddenFileInput.files = dataTransfer.files;
+        console.log("✅ Μεταφορά επιτυχής");
+    } catch (error) {
+        console.error("❌ Σφάλμα μεταφοράς:", error);
     }
+}
+
+/**
+ * Δημιουργία νέων στοιχείων
+ */
+function initNewItemCreation() {
+    const categoryFields = document.getElementById('category-selection-fields');
+    if (!categoryFields) return;
+    
+    console.log("✅ Αρχικοποίηση δημιουργίας νέων στοιχείων");
+    
+    ['subcategory', 'chapter'].forEach(type => {
+        if (!document.getElementById(`new-${type}-form`)) {
+            const form = document.createElement('div');
+            form.id = `new-${type}-form`;
+            form.style.display = 'none';
+            form.innerHTML = `
+                <label>Όνομα Νέου ${type === 'subcategory' ? 'Υποκατηγορίας' : 'Κεφαλαίου'}:</label>
+                <input type="text" id="new_${type}_name" placeholder="Πληκτρολογήστε όνομα">
+                <button type="button" onclick="saveNewItem('${type}')">Αποθήκευση</button>
+                <button type="button" onclick="cancelNewItem('${type}')">Ακύρωση</button>
+            `;
+            categoryFields.appendChild(form);
+        }
+    });
+}
+
+function showNewItemForm(type) {
+    const form = document.getElementById(`new-${type}-form`);
+    if (form) {
+        form.style.display = 'block';
+        document.getElementById(`new_${type}_name`).focus();
+    }
+}
+
+function saveNewItem(type) {
+    const nameInput = document.getElementById(`new_${type}_name`);
+    const name = nameInput.value.trim();
+    if (!name) {
+        alert(`Εισάγετε όνομα για το νέο ${type === 'subcategory' ? 'υποκατηγορία' : 'κεφάλαιο'}.`);
+        return;
+    }
+    
+    const parentSelect = document.getElementById(type === 'subcategory' ? 'category_id' : 'subcategory_id');
+    const select = document.getElementById(`${type}_id`);
+    if (!parentSelect.value) {
+        alert(`Επιλέξτε πρώτα ${type === 'subcategory' ? 'κατηγορία' : 'υποκατηγορία'}.`);
+        return;
+    }
+    
+    const tempId = 'new_' + Date.now();
+    const option = document.createElement('option');
+    option.value = tempId;
+    option.textContent = name;
+    option.setAttribute(`data-${type === 'subcategory' ? 'category' : 'subcategory'}`, parentSelect.value);
+    select.insertBefore(option, select.querySelector('option[value="new"]'));
+    select.value = tempId;
+    
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenFileInput.name = `new_${type}_names[${tempId}]`;
+    hiddenInput.value = name;
+    document.querySelector('form').appendChild(hiddenInput);
+    
+    document.getElementById(`new-${type}-form`).style.display = 'none';
+    select.dispatchEvent(new Event('change'));
+}
+
+function cancelNewItem(type) {
+    const form = document.getElementById(`new-${type}-form`);
+    form.style.display = 'none';
+    document.getElementById(`${type}_id`).value = '';
+    document.getElementById(`${type}_id`).dispatchEvent(new Event('change'));
+}
+
+/**
+ * Επικύρωση φόρμας
+ */
+function initFormValidation() {
+    const form = document.querySelector('form');
+    if (!form) return;
+    
+    console.log("✅ Αρχικοποίηση επικύρωσης φόρμας");
+    
+    form.addEventListener('submit', function(event) {
+        if (document.getElementById('use_csv_yes') && document.getElementById('use_csv_yes').checked) return;
+        
+        const selects = ['category_id', 'subcategory_id', 'chapter_id'].map(id => document.getElementById(id));
+        for (let select of selects) {
+            if (select && !select.value) {
+                event.preventDefault();
+                alert(`Παρακαλώ επιλέξτε ${select.id === 'category_id' ? 'κατηγορία' : select.id === 'subcategory_id' ? 'υποκατηγορία' : 'κεφάλαιο'}.`);
+                return;
+            }
+        }
+        console.log("📥 Υποβολή φόρμας εισαγωγής");
+    });
 }

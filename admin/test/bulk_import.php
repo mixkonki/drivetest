@@ -189,6 +189,7 @@ function findOrCreateChapter($mysqli, $name, $subcategory_id) {
 // Διαχείριση προεπισκόπησης CSV
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file']) && $_FILES['csv_file']['error'] === UPLOAD_ERR_OK) {
     $preview_mode = true;
+    
     $file = $_FILES['csv_file']['tmp_name'];
     $delimiter = isset($_POST['delimiter']) ? $_POST['delimiter'] : ';';
     
@@ -264,6 +265,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_import'])) {
         logDebug("Σφάλμα: Λείπει το αρχείο CSV");
     }
     
+    if (!$use_csv_categorization) {
+        $category_id = intval($_POST['category_id'] ?? 0);
+        $subcategory_id = intval($_POST['subcategory_id'] ?? 0);
+        $chapter_id = intval($_POST['chapter_id'] ?? 0);
+        
+        // Χειρισμός νέων υποκατηγοριών
+        if (strpos($subcategory_id, 'new_') === 0 && isset($new_subcategory_names[$subcategory_id])) {
+            $subcategory_id = findOrCreateSubcategory($mysqli, $new_subcategory_names[$subcategory_id], $category_id);
+        }
+        
+        // Χειρισμός νέων κεφαλαίων
+        if (strpos($chapter_id, 'new_') === 0 && isset($new_chapter_names[$chapter_id])) {
+            $chapter_id = findOrCreateChapter($mysqli, $new_chapter_names[$chapter_id], $subcategory_id);
+        }} else {
+        $category_id = 0;
+        $subcategory_id = 0;
+        $chapter_id = 0;
+    }
     // Αν δεν χρησιμοποιούμε κατηγοριοποίηση από το CSV, ελέγχουμε ότι έχουν επιλεγεί τα απαραίτητα
     if (!$use_csv_categorization) {
         $category_id = intval($_POST['category_id'] ?? 0);
@@ -384,6 +403,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_import'])) {
                             $failed_imports++;
                             continue;
                         }
+                        
                         
                         // Διαχείριση της κατηγοριοποίησης
                         $current_category_id = $category_id ?? 0;
@@ -799,6 +819,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_import'])) {
                     <button type="submit" class="btn-primary">📥 Εισαγωγή Ερωτήσεων</button>
                     <a href="bulk_import.php" class="btn-secondary">🔄 Νέα Εισαγωγή</a>
                 </div>
+                <!-- Μέσα στο τμήμα προεπισκόπησης CSV, πριν το κλείσιμο της φόρμας (</form>) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Αντιγραφή του αρχείου από το preview form
+    const previewFileInput = document.getElementById('csv_file');
+    const hiddenFileInput = document.getElementById('csv_file_hidden');
+    
+    if (previewFileInput && hiddenFileInput && previewFileInput.files[0]) {
+        try {
+            // Δημιουργία ενός νέου DataTransfer αντικειμένου
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(previewFileInput.files[0]);
+            hiddenFileInput.files = dataTransfer.files;
+            console.log("✅ Το αρχείο μεταφέρθηκε επιτυχώς στο κρυφό input");
+        } catch (error) {
+            console.error("❌ Σφάλμα κατά τη μεταφορά του αρχείου:", error);
+            
+            // Εναλλακτική προσέγγιση
+            const filenameInput = document.createElement('input');
+            filenameInput.type = 'hidden';
+            filenameInput.name = 'original_filename'; 
+            filenameInput.value = previewFileInput.files[0].name;
+            
+            const form = document.querySelector('form');
+            if (form) {
+                form.appendChild(filenameInput);
+                console.log("✅ Προστέθηκε κρυφό πεδίο με το όνομα του αρχείου");
+            }
+        }
+    }
+});
+</script>
             </form>
         </div>
     <?php else: ?>
