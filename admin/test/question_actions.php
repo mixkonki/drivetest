@@ -680,6 +680,187 @@ if ($action === 'delete_question') {
 
 // ✅ Αν η ενέργεια δεν είναι γνωστή
 logMessage("❌ [ERROR] Άγνωστη ενέργεια: " . $action);
+
+// Προσθέστε τον παρακάτω κώδικα στο question_actions.php, πριν την τελευταία γραμμή
+// που λέει "echo json_encode(["success" => false, "message" => "Άγνωστη ενέργεια."]);"
+
+// ✅ Μαζική Διαγραφή Ερωτήσεων
+if ($action === 'bulk_delete') {
+    logMessage("🔍 [INFO] Ξεκίνησε μαζική διαγραφή ερωτήσεων...");
+
+    // Λήψη των IDs των ερωτήσεων από το POST
+    $question_ids_json = $_POST['question_ids'] ?? '[]';
+    $question_ids = json_decode($question_ids_json, true);
+    
+    if (empty($question_ids) || !is_array($question_ids)) {
+        logMessage("❌ [ERROR] Δεν δόθηκαν έγκυρα IDs ερωτήσεων για διαγραφή");
+        echo json_encode([
+            "success" => false, 
+            "message" => "Δεν επιλέχθηκαν ερωτήσεις για διαγραφή."
+        ]);
+        exit();
+    }
+    
+    logMessage("📊 [INFO] Ζητήθηκε διαγραφή " . count($question_ids) . " ερωτήσεων: " . implode(', ', $question_ids));
+    
+    // Έλεγχος αν κάποια από τις ερωτήσεις χρησιμοποιείται σε κάποιο τεστ
+    $used_question_ids = [];
+    $placeholders = implode(',', array_fill(0, count($question_ids), '?'));
+    
+    $check_query = "SELECT DISTINCT question_id FROM test_generation_questions WHERE question_id IN ($placeholders)";
+    $stmt = $mysqli->prepare($check_query);
+    
+    if (!$stmt) {
+        logMessage("❌ [ERROR] Σφάλμα προετοιμασίας SQL (check usage): " . $mysqli->error);
+        echo json_encode([
+            "success" => false, 
+            "message" => "Σφάλμα κατά τον έλεγχο χρήσης των ερωτήσεων."
+        ]);
+        exit();
+    }
+    
+    // Δημιουργία της παραμέτρου τύπων για το bind_param
+    $types = str_repeat('i', count($question_ids));
+    // Χρήση του ... operator για να περάσουμε τα question_ids ως μεμονωμένες παραμέτρους
+    $stmt->bind_param($types, ...$question_ids);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    while ($row = $result->fetch_assoc()) {
+        $used_question_ids[] = $row['question_id'];
+    }
+    $stmt->close();
+    
+    // Αν βρέθηκαν ερωτήσεις που χρησιμοποιούνται, τις αφαιρούμε από τις προς διαγραφή
+    if (!empty($used_question_ids)) {
+        logMessage("⚠️ [WARNING] Βρέθηκαν " . count($used_question_ids) . " ερωτήσεις που χρησιμοποιούνται σε τεστ");
+        $question_ids = array_diff($question_ids, $used_question_ids);
+    }
+    
+    if (empty($question_ids)) {
+        logMessage("❌ [ERROR] Όλες οι επιλεγμένες ερωτήσεις χρησιμοποιούνται σε τεστ και δεν μπορούν να διαγραφούν");
+        echo json_encode([
+            "success" => false, 
+            "message" => "Όλες οι επιλεγμένες ερωτήσεις χρησιμοποιούνται σε τεστ και δεν μπορούν να διαγραφούν."
+        ]);
+        exit();
+    }
+    
+    // Ξεκινάμε μια συναλλαγή για να εξασφαλίσουμε την ακεραιότητα των δεδομένων
+    $mysqli->begin_transaction();
+    
+    try {
+        // Ανάκτηση των στοιχείων των ερωτήσεων για τα πολυμέσα
+        $placeholders = implode(',', array_fill(0, count($question_ids), '?'));
+        $query = "SELECT id, question_media, explanation_media FROM questions WHERE id IN ($placeholders)";
+        $stmt = $mysqli->prepare($query);
+        
+        if (!$stmt) {
+            throw new Exception("Σφάλμα προετοιμασίας SQL (get questions): " . $mysqli->error);
+        }
+        
+        $types = str_repeat('i', count($question_ids));
+        $stmt->bind_param($types, ...$question_ids);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $questions_to_delete = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        
+        // 1. Διαγραφή των απαντήσεων
+        $placeholders = implode(',', array_fill(0, count($question_ids), '?'));
+        $delete_answers_query = "DELETE FROM test_answers WHERE question_id IN ($placeholders)";
+        $stmt = $mysqli->prepare($delete_answers_query);
+        
+        if (!$stmt) {
+            throw new Exception("Σφάλμα προετοιμασίας SQL (delete answers): " . $mysqli->error);
+        }
+        
+        $types = str_repeat('i', count($question_ids));
+        $stmt->bind_param($types, ...$question_ids);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Σφάλμα κατά τη διαγραφή απαντήσεων: " . $stmt->error);
+        }
+        
+        $deleted_answers_count = $stmt->affected_rows;
+        $stmt->close();
+        logMessage("✅ [SUCCESS] Διαγράφηκαν $deleted_answers_count απαντήσεις.");
+        
+        // 2. Διαγραφή των ερωτήσεων
+        $placeholders = implode(',', array_fill(0, count($question_ids), '?'));
+        $delete_questions_query = "DELETE FROM questions WHERE id IN ($placeholders)";
+        $stmt = $mysqli->prepare($delete_questions_query);
+        
+        if (!$stmt) {
+            throw new Exception("Σφάλμα προετοιμασίας SQL (delete questions): " . $mysqli->error);
+        }
+        
+        $types = str_repeat('i', count($question_ids));
+        $stmt->bind_param($types, ...$question_ids);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Σφάλμα κατά τη διαγραφή ερωτήσεων: " . $stmt->error);
+        }
+        
+        $deleted_questions_count = $stmt->affected_rows;
+        $stmt->close();
+        logMessage("✅ [SUCCESS] Διαγράφηκαν $deleted_questions_count ερωτήσεις.");
+        
+        // 3. Διαγραφή των αρχείων πολυμέσων
+        $uploadDir = BASE_PATH . '/admin/test/uploads/';
+        $deleted_files = 0;
+        
+        foreach ($questions_to_delete as $question) {
+            if (!empty($question['question_media']) && file_exists($uploadDir . $question['question_media'])) {
+                if (unlink($uploadDir . $question['question_media'])) {
+                    $deleted_files++;
+                    logMessage("✅ [SUCCESS] Διαγράφηκε το αρχείο πολυμέσου ερώτησης: " . $question['question_media']);
+                } else {
+                    logMessage("⚠️ [WARNING] Αδυναμία διαγραφής αρχείου πολυμέσου ερώτησης: " . $question['question_media']);
+                }
+            }
+            
+            if (!empty($question['explanation_media']) && file_exists($uploadDir . $question['explanation_media'])) {
+                if (unlink($uploadDir . $question['explanation_media'])) {
+                    $deleted_files++;
+                    logMessage("✅ [SUCCESS] Διαγράφηκε το αρχείο πολυμέσου επεξήγησης: " . $question['explanation_media']);
+                } else {
+                    logMessage("⚠️ [WARNING] Αδυναμία διαγραφής αρχείου πολυμέσου επεξήγησης: " . $question['explanation_media']);
+                }
+            }
+        }
+        
+        // Επιβεβαίωση της συναλλαγής
+        $mysqli->commit();
+        
+        $message = "Διαγράφηκαν επιτυχώς $deleted_questions_count ερωτήσεις και $deleted_answers_count απαντήσεις";
+        
+        if (!empty($used_question_ids)) {
+            $message .= ". " . count($used_question_ids) . " ερωτήσεις εξαιρέθηκαν γιατί χρησιμοποιούνται σε τεστ.";
+        }
+        
+        logMessage("✅ [SUCCESS] " . $message);
+        
+        echo json_encode([
+            "success" => true, 
+            "message" => $message,
+            "deleted_count" => $deleted_questions_count,
+            "skipped_ids" => $used_question_ids
+        ]);
+        
+    } catch (Exception $e) {
+        // Αναίρεση της συναλλαγής σε περίπτωση σφάλματος
+        $mysqli->rollback();
+        logMessage("❌ [ERROR] Αναίρεση συναλλαγής λόγω σφάλματος: " . $e->getMessage());
+        
+        echo json_encode([
+            "success" => false, 
+            "message" => "Σφάλμα κατά τη μαζική διαγραφή ερωτήσεων: " . $e->getMessage()
+        ]);
+    }
+    
+    exit();
+}
 echo json_encode(["success" => false, "message" => "Άγνωστη ενέργεια."]);
 exit();
 ?>

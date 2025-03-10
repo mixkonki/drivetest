@@ -43,7 +43,6 @@ if (isset($_GET['error'])) {
 
 <main class="admin-container">
     <h2 class="admin-title">📌 Διαχείριση Ερωτήσεων</h2>
-    ?>
 
 <?php if (!empty($success_message)): ?>
 <div class="alert alert-success">
@@ -57,9 +56,113 @@ if (isset($_GET['error'])) {
 </div>
 <?php endif; ?>
     <div id="question-list-container">
+
+
+<!-- Προσθέστε αυτό μετά τον τίτλο "Διαχείριση Ερωτήσεων" και πριν τη μπάρα μαζικών ενεργειών -->
+<div class="filters-container">
+    <div class="filters-header">
+        <h3>📋 Φίλτρα Ερωτήσεων</h3>
+        <button type="button" id="toggle-filters-btn" class="btn-secondary">
+            <span class="expand-icon">▼</span><span class="collapse-icon" style="display:none;">▲</span> 
+            Φίλτρα
+        </button>
+    </div>
+    
+    <div id="filters-panel" style="display:none;">
+        <div class="filters-row">
+            <div class="filter-group">
+                <label for="filter-category">Κατηγορία:</label>
+                <select id="filter-category" class="filter-select">
+                    <option value="">Όλες οι κατηγορίες</option>
+                    <!-- Θα συμπληρωθεί δυναμικά -->
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="filter-subcategory">Υποκατηγορία:</label>
+                <select id="filter-subcategory" class="filter-select">
+                    <option value="">Όλες οι υποκατηγορίες</option>
+                    <!-- Θα συμπληρωθεί δυναμικά -->
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="filter-chapter">Κεφάλαιο:</label>
+                <select id="filter-chapter" class="filter-select">
+                    <option value="">Όλα τα κεφάλαια</option>
+                    <!-- Θα συμπληρωθεί δυναμικά -->
+                </select>
+            </div>
+        </div>
+        
+        <div class="filters-row">
+            <div class="filter-group">
+                <label for="filter-type">Τύπος Ερώτησης:</label>
+                <select id="filter-type" class="filter-select">
+                    <option value="">Όλοι οι τύποι</option>
+                    <option value="single_choice">Μονής Επιλογής</option>
+                    <option value="multiple_choice">Πολλαπλής Επιλογής</option>
+                    <option value="true_false">Σωστό/Λάθος</option>
+                    <option value="fill_in_blank">Συμπλήρωση Κενού</option>
+                    <option value="matching">Αντιστοίχιση</option>
+                    <option value="ordering">Ταξινόμηση</option>
+                    <option value="short_answer">Σύντομη Απάντηση</option>
+                    <option value="essay">Ανάπτυξη</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="filter-status">Κατάσταση:</label>
+                <select id="filter-status" class="filter-select">
+                    <option value="">Όλες οι καταστάσεις</option>
+                    <option value="active">Ενεργή</option>
+                    <option value="inactive">Ανενεργή</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="filter-search">Αναζήτηση:</label>
+                <input type="text" id="filter-search" class="filter-input" placeholder="Αναζήτηση στις ερωτήσεις...">
+            </div>
+        </div>
+        
+        <div class="filters-actions">
+            <button type="button" id="apply-filters-btn" class="btn-primary">🔍 Εφαρμογή Φίλτρων</button>
+            <button type="button" id="reset-filters-btn" class="btn-secondary">↻ Επαναφορά</button>
+            <div class="filters-info">
+                <span>Εμφάνιση <strong id="filtered-count">0</strong> από <strong id="total-count">0</strong> ερωτήσεις</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Μπάρα μαζικών ενεργειών (παραμένει όπως είναι) -->
+<div id="bulk-actions-bar" style="display: none;">
+    <div class="bulk-selection-info">
+        <span>Επιλεγμένες ερωτήσεις: <strong id="selected-count">0</strong></span>
+    </div>
+    <div class="bulk-actions">
+        <button type="button" class="btn-danger" onclick="bulkDeleteQuestions()">🗑️ Μαζική Διαγραφή</button>
+        <button type="button" class="btn-secondary" onclick="selectAllQuestions(false)">❌ Καθαρισμός Επιλογών</button>
+    </div>
+</div>
+        <!-- Μπάρα μαζικών ενεργειών -->
+        <div id="bulk-actions-bar" style="display: none;">
+            <div class="bulk-selection-info">
+                <span>Επιλεγμένες ερωτήσεις: <strong id="selected-count">0</strong></span>
+            </div>
+            <div class="bulk-actions">
+                <button type="button" class="btn-danger" onclick="bulkDeleteQuestions()">🗑️ Μαζική Διαγραφή</button>
+                <button type="button" class="btn-secondary" onclick="selectAllQuestions(false)">❌ Καθαρισμός Επιλογών</button>
+            </div>
+        </div>
+
         <table id="questions-table" class="admin-table">
             <thead>
                 <tr>
+                    <th>
+                        <input type="checkbox" id="select-all-questions" title="Επιλογή όλων">
+                    </th>
                     <th>Ερώτηση</th>
                     <th>Κατηγορία</th>
                     <th>Απαντήσεις</th>
@@ -67,8 +170,8 @@ if (isset($_GET['error'])) {
                     <th>Δημιουργία</th>
                     <th>Κατάσταση</th>
                     <th>Συγγραφέας</th>
-                    <th>Χρησιμοποιήθηκε</th>
                     <th>ID</th>
+                    <th>Ενέργειες</th>
                 </tr>
             </thead>
             <tbody id="questions-table-body"></tbody>
@@ -131,6 +234,9 @@ if (isset($_GET['error'])) {
             <button type="submit" class="btn-primary">💾 Αποθήκευση Ερώτησης</button>
         </form>
     </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
 
     <script src="../assets/js/question_manager.js" defer></script>
 
