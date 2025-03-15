@@ -31,6 +31,14 @@
     <?php endif; ?>
 <?php endif; ?>
 
+<!-- Google Maps API και σχετικά scripts -->
+<?php if (isset($load_map_js) && $load_map_js === true): ?>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?= $config['google_maps_api_key'] ?>&libraries=places"></script>
+<script src="<?= BASE_URL ?>/assets/js/maps.js"></script>
+<?php endif; ?>
+<!-- Script για την εμφάνιση των μηνύματων στον χρήστη -->
+<script>
+
 <!-- Script για κλείσιμο των alerts -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -57,36 +65,5 @@
             }, 5000);
         });
         
-        // Toggle του navbar στο κινητό
-        const navbarToggler = document.getElementById('navbar-toggler');
-        const navbarMenu = document.getElementById('navbar-menu');
-        
-        if (navbarToggler && navbarMenu) {
-            navbarToggler.addEventListener('click', function() {
-                navbarMenu.classList.toggle('active');
-            });
-        }
-        
-        // Toggle των dropdowns
-        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-        dropdownToggles.forEach(function(toggle) {
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                const dropdown = this.nextElementSibling;
-                dropdown.classList.toggle('show');
-            });
-        });
-        
-        // Κλείσιμο των dropdowns όταν κάνουμε κλικ έξω από αυτά
-        document.addEventListener('click', function(e) {
-            if (!e.target.matches('.dropdown-toggle')) {
-                const dropdowns = document.querySelectorAll('.dropdown-menu');
-                dropdowns.forEach(function(dropdown) {
-                    if (dropdown.classList.contains('show')) {
-                        dropdown.classList.remove('show');
-                    }
-                });
-            }
-        });
-    });
+      
 </script>

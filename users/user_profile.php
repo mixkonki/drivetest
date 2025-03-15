@@ -2,34 +2,28 @@
 require_once '../config/config.php';
 require_once '../includes/db_connection.php';
 require_once BASE_PATH . '/includes/user_auth.php';
-
 // Έλεγχος αν ο χρήστης είναι συνδεδεμένος
 if (!isset($_SESSION['user_id'])) {
     header("Location: " . BASE_URL . "/public/login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
 $is_edit_mode = isset($_GET['edit']) && $_GET['edit'] == '1';
-
 // Ανάκτηση των στοιχείων του χρήστη
 $query = "SELECT fullname, email, phone, address, street_number, postal_code, city, 
           latitude, longitude, avatar 
           FROM users 
           WHERE id = ?";
-
 $stmt = $mysqli->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
-
 if (!$user) {
     header("Location: " . BASE_URL . "/users/dashboard.php?error=" . urlencode("Δεν βρέθηκαν τα στοιχεία του χρήστη"));
     exit();
 }
-
 // Επεξεργασία της φόρμας, αν έχει υποβληθεί
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullname = trim($_POST['fullname'] ?? '');
@@ -96,22 +90,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
     }
 }
-
 // Ορισμός των μεταβλητών για το template
 $page_title = "Το Προφίλ μου";
 $load_profile_css = true;
 $load_map_js = true;
-
 // Φόρτωση του header
 require_once BASE_PATH . '/includes/header.php';
 ?>
-
 <div class="profile-container">
     <div class="profile-header">
         <?php
         $avatar_url = !empty($user['avatar']) 
             ? BASE_URL . '/uploads/avatars/' . $user['avatar'] 
-            : BASE_URL . '/assets/images/default-avatar.png';
+            : BASE_URL . '/uploads/avatars/default-avatar.png';
         ?>
         <img src="<?= $avatar_url ?>" alt="<?= htmlspecialchars($user['fullname']) ?>" class="profile-avatar">
         
@@ -407,113 +398,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Χάρτης Google Maps (για την καρτέλα προφίλ)
-    const mapElement = document.getElementById('map');
-    const latitudeInput = document.getElementById('latitude');
-    const longitudeInput = document.getElementById('longitude');
+    // Χάρτης Google Maps
+    const lat = <?= !empty($user['latitude']) ? $user['latitude'] : 'null' ?>;
+    const lng = <?= !empty($user['longitude']) ? $user['longitude'] : 'null' ?>;
     
-    if (mapElement && latitudeInput && longitudeInput) {
-        const lat = parseFloat(latitudeInput.value);
-        const lng = parseFloat(longitudeInput.value);
+    <?php if ($is_edit_mode): ?>
+    // Χάρτης σε mode επεξεργασίας
+    if (typeof initEditableMap === 'function') {
+        const mapData = initEditableMap('map', 'latitude', 'longitude', lat, lng);
         
-        if (!isNaN(lat) && !isNaN(lng)) {
-            const map = new google.maps.Map(mapElement, {
-                center: { lat, lng },
-                zoom: 15
-            });
-            
-            const marker = new google.maps.Marker({
-                position: { lat, lng },
-                map: map,
-                draggable: <?= $is_edit_mode ? 'true' : 'false' ?>
-            });
-            
-            <?php if ($is_edit_mode): ?>
-            // Ενημέρωση των συντεταγμένων όταν μετακινείται ο marker
-            marker.addListener('dragend', function() {
-                const position = marker.getPosition();
-                latitudeInput.value = position.lat();
-                longitudeInput.value = position.lng();
-            });
-            
-            // Αυτόματη εύρεση διεύθυνσης όταν αλλάζουν τα πεδία
-            const addressInput = document.getElementById('address');
-            const streetNumberInput = document.getElementById('street_number');
-            const postalCodeInput = document.getElementById('postal_code');
-            const cityInput = document.getElementById('city');
-            
-            if (addressInput && streetNumberInput && postalCodeInput && cityInput) {
-                const geocoder = new google.maps.Geocoder();
-                
-                const updateMap = function() {
-                    const address = `${addressInput.value} ${streetNumberInput.value}, ${postalCodeInput.value} ${cityInput.value}, Greece`;
-                    
-                    geocoder.geocode({ address }, function(results, status) {
-                        if (status === 'OK' && results[0]) {
-                            const position = results[0].geometry.location;
-                            map.setCenter(position);
-                            marker.setPosition(position);
-                            
-                            latitudeInput.value = position.lat();
-                            longitudeInput.value = position.lng();
-                        }
-                    });
-                };
-                
-                // Ενημέρωση του χάρτη με καθυστέρηση για να αποφύγουμε πολλά requests
-                let timeoutId;
-                const handleAddressChange = function() {
-                    clearTimeout(timeoutId);
-                    timeoutId = setTimeout(updateMap, 1000);
-                };
-                
-                addressInput.addEventListener('change', handleAddressChange);
-                streetNumberInput.addEventListener('change', handleAddressChange);
-                postalCodeInput.addEventListener('change', handleAddressChange);
-                cityInput.addEventListener('change', handleAddressChange);
-            }
-            <?php endif; ?>
-        } else if (<?= $is_edit_mode ? 'true' : 'false' ?>) {
-            // Αρχικοποίηση χάρτη με προεπιλεγμένη τοποθεσία (Αθήνα)
-            const map = new google.maps.Map(mapElement, {
-                center: { lat: 37.9838, lng: 23.7275 },
-                zoom: 7
-            });
-            
-            const marker = new google.maps.Marker({
-                position: { lat: 37.9838, lng: 23.7275 },
-                map: map,
-                draggable: true
-            });
-            
-            // Ενημέρωση των συντεταγμένων όταν μετακινείται ο marker
-            marker.addListener('dragend', function() {
-                const position = marker.getPosition();
-                latitudeInput.value = position.lat();
-                longitudeInput.value = position.lng();
-            });
+        if (mapData && typeof setupAddressToMapUpdates === 'function') {
+            setupAddressToMapUpdates(
+                mapData,
+                'address',
+                'street_number',
+                'postal_code',
+                'city',
+                'latitude',
+                'longitude'
+            );
         }
     }
+    <?php else: ?>
+    // Απλή εμφάνιση χάρτη
+    if (lat !== null && lng !== null && typeof initMap === 'function') {
+        initMap('map', lat, lng);
+    }
+    <?php endif; ?>
     
     // Χάρτης για την καρτέλα τοποθεσίας
-    const mapFullElement = document.getElementById('map-full');
-    
-    if (mapFullElement) {
-        const lat = <?= !empty($user['latitude']) ? $user['latitude'] : 'null' ?>;
-        const lng = <?= !empty($user['longitude']) ? $user['longitude'] : 'null' ?>;
-        
-        if (lat !== null && lng !== null) {
-            const mapFull = new google.maps.Map(mapFullElement, {
-                center: { lat, lng },
-                zoom: 15
-            });
-            
-            const marker = new google.maps.Marker({
-                position: { lat, lng },
-                map: mapFull,
-                draggable: false
-            });
-        }
+    if (lat !== null && lng !== null && typeof initMap === 'function') {
+        initMap('map-full', lat, lng);
     }
 });
 </script>

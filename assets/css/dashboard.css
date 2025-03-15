@@ -1,0 +1,408 @@
+/* 
+ * DriveTest - Dashboard CSS
+ * Στυλ για τις σελίδες dashboard
+ */
+
+/* Κύριο container */
+.dashboard-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: var(--spacing-xl) var(--page-margin);
+  }
+  
+  /* Επικεφαλίδα */
+  .dashboard-header {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .dashboard-header h1 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .dashboard-header p {
+    color: var(--text-light);
+  }
+  
+  /* Πλέγμα dashboard */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  /* Καρτέλες dashboard */
+  .dashboard-card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    padding: var(--spacing-lg);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  
+  .dashboard-card:hover {
+    box-shadow: var(--box-shadow-lg);
+    transform: translateY(-3px);
+  }
+  
+  .dashboard-card h2 {
+    color: var(--secondary-color);
+    font-size: var(--font-size-large);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+  }
+  
+  .dashboard-card h2 i {
+    color: var(--primary-color);
+    margin-right: var(--spacing-sm);
+  }
+  
+  /* Στατιστικά */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .stat-card {
+    background-color: #f8f9fa;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .stat-label {
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+  }
+  
+  /* Πρόσφατα τεστ */
+  .recent-tests {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .test-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .test-item:last-child {
+    border-bottom: none;
+  }
+  
+  .test-icon {
+    font-size: 24px;
+    margin-right: var(--spacing-md);
+  }
+  
+  .test-icon.passed {
+    color: var(--success-color);
+  }
+  
+  .test-icon.failed {
+    color: var(--danger-color);
+  }
+  
+  .test-info {
+    flex: 1;
+  }
+  
+  .test-title {
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .test-meta {
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+    display: flex;
+    gap: var(--spacing-md);
+  }
+  
+  .test-score {
+    font-weight: 500;
+  }
+  
+  .test-score.passed {
+    color: var(--success-color);
+  }
+  
+  .test-score.failed {
+    color: var(--danger-color);
+  }
+  
+  .test-action {
+    margin-left: var(--spacing-md);
+  }
+  
+  /* Συνδρομές */
+  .subscription-card {
+    display: flex;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-md);
+    background-color: #f8f9fa;
+  }
+  
+  .subscription-icon {
+    font-size: 24px;
+    margin-right: var(--spacing-md);
+    color: var(--primary-color);
+  }
+  
+  .subscription-info {
+    flex: 1;
+  }
+  
+  .subscription-title {
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .subscription-meta {
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .subscription-expires {
+    font-weight: 500;
+  }
+  
+  .subscription-expires.soon {
+    color: var(--warning-color);
+  }
+  
+  .subscription-expires.expired {
+    color: var(--danger-color);
+  }
+  
+  .subscription-action {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Γρήγορη πρόσβαση */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .quick-action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  
+  .quick-action-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow-lg);
+    text-decoration: none;
+  }
+  
+  .quick-action-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .quick-action-title {
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .quick-action-description {
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+  }
+  
+  /* Γραφήματα */
+  .chart-container {
+    height: 300px;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  /* Ειδοποιήσεις */
+  .notifications {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .notification-item {
+    display: flex;
+    align-items: flex-start;
+    padding: var(--spacing-md);
+    border-left: 3px solid var(--primary-color);
+    background-color: #f8f9fa;
+    margin-bottom: var(--spacing-md);
+    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+  }
+  
+  .notification-icon {
+    margin-right: var(--spacing-md);
+    color: var(--primary-color);
+  }
+  
+  .notification-info {
+    flex: 1;
+  }
+  
+  .notification-title {
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .notification-meta {
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+  }
+  
+  .notification-content {
+    margin-top: var(--spacing-xs);
+  }
+  
+  .notification-action {
+    margin-left: var(--spacing-md);
+  }
+  
+  /* Μαθητές (για σχολές) */
+  .students-list {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .student-card {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .student-card:last-child {
+    border-bottom: none;
+  }
+  
+  .student-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: var(--spacing-md);
+  }
+  
+  .student-info {
+    flex: 1;
+  }
+  
+  .student-name {
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .student-meta {
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+    display: flex;
+    gap: var(--spacing-md);
+  }
+  
+  .student-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+  
+  /* Προσθήκη μαθητή */
+  .add-student-form {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius-md);
+  }
+  
+  .student-search {
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+  
+  .student-search input {
+    flex: 1;
+  }
+  
+  /* Media queries */
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .quick-actions {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .subscription-card {
+      flex-direction: column;
+    }
+    
+    .subscription-action {
+      margin-left: 0;
+      margin-top: var(--spacing-sm);
+    }
+    
+    .test-meta,
+    .subscription-meta {
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .quick-actions {
+      grid-template-columns: 1fr;
+    }
+    
+    .student-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .student-avatar {
+      margin-right: 0;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .student-actions {
+      margin-top: var(--spacing-sm);
+    }
+  }

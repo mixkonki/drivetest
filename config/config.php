@@ -34,7 +34,7 @@ if (!defined('LOGS_PATH')) {
     define('LOGS_PATH', BASE_PATH . '/logs');
 }
 
-// Υπόλοιπος κώδικας του config.php...
+
 
 // Ρυθμίσεις για τη βάση δεδομένων
 $config = [
@@ -120,5 +120,14 @@ if (!defined('APP_NAME')) {
 if (file_exists(__DIR__ . '/aade_config.php')) {
     include __DIR__ . '/aade_config.php';
 }
+// Φόρτωση των βοηθητικών συναρτήσεων
+require_once INCLUDES_PATH . '/language_helper.php';
+require_once INCLUDES_PATH . '/template_helper.php';
 
+// Φόρτωση της γλώσσας βάσει της επιλογής του χρήστη
+$language = isset($_GET['lang']) ? $_GET['lang'] : ($_SESSION['language'] ?? $config['default_language']);
+$translations = load_language($language);
+
+// Αποθήκευση της επιλογής στη συνεδρία
+$_SESSION['language'] = $language;
 return $config;

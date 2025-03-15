@@ -1,0 +1,38 @@
+<?php
+return [
+    'welcome' => 'Καλώς ήρθατε στο DriveTest',
+    'register_title' => 'Εγγραφή Χρήστη',
+    'register_subtitle' => 'Αποκτήστε πρόσβαση στο <strong>DriveTest</strong> μέσα σε 30 δευτερόλεπτα!',
+    'fullname' => 'Ονοματεπώνυμο',
+    'fullname_placeholder' => 'Ονοματεπώνυμο',
+    'email' => 'Email',
+    'email_placeholder' => 'Email',
+    'password' => 'Συνθηματικό',
+    'password_placeholder' => 'Συνθηματικό',
+    'confirm_password' => 'Επιβεβαίωση Συνθηματικού',
+    'confirm_password_placeholder' => 'Επιβεβαίωση Συνθηματικού',
+    'password_requirements' => 'Το συνθηματικό πρέπει να περιέχει:',
+    'password_mismatch' => 'Τα συνθηματικά δεν ταιριάζουν!',
+    'not_robot' => 'Δεν είμαι ρομπότ',
+    'accept_terms' => 'Αποδέχομαι τους <a href="#">όρους χρήσης</a>',
+    'register_button' => 'Εγγραφή',
+    'login_link' => 'Έχετε ήδη λογαριασμό? <a href="' . BASE_URL . '/public/login.php?lang=el">Συνδεθείτε</a>',
+    'email_exists' => 'Το email είναι ήδη εγγεγραμμένο! <a href="recover_password.php?lang=el">Ανάκτηση συνθηματικού</a>',
+    'verification_sent' => 'Ένα email επαλήθευσης έχει σταλεί στο ',
+    'registration_error' => 'Σφάλμα κατά την εγγραφή!',
+    'query_error' => 'Σφάλμα προετοιμασίας ερωτήματος!',
+     // Μεταφράσεις για την ανάκτηση κωδικού
+     'reset_password_title' => 'Επαναφορά Κωδικού',
+     'reset_password_subtitle' => 'Εισαγάγετε το email σας για να λάβετε σύνδεσμο επαναφοράς.',
+     'email' => 'Email',
+     'email_placeholder' => 'Εισάγετε το email σας',
+     'reset_button' => 'Αποστολή Συνδέσμου',
+     'login_link' => 'Θυμηθήκατε τον κωδικό σας; <a href="' . BASE_URL . '/public/login.php">Συνδεθείτε</a>',
+     'email_required' => 'Παρακαλώ εισάγετε το email σας.',
+     'email_not_found' => 'Το email δεν βρέθηκε. Ελέγξτε το και προσπαθήστε ξανά.',
+     'reset_email_sent' => 'Ένα email επαναφοράς κωδικού έχει σταλεί στο :email.',
+     'email_send_error' => 'Σφάλμα κατά την αποστολή email. Παρακαλώ προσπαθήστε ξανά.',
+     'reset_error' => 'Σφάλμα κατά την επαναφορά. Προσπαθήστε ξανά!',
+     
+
+];

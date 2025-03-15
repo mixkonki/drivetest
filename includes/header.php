@@ -1,10 +1,13 @@
 <?php
+// Συμπερίλαβε το config
+require_once dirname(__DIR__) . '/config/config.php';
 // Έλεγχος αν η μεταβλητή $page_title έχει οριστεί, αλλιώς χρήση προεπιλεγμένου τίτλου
 $page_title = isset($page_title) ? $page_title . ' - DriveTest' : 'DriveTest - Πλατφόρμα Θεωρητικών Τεστ Οδήγησης';
-
 // Έλεγχος για ειδικά CSS
 $additional_css = isset($additional_css) ? $additional_css : '';
 $load_test_css = isset($load_test_css) && $load_test_css ? true : false;
+
+
 // Φόρτωση των βοηθητικών συναρτήσεων χρήστη
 require_once dirname(__FILE__) . '/user_functions.php';
 ?>
@@ -21,33 +24,16 @@ require_once dirname(__FILE__) . '/user_functions.php';
     <!-- Φόρτωση όλων των CSS -->
     <?php require_once dirname(__FILE__) . '/styles.php'; ?>
     
-    <!-- Προσθήκη meta tags για SEO -->
-    <meta name="description" content="DriveTest - Η καλύτερη πλατφόρμα προετοιμασίας για θεωρητικές εξετάσεις οδήγησης, ADR, ΠΕΕ και Χειριστών Μηχανημάτων Έργου">
-    <meta name="keywords" content="θεωρητικά τεστ, σχολή οδηγών, άδεια οδήγησης, εξετάσεις, Υπουργείο Μεταφορών">
-    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
-    <!-- Βασικά CSS -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/main.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/navbar.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/footer.css">
-    
-    <!-- Προσθήκη ειδικών CSS εφόσον χρειάζεται -->
-    <?php if ($load_test_css): ?>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/test.css">
-    <?php endif; ?>
-    
-    <?= $additional_css ?>
-    
-    <!-- Προσθήκη meta tags για SEO -->
-    <meta name="description" content="DriveTest - Η καλύτερη πλατφόρμα προετοιμασίας για θεωρητικές εξετάσεις οδήγησης, ADR, ΠΕΕ και Χειριστών Μηχανημάτων Έργου">
-    <meta name="keywords" content="θεωρητικά τεστ, σχολή οδηγών, άδεια οδήγησης, εξετάσεις, Υπουργείο Μεταφορών">
+ <!-- Google Maps API -->
+<?php if (isset($load_map_js) && $load_map_js === true): ?>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?= $config['google_maps_api_key'] ?>&libraries=places"></script>
+<script src="<?= BASE_URL ?>/assets/js/maps.js"></script>
+<?php endif; ?>
     
     <!-- PWA Support -->
     <link rel="manifest" href="<?= BASE_URL ?>/public/manifest.json">
@@ -167,7 +153,7 @@ require_once dirname(__FILE__) . '/user_functions.php';
                                         </a>
                                     <?php endif; ?>
                                     <div class="dropdown-divider"></div>
-                                    <a href="<?= BASE_URL ?>/admin/logout.php" class="dropdown-item text-danger">
+                                    <a href="<?= BASE_URL ?>/public/logout.php" class="dropdown-item text-danger">
                                         <i class="fas fa-sign-out-alt"></i> Αποσύνδεση
                                     </a>
                                 </div>

@@ -60,7 +60,7 @@ function require_role($role, $redirect_url = '/public/login.php') {
  * 
  * @return array|null Τα στοιχεία του χρήστη ή null αν δεν είναι συνδεδεμένος
  */
-function get_current_user() {
+function get_logged_in_user() {  // Άλλαξε το όνομα εδώ
     if (!is_logged_in()) {
         return null;
     }

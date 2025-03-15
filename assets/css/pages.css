@@ -1,0 +1,12 @@
+/* Βασικές Σελίδες (π.χ. Index, Dashboard) */
+.page-title {
+    font-size: 28px;
+    color: #222;
+    margin-bottom: 20px;
+}
+
+.page-content {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #555;
+}

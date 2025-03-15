@@ -133,7 +133,6 @@ if (isset($_GET['success']) && $_GET['success'] === 'registered') {
 
 // Τίτλος σελίδας
 $page_title = "Σύνδεση";
-$load_auth_css = true;
 $load_auth_js = true;
 
 

@@ -1,0 +1,284 @@
+/* Βασικές ρυθμίσεις σελίδας */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Ρυθμίσεις container */
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center; /* Κεντρικός στοιχισμός οριζόντια */
+    align-items: center; /* Κεντρικός στοιχισμός κάθετα */
+    gap: 50px; /* Απόσταση μεταξύ στήλων */
+    width: 70%;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+/* Ρυθμίσεις form container */
+.form-column {
+    flex: 1;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Ρυθμίσεις info box */
+.info-box {
+    flex: 1;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center; /* Στοιχισμός οριζόντια στο κέντρο */
+    align-items: center; /* Στοιχισμός κάθετα στο κέντρο */
+    text-align: center; /* Στοιχισμός κειμένου στο κέντρο */
+
+}
+
+/* Ρυθμίσεις λογότυπου */
+.logo img {
+    display: block;
+    margin: 0 auto 20px;
+    max-width: 150px;
+}
+
+/* Ρυθμίσεις επικεφαλίδας */
+h1 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+/* Ρυθμίσεις παραγράφων */
+p {
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Γενικές ρυθμίσεις πεδίων εισαγωγής */
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Ειδικές ρυθμίσεις πεδίων εισαγωγής */
+input[type="email"],
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.text_pass {
+    text-align: left;
+    font-weight: bold;
+    margin-bottom: 1vh; /* 3% του ύψους της οθόνης */
+}
+
+.password-hint {
+    list-style: none;
+    padding-left: 0;
+}
+
+/* Προσθήκη για το container του password με το εικονίδιο */
+.password-visibility {
+    position: relative;
+    width: 100%;
+}
+
+/* Ρύθμιση του πεδίου password για να χωράει το εικονίδιο */
+.password-visibility input {
+    padding-right: 40px;
+}
+
+/* Τοποθέτηση του εικονιδίου ματιού */
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+/* Στυλ για το εικονίδιο ματιού */
+.password-toggle img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+}
+
+/* Εφέ hover για το εικονίδιο ματιού */
+.password-toggle:hover img {
+    opacity: 1;
+}
+
+/* Μορφοποίηση για τα password hints */
+.password-hint {
+    list-style: none;
+    padding-left: 0;
+    margin: 5px 0 15px 0;
+}
+
+/* Στυλ για κάθε στοιχείο των password hints */
+.password-hint li {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+}
+
+/* Προσθήκη κουκίδας πριν από κάθε hint */
+.password-hint li::before {
+    content: "•";
+    margin-right: 5px;
+}
+
+/* Ρυθμίσεις για το ρόλο χρήστη */
+.role_user {
+    background-color: #000000;    /* Μαύρο φόντο */
+    color: #ffffff;               /* Άσπρα γράμματα */
+    font-size: 1.3em;
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: inherit;
+    margin-bottom: 1vh;
+}
+
+/* Ρυθμίσεις εικόνας ρόλου */
+.role_user img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);  /* Κάνει την εικόνα άσπρη */
+}
+
+/* Ρυθμίσεις διαχωριστικής γραμμής */
+.divider {
+    border: none;
+    height: 1px;
+    background-color: #ccc;
+    margin: 5px 0;
+    width: 100%;
+}
+
+/* Στυλ για τις Ετικέτες (Labels) */
+label {
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    white-space: nowrap;  /* Αποτροπή αναδίπλωσης κειμένου */
+    margin: 1vh;          /* Ενιαίο περιθώριο */
+    margin-right: 20px;   /* Επιπλέον δεξί διάστημα */
+}
+
+/* Στυλ για τα Κουτιά Ελέγχου (Checkboxes) */
+input[type="checkbox"] {
+    margin-right: 10px;   /* Κενό μεταξύ του checkbox και του κειμένου της ετικέτας */
+}
+
+/* Στυλ για τους Συνδέσμους (Links) */
+a {
+    color: #0066cc;
+    text-decoration: none;
+    white-space: nowrap;  /* Αποτροπή αναδίπλωσης συνδέσμων */
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Ρυθμίσεις κύριου κουμπιού */
+.btn-primary {
+    width: 100%;
+    background-color: #d9534f;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Εφέ hover κύριου κουμπιού */
+.btn-primary:hover {
+    background-color: #c9302c;
+}
+
+/* Ρυθμίσεις για το Google signup */
+.google-signup {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Ρυθμίσεις εικονιδίου Google */
+.google-signup img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Ρυθμίσεις κουμπιού Google */
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #4285F4;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Εφέ hover κουμπιού Google */
+.btn-google:hover {
+    background-color: #357ae8;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 90%;
+    }
+    .form-column, .info-box {
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+
+/* Ρυθμίσεις για το wrapper (αν χρειάζεται) */
+.columns-wrapper {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 80px; /* Απόσταση μεταξύ στήλων */
+}

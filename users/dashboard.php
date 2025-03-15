@@ -306,7 +306,7 @@ require_once BASE_PATH . '/includes/header.php';
                     <?php 
                     $avatar_url = !empty($user['avatar']) 
                         ? BASE_URL . '/uploads/avatars/' . $user['avatar'] 
-                        : BASE_URL . '/assets/images/default-avatar.png';
+                        : BASE_URL . '/uploada/avatars/default-avatar.png';
                     ?>
                     <img src="<?= $avatar_url ?>" alt="<?= htmlspecialchars($username) ?>" class="profile-avatar">
                 </div>
