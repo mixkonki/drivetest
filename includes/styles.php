@@ -19,6 +19,18 @@ foreach ($base_css_files as $css_file) {
     }
 }
 ?>
+
+<!-- CSS για διαχείριση FOUC (Flash of Unstyled Content) -->
+<style>
+body {
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+body.loading {
+    opacity: 0;
+}
+</style>
+
 <!-- Ειδικά CSS για χρήστες -->
 <?php if (function_exists('is_logged_in') && is_logged_in()): ?>
     <?php 
@@ -40,6 +52,29 @@ foreach ($base_css_files as $css_file) {
     ?>
 <?php endif; ?>
 
+<!-- Φόρτωση CSS με βάση τις παραμέτρους -->
+<?php
+// Έλεγχος για flag μεταβλητές
+$css_flags = [
+    'load_dashboard_css' => 'dashboard.css',
+    'load_profile_css' => 'user_profile.css',
+    'load_auth_js' => 'login.css',
+    'load_test_css' => 'test.css',
+    'load_school_dashboard_css' => 'school-dashboard.css',
+    'load_email_verification_css' => 'email_verification_notice.CSS',
+    'load_recovery_css' => 'recover_password.css'
+];
+
+foreach ($css_flags as $flag => $css_file) {
+    if (isset($$flag) && $$flag === true) {
+        $css_path = BASE_PATH . '/assets/css/' . $css_file;
+        if (file_exists($css_path)) {
+            echo '<link rel="stylesheet" href="' . BASE_URL . '/assets/css/' . $css_file . '">' . "\n";
+        }
+    }
+}
+?>
+
 <!-- Αυτόματη φόρτωση CSS με βάση το όνομα της σελίδας -->
 <?php
 $current_page = basename($_SERVER['PHP_SELF'], '.php'); // Αφαιρεί την κατάληξη .php
@@ -48,3 +83,8 @@ if (file_exists($page_specific_css)) {
     echo '<link rel="stylesheet" href="' . BASE_URL . '/assets/css/' . $current_page . '.css">';
 }
 ?>
+
+<!-- Additional CSS (αν έχει οριστεί από το σενάριο) -->
+<?php if (isset($additional_css)): ?>
+    <?= $additional_css ?>
+<?php endif; ?>

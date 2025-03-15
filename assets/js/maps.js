@@ -4,8 +4,8 @@
  */
 
 // Έλεγχος φόρτωσης του Google Maps API
-if (typeof google === 'undefined') {
-    console.error('Google Maps API δεν φορτώθηκε σωστά');
+function checkGoogleMapsLoaded() {
+    return typeof google !== 'undefined' && typeof google.maps !== 'undefined';
 }
 
 /**
@@ -16,9 +16,20 @@ if (typeof google === 'undefined') {
  * @param {number} lng - Το γεωγραφικό μήκος
  * @param {number} zoom - Το επίπεδο zoom (προαιρετικό, προεπιλογή: 15)
  * @param {boolean} draggable - Αν ο marker θα μπορεί να μετακινηθεί (προαιρετικό, προεπιλογή: false)
- * @returns {object} - Αντικείμενο με τον χάρτη και τον marker
+ * @returns {object|null} - Αντικείμενο με τον χάρτη και τον marker ή null αν υπάρχει πρόβλημα
  */
 function initMap(elementId, lat, lng, zoom = 15, draggable = false) {
+    // Ασφαλής κλήση - αν το API δεν είναι διαθέσιμο, προσθέτουμε callback
+    if (!checkGoogleMapsLoaded()) {
+        console.log('Google Maps API not loaded yet, adding callback');
+        if (typeof window.addMapInitCallback === 'function') {
+            window.addMapInitCallback(function() {
+                initMap(elementId, lat, lng, zoom, draggable);
+            });
+        }
+        return null;
+    }
+    
     const mapElement = document.getElementById(elementId);
     
     if (!mapElement) {
@@ -27,31 +38,36 @@ function initMap(elementId, lat, lng, zoom = 15, draggable = false) {
     }
     
     // Έλεγχος αν υπάρχουν έγκυρες συντεταγμένες
-    if (isNaN(lat) || isNaN(lng)) {
+    if (lat === null || isNaN(lat) || lng === null || isNaN(lng)) {
         console.warn('Μη έγκυρες συντεταγμένες. Χρήση προεπιλεγμένων συντεταγμένων (Αθήνα)');
         lat = 37.9838;
         lng = 23.7275;
         zoom = 7;
     }
     
-    // Δημιουργία χάρτη
-    const map = new google.maps.Map(mapElement, {
-        center: { lat, lng },
-        zoom: zoom,
-        mapTypeControl: true,
-        streetViewControl: true,
-        fullscreenControl: true
-    });
-    
-    // Δημιουργία marker
-    const marker = new google.maps.Marker({
-        position: { lat, lng },
-        map: map,
-        draggable: draggable,
-        animation: google.maps.Animation.DROP
-    });
-    
-    return { map, marker };
+    try {
+        // Δημιουργία χάρτη
+        const map = new google.maps.Map(mapElement, {
+            center: { lat: parseFloat(lat), lng: parseFloat(lng) },
+            zoom: zoom,
+            mapTypeControl: true,
+            streetViewControl: true,
+            fullscreenControl: true
+        });
+        
+        // Δημιουργία marker
+        const marker = new google.maps.Marker({
+            position: { lat: parseFloat(lat), lng: parseFloat(lng) },
+            map: map,
+            draggable: draggable,
+            animation: google.maps.Animation.DROP
+        });
+        
+        return { map, marker };
+    } catch (e) {
+        console.error('Error creating map:', e);
+        return null;
+    }
 }
 
 /**
@@ -62,12 +78,29 @@ function initMap(elementId, lat, lng, zoom = 15, draggable = false) {
  * @param {string} lngInputId - Το ID του input πεδίου για το γεωγραφικό μήκος
  * @param {number|null} initialLat - Αρχικό γεωγραφικό πλάτος (προαιρετικό)
  * @param {number|null} initialLng - Αρχικό γεωγραφικό μήκος (προαιρετικό)
- * @returns {object} - Αντικείμενο με τον χάρτη και τον marker
+ * @returns {object|null} - Αντικείμενο με τον χάρτη και τον marker ή null αν υπάρχει πρόβλημα
  */
 function initEditableMap(mapElementId, latInputId, lngInputId, initialLat = null, initialLng = null) {
+    // Ασφαλής κλήση - αν το API δεν είναι διαθέσιμο, προσθέτουμε callback
+    if (!checkGoogleMapsLoaded()) {
+        console.log('Google Maps API not loaded yet, adding callback');
+        if (typeof window.addMapInitCallback === 'function') {
+            window.addMapInitCallback(function() {
+                initEditableMap(mapElementId, latInputId, lngInputId, initialLat, initialLng);
+            });
+        }
+        return null;
+    }
+    
     // Λήψη των στοιχείων του DOM
+    const mapElement = document.getElementById(mapElementId);
     const latInput = document.getElementById(latInputId);
     const lngInput = document.getElementById(lngInputId);
+    
+    if (!mapElement) {
+        console.error(`Map element με ID ${mapElementId} δεν βρέθηκε`);
+        return null;
+    }
     
     if (!latInput || !lngInput) {
         console.error('Τα πεδία για τις συντεταγμένες δεν βρέθηκαν');
@@ -75,39 +108,62 @@ function initEditableMap(mapElementId, latInputId, lngInputId, initialLat = null
     }
     
     // Λήψη των αρχικών συντεταγμένων
-    const lat = initialLat !== null ? initialLat : (latInput.value ? parseFloat(latInput.value) : null);
-    const lng = initialLng !== null ? initialLng : (lngInput.value ? parseFloat(lngInput.value) : null);
+    let lat = initialLat !== null ? parseFloat(initialLat) : (latInput.value ? parseFloat(latInput.value) : null);
+    let lng = initialLng !== null ? parseFloat(initialLng) : (lngInput.value ? parseFloat(lngInput.value) : null);
     
-    // Αρχικοποίηση χάρτη
-    const mapData = initMap(mapElementId, lat, lng, 15, true);
-    
-    if (!mapData) return null;
-    
-    const { map, marker } = mapData;
-    
-    // Ενημέρωση των συντεταγμένων όταν μετακινείται ο marker
-    marker.addListener('dragend', function() {
-        const position = marker.getPosition();
-        latInput.value = position.lat();
-        lngInput.value = position.lng();
-    });
-    
-    // Ενημέρωση του marker αν αλλάξουν τα input πεδία
-    latInput.addEventListener('change', updateMarkerFromInputs);
-    lngInput.addEventListener('change', updateMarkerFromInputs);
-    
-    function updateMarkerFromInputs() {
-        const newLat = parseFloat(latInput.value);
-        const newLng = parseFloat(lngInput.value);
-        
-        if (!isNaN(newLat) && !isNaN(newLng)) {
-            const newPosition = new google.maps.LatLng(newLat, newLng);
-            marker.setPosition(newPosition);
-            map.setCenter(newPosition);
-        }
+    // Προεπιλεγμένες συντεταγμένες (Αθήνα) αν δεν υπάρχουν έγκυρες
+    if (lat === null || isNaN(lat) || lng === null || isNaN(lng)) {
+        lat = 37.9838;
+        lng = 23.7275;
     }
     
-    return { map, marker };
+    try {
+        // Αρχικοποίηση χάρτη
+        const map = new google.maps.Map(mapElement, {
+            center: { lat, lng },
+            zoom: 15,
+            mapTypeControl: true,
+            streetViewControl: true,
+            fullscreenControl: true
+        });
+        
+        // Δημιουργία marker
+        const marker = new google.maps.Marker({
+            position: { lat, lng },
+            map: map,
+            draggable: true,
+            animation: google.maps.Animation.DROP
+        });
+        
+        // Ενημέρωση των συντεταγμένων όταν μετακινείται ο marker
+        marker.addListener('dragend', function() {
+            const position = marker.getPosition();
+            if (position) {
+                latInput.value = position.lat();
+                lngInput.value = position.lng();
+            }
+        });
+        
+        // Ενημέρωση του marker αν αλλάξουν τα input πεδία
+        latInput.addEventListener('change', updateMarkerFromInputs);
+        lngInput.addEventListener('change', updateMarkerFromInputs);
+        
+        function updateMarkerFromInputs() {
+            const newLat = parseFloat(latInput.value);
+            const newLng = parseFloat(lngInput.value);
+            
+            if (!isNaN(newLat) && !isNaN(newLng)) {
+                const newPosition = new google.maps.LatLng(newLat, newLng);
+                marker.setPosition(newPosition);
+                map.setCenter(newPosition);
+            }
+        }
+        
+        return { map, marker };
+    } catch (e) {
+        console.error('Error creating editable map:', e);
+        return null;
+    }
 }
 
 /**
@@ -130,6 +186,25 @@ function setupAddressToMapUpdates(
     latInputId, 
     lngInputId
 ) {
+    // Ασφαλής κλήση - αν το API δεν είναι διαθέσιμο, προσθέτουμε callback
+    if (!checkGoogleMapsLoaded()) {
+        console.log('Google Maps API not loaded yet, adding callback');
+        if (typeof window.addMapInitCallback === 'function') {
+            window.addMapInitCallback(function() {
+                setupAddressToMapUpdates(
+                    mapData, 
+                    addressInputId, 
+                    streetNumberInputId, 
+                    postalCodeInputId, 
+                    cityInputId, 
+                    latInputId, 
+                    lngInputId
+                );
+            });
+        }
+        return;
+    }
+    
     const addressInput = document.getElementById(addressInputId);
     const streetNumberInput = document.getElementById(streetNumberInputId);
     const postalCodeInput = document.getElementById(postalCodeInputId);
@@ -156,7 +231,7 @@ function setupAddressToMapUpdates(
         if (address.trim() === ', , Greece') return;
         
         geocoder.geocode({ address }, function(results, status) {
-            if (status === 'OK' && results[0]) {
+            if (status === 'OK' && results && results[0]) {
                 const position = results[0].geometry.location;
                 map.setCenter(position);
                 marker.setPosition(position);
@@ -182,36 +257,8 @@ function setupAddressToMapUpdates(
     cityInput.addEventListener('change', handleAddressChange);
 }
 
-/**
- * Προσθήκη αυτόματης συμπλήρωσης σε πεδίο διεύθυνσης
- * 
- * @param {string} inputId - Το ID του input πεδίου
- * @param {function} callback - Callback function που καλείται όταν επιλεγεί μια διεύθυνση
- */
-function setupAddressAutocomplete(inputId, callback) {
-    const input = document.getElementById(inputId);
-    
-    if (!input) {
-        console.error(`Element με ID ${inputId} δεν βρέθηκε`);
-        return;
-    }
-    
-    const options = {
-        componentRestrictions: { country: 'gr' }
-    };
-    
-    const autocomplete = new google.maps.places.Autocomplete(input, options);
-    
-    autocomplete.addListener('place_changed', function() {
-        const place = autocomplete.getPlace();
-        
-        if (!place.geometry) {
-            console.warn('Δεν υπάρχουν λεπτομέρειες για τη διεύθυνση που επιλέχθηκε');
-            return;
-        }
-        
-        if (typeof callback === 'function') {
-            callback(place);
-        }
-    });
-}
+// Export στο παγκόσμιο περιβάλλον
+window.initMap = initMap;
+window.initEditableMap = initEditableMap;
+window.setupAddressToMapUpdates = setupAddressToMapUpdates;
+window.checkGoogleMapsLoaded = checkGoogleMapsLoaded;
