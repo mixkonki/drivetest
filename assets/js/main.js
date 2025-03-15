@@ -265,9 +265,19 @@ function initPasswordToggles() {
     
     passwordToggles.forEach(toggle => {
         toggle.addEventListener('click', function() {
-            const inputField = this.previousElementSibling;
+            // Προσπαθήστε να βρείτε το πεδίο input με διαφορετικούς τρόπους
+            let inputField = this.previousElementSibling;
             
-            if (!inputField || inputField.tagName !== 'INPUT') return;
+            // Αν είμαστε στη σελίδα login, η δομή είναι διαφορετική
+            if (!inputField || inputField.tagName !== 'INPUT') {
+                // Δοκιμάστε να βρείτε το πεδίο input διαφορετικά
+                const parentDiv = this.parentElement;
+                if (parentDiv) {
+                    inputField = parentDiv.querySelector('input[type="password"], input[type="text"]');
+                }
+            }
+            
+            if (!inputField) return;
             
             // Toggle του τύπου του input
             if (inputField.type === 'password') {

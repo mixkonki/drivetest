@@ -2,7 +2,7 @@
 require_once '../config/config.php';
 require_once '../includes/db_connection.php';
 require_once '../includes/user_auth.php';
-require_once '../includes/aade_api.php'; // Προσθέτουμε το νέο αρχείο για το API της ΑΑΔΕ
+
 
 // Έλεγχος αν ο χρήστης είναι σχολή
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'school') {
@@ -585,7 +585,6 @@ require_once '../includes/header.php';
 
 <script src="https://maps.googleapis.com/maps/api/js?key=<?= $config['google_maps_api_key'] ?>&callback=initMap" async defer></script>
 <script src="<?= BASE_URL ?>/assets/js/school-dashboard.js"></script>
-<script src="<?= BASE_URL ?>/assets/js/aade-integration.js"></script>
-<link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/aade-integration.css">
+
 
 <?php require_once '../includes/footer.php'; ?>

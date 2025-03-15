@@ -1,0 +1,147 @@
+/* 
+ * DriveTest - Email Verification Notice CSS
+ * Στυλ για τη σελίδα επιβεβαίωσης email
+ */
+
+ .verification-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-xl) var(--page-margin);
+    min-height: calc(100vh - 300px); /* Προσαρμογή για header/footer */
+}
+
+.verification-box {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    padding: var(--spacing-xl);
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+}
+
+.verification-box h1 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.verification-box p {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-dark);
+    font-size: var(--font-size-base);
+}
+
+.verification-box p strong {
+    color: var(--primary-color);
+    font-size: var(--font-size-large);
+    word-break: break-all;
+    display: block;
+    margin: var(--spacing-sm) 0;
+}
+
+.success-message {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--success-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.error-message {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: var(--danger-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.verification-box form {
+    margin: var(--spacing-md) 0;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    text-decoration: none;
+    margin-top: var(--spacing-md);
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-dark);
+    text-decoration: none;
+    color: var(--text-white);
+}
+
+/* Animation για την επιτυχή επιβεβαίωση */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.verification-box h1:first-child {
+    animation: pulse 2s infinite;
+}
+
+/* Media queries για προσαρμογή σε μικρότερες οθόνες */
+@media (max-width: 768px) {
+    .verification-box {
+        padding: var(--spacing-md);
+    }
+    
+    .verification-container {
+        padding: var(--spacing-md) var(--spacing-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .verification-box p strong {
+        font-size: var(--font-size-base);
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}

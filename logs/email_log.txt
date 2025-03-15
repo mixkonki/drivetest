@@ -1,1 +1,3 @@
 [2025-03-15 12:17:47] ✅ Email sent successfully to kostas.michailidis@hotmail.gr with subject: 🚗 Επιβεβαίωση Συνδρομής - DriveTest
+[2025-03-15 14:50:12] ✅ Email sent successfully to kostasm@thessdrive.gr with subject: Επαλήθευση Email - DriveTest
+[2025-03-15 15:02:01] ✅ Email sent successfully to kostasm@thessdrive.gr with subject: Επαλήθευση Email - DriveTest

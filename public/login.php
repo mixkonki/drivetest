@@ -2,11 +2,9 @@
 // Φόρτωση ρυθμίσεων και σύνδεσης βάσης
 require_once '../config/config.php';
 require_once '../includes/db_connection.php';
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 // Session timeout (30 λεπτά)
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
     session_unset();
@@ -15,7 +13,6 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
     exit();
 }
 $_SESSION['last_activity'] = time();
-
 // Έλεγχος IP (προαιρετικό, για επιπλέον ασφάλεια)
 if (!isset($_SESSION['ip'])) {
     $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
@@ -25,15 +22,12 @@ if (!isset($_SESSION['ip'])) {
     header("Location: " . BASE_URL . "/public/login.php?error=ip_mismatch");
     exit();
 }
-
 // CSRF Protection: Δημιουργία ή έλεγχος token
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-
 $error = '';
 $success = '';
-
 // Έλεγχος αν έγινε υποβολή της φόρμας
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Έλεγχος CSRF token
@@ -42,13 +36,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $email = trim($_POST['email']);
         $password = trim($_POST['password']);
-
         // Ερώτημα για ανάκτηση χρήστη βάσει email
         $stmt = $mysqli->prepare("SELECT id, fullname, password, role, email_verified FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $stmt->store_result();
-
         // Αν δεν βρεθεί χρήστης, επιστρέφουμε μήνυμα λάθους
         if ($stmt->num_rows === 0) {
             $error = "Λάθος email ή κωδικός!";
@@ -56,7 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Δέσμευση αποτελεσμάτων
             $stmt->bind_result($id, $fullname, $hashed_password, $role, $verified);
             $stmt->fetch();
-
             // Έλεγχος αν ο χρήστης έχει επιβεβαιώσει το email του
             if ($verified == 0) {
                 $error = "Πρέπει να επιβεβαιώσετε το email σας πρώτα!";
@@ -66,21 +57,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } elseif (password_verify($password, $hashed_password)) {
                 // Δημιουργία νέου session token
                 $session_token = bin2hex(random_bytes(32));
-
                 // Ενημέρωση του χρήστη με το νέο session token
                 $update_stmt = $mysqli->prepare("UPDATE users SET session_token = ? WHERE id = ?");
                 $update_stmt->bind_param("si", $session_token, $id);
                 $update_stmt->execute();
-
                 // Αποθήκευση δεδομένων συνεδρίας
                 $_SESSION['user_id'] = $id;
                 $_SESSION['fullname'] = $fullname;
                 $_SESSION['role'] = $role;
                 $_SESSION['session_token'] = $session_token;
-
                 // Αποθήκευση της ώρας σύνδεσης
                 $_SESSION['login_time'] = time();
-
                 // Προαιρετική λειτουργία "Να με θυμάσαι"
                 if (isset($_POST['remember_me']) && $_POST['remember_me'] == 1) {
                     $remember_token = bin2hex(random_bytes(32));
@@ -93,17 +80,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Αποθήκευση του token σε cookie που λήγει σε 30 ημέρες
                     setcookie('remember_token', $remember_token, time() + (86400 * 30), '/', '', true, true);
                 }
-
                 // Ανακατεύθυνση βάσει ρόλου
                 switch ($role) {
                     case 'admin':
                         header("Location: " . BASE_URL . "/admin/dashboard.php");
                         break;
                     case 'school':
-                        header("Location: " . BASE_URL . "/schools/dashboard.php");
+                        header("Location: " . BASE_URL . "/schools/school-dashboard.php");
                         break;
                     case 'student':
-                        header("Location: " . BASE_URL . "/students/dashboard.php");
+                        header("Location: " . BASE_URL . "/students/students-dashboard.php");
                         break;
                     case 'user':
                         header("Location: " . BASE_URL . "/users/dashboard.php");
@@ -120,26 +106,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
     }
 }
-
 // Έλεγχος για επιτυχή επαλήθευση email
 if (isset($_GET['success']) && $_GET['success'] === 'verified') {
     $success = "Το email σας επαληθεύτηκε επιτυχώς! Μπορείτε να συνδεθείτε.";
 }
-
 // Έλεγχος για μήνυμα επιτυχίας εγγραφής
 if (isset($_GET['success']) && $_GET['success'] === 'registered') {
     $success = "Η εγγραφή σας ολοκληρώθηκε επιτυχώς! Μπορείτε να συνδεθείτε.";
 }
-
 // Τίτλος σελίδας
 $page_title = "Σύνδεση";
 $load_auth_js = true;
-
-
 // Φόρτωση του header
 require_once '../includes/header.php';
 ?>
-
 <div class="auth-container">
     <div class="auth-box">
         <div class="auth-header">
@@ -176,7 +156,7 @@ require_once '../includes/header.php';
                 <div class="input-group password-visibility">
                     <span class="input-icon"><i class="fas fa-lock"></i></span>
                     <input type="password" id="password" name="password" class="form-control" placeholder="Εισάγετε τον κωδικό σας" required>
-                    <span class="password-toggle" onclick="togglePassword('password')">
+                    <span class="password-toggle">
                         <i class="fas fa-eye"></i>
                     </span>
                 </div>
@@ -215,26 +195,6 @@ require_once '../includes/header.php';
         </div>
     </div>
 </div>
-
-<script>
-// Λειτουργία εναλλαγής ορατότητας κωδικού
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const toggle = input.nextElementSibling;
-    const icon = toggle.querySelector('i');
-    
-    if (input.type === "password") {
-        input.type = "text";
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    } else {
-        input.type = "password";
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-    }
-}
-</script>
-
 <?php
 // Φόρτωση του footer
 require_once '../includes/footer.php';
