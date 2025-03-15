@@ -1,0 +1,205 @@
+/* === Βασικές Ρυθμίσεις για Σελίδες Users === */
+/* Αυτές οι ρυθμίσεις ορίζουν τη γενική εμφάνιση της σελίδας προφίλ χρήστη */
+body.user-page {
+    font-family: Arial, sans-serif; /* Χρησιμοποιεί την Arial ως προεπιλεγμένη γραμματοσειρά */
+    margin: 0; /* Αφαιρεί περιθώρια από το body */
+    padding: 20px; /* Προσθέτει εσωτερική απόσταση 20px */
+    background-color: #f5f5f5; /* Φόντο γκρι-λευκό για αντίθεση */
+    color: #333; /* Χρώμα κειμένου σκούρο γκρι */
+}
+
+/* Container για το κύριο περιεχόμενο της σελίδας */
+.container {
+    max-width: 95%; /* Μέγιστο πλάτος 1200px για καλύτερη προβολή */
+    margin: 0 auto; /* Κεντράρει το container οριζόντια */
+    padding: 20px; /* Εσωτερική απόσταση 20px */
+    border-radius: 8px; /* Στρογγυλεμένες γωνίες */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Λεπτή σκίαση για 3D εμφάνιση */
+}
+
+/* Header του προφίλ χρήστη */  
+.header {
+    background-color: #aa3636; /* Κόκκινο φόντο για το header */
+    color: white; /* Λευκό κείμενο για αντίθεση */
+    padding: 15px; /* Εσωτερική απόσταση 15px */
+    border-radius: 8px 8px 0 0; /* Στρογγυλεμένες γωνίες μόνο στην κορυφή */
+    text-align: center; /* Κεντράρει το κείμενο οριζόντια */
+}
+
+/* Grid layout για τα sections του προφίλ */
+.profile-grid {
+    display: grid; /* Χρησιμοποιεί CSS Grid για διάταξη */
+    grid-template-columns: repeat(4, 1fr); /* 4 ίσες στήλες */
+    gap: 20px; /* Απόσταση 20px μεταξύ των sections */
+    margin-top: 20px; /* Περιθώριο από πάνω 20px */
+}
+
+/* Στυλ για κάθε section (βασικά στοιχεία, διεύθυνση, χάρτης) */
+.profile-section {
+    background-color: #fff; /* Λευκό φόντο */
+    padding: 15px; /* Εσωτερική απόσταση 15px */
+    border-radius: 8px; /* Στρογγυλεμένες γωνίες */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); /* Λεπτή σκίαση */
+    border-left: 5px solid #aa3636; /* Κόκκινο περιθώριο αριστερά για έμφαση */
+}
+
+/* Τίτλοι των sections */
+.profile-section h3 {
+    color: #aa3636; /* Κόκκινο χρώμα για τίτλους */
+    margin-top: 0; /* Καμία απόσταση από πάνω */
+    border-bottom: 2px solid #aa3636; /* Κόκκινο underline για τίτλους */
+    padding-bottom: 10px; /* Εσωτερική απόσταση κάτω 10px */
+}
+
+/* Παράγραφοι μέσα στα sections */
+.profile-section p {
+    margin: 10px 0; /* Περιθώριο 10px πάνω/κάτω */
+}
+
+/* Container για τα κουμπιά (Επεξεργασία, Αποθήκευση, Επιστροφή) */
+.btn-container {
+    margin-top: 20px; /* Περιθώριο από πάνω 20px */
+    display: flex; /* Χρησιμοποιεί flexbox για διάταξη */
+    gap: 15px; /* Απόσταση 15px μεταξύ κουμπιών */
+}
+
+/* Στυλ για τα κουμπιά πρωτεύουσας σημασίας (π.χ. Επεξεργασία, Αποθήκευση) */
+.btn-primary {
+    background-color: #aa3636 !important; /* Κόκκινο φόντο, !important για να επικαλύψει το styles.css */
+    color: white; /* Λευκό κείμενο */
+    padding: 10px 20px; /* Εσωτερική απόσταση 10px πάνω/κάτω, 20px δεξιά/αριστερά */
+    border: none; /* Καμία περίγραμμή */
+    border-radius: 5px; /* Στρογγυλεμένες γωνίες */
+    cursor: pointer; /* Δείκτης χεριού όταν περνάει ο ποντικός */
+    text-decoration: none; /* Καμία υπογράμμιση */
+    text-align: center; /* Κεντράρει το κείμενο οριζόντια */
+}
+
+/* Hover effect για τα πρωτεύοντα κουμπιά */
+.btn-primary:hover {
+    background-color: #8c2e2e !important; /* Σκουρότερο κόκκινο στο hover */
+}
+
+/* Στυλ για τα δευτερεύοντα κουμπιά (π.χ. Επιστροφή) */
+.btn-secondary {
+    background-color: #c44848 !important; /* Λιγότερο έντονο κόκκινο */
+    color: white; /* Λευκό κείμενο */
+    padding: 10px 20px; /* Εσωτερική απόσταση 10px πάνω/κάτω, 20px δεξιά/αριστερά */
+    border: none; /* Καμία περίγραμμή */
+    border-radius: 5px; /* Στρογγυλεμένες γωνίες */
+    cursor: pointer; /* Δείκτης χεριού */
+    text-decoration: none; /* Καμία υπογράμμιση */
+    text-align: center; /* Κεντράρει το κείμενο */
+}
+
+/* Hover effect για τα δευτερεύοντα κουμπιά */
+.btn-secondary:hover {
+    background-color: #b03a3a !important; /* Σκουρότερο κόκκινο στο hover */
+}
+
+/* Στυλ για τον χάρτη Google Maps */
+#map {
+    height: 300px; /* Ύψος 300px */
+    width: 100%; /* Πλήρες πλάτος */
+    border-radius: 8px; /* Στρογγυλεμένες γωνίες */
+}
+
+/* Στυλ για μηνύματα σφάλματος */
+.error-message {
+    color: #aa3636; /* Κόκκινο κείμενο */
+    background-color: #ffebee; /* Ροζ φόντο για αντίθεση */
+    padding: 10px; /* Εσωτερική απόσταση 10px */
+    border-radius: 5px; /* Στρογγυλεμένες γωνίες */
+    margin-bottom: 15px; /* Περιθώριο από κάτω 15px */
+}
+
+/* Στυλ για την εικόνα του avatar στην προβολή μόνο */
+.avatar-upload {
+    margin-bottom: 15px; /* Περιθώριο από κάτω 15px */
+}
+
+.avatar-upload img {
+    width: 50px; /* Πλάτος 50px */
+    height: 50px; /* Ύψος 50px */
+    border-radius: 50%; /* Κυκλική εμφάνιση */
+    cursor: pointer; /* Δείκτης χεριού για κλικ */
+}
+
+/* Στυλ για τα πεδία της φόρμας */
+.form-group {
+    margin-bottom: 15px; /* Περιθώριο από κάτω 15px */
+}
+
+.form-group label {
+    display: block; /* Εμφάνιση ως block για να καταλαμβάνει πλήρες πλάτος */
+    margin-bottom: 5px; /* Περιθώριο από κάτω 5px */
+    color: #aa3636; /* Κόκκινο χρώμα για ετικέτες */
+}
+
+.form-group input {
+    width: 100%; /* Πλήρες πλάτος */
+    padding: 8px; /* Εσωτερική απόσταση 8px */
+    border: 1px solid #ccc; /* Λεπτή γκρίζα περίγραμμή */
+    border-radius: 4px; /* Στρογγυλεμένες γωνίες */
+}
+
+/* Στυλ για section στατιστικών (αν υπάρχει) */
+.stats-section {
+    margin-top: 20px; /* Περιθώριο από πάνω 20px */
+    padding: 15px; /* Εσωτερική απόσταση 15px */
+    background-color: #fff; /* Λευκό φόντο */
+    border-radius: 8px; /* Στρογγυλεμένες γωνίες */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); /* Λεπτή σκίαση */
+    border-left: 5px solid #aa3636; /* Κόκκινο περιθώριο αριστερά */
+}
+
+.stats-section h3 {
+    color: #aa3636; /* Κόκκινο χρώμα για τίτλους */
+    margin-top: 0; /* Καμία απόσταση από πάνω */
+    border-bottom: 2px solid #aa3636; /* Κόκκινο underline */
+    padding-bottom: 10px; /* Εσωτερική απόσταση κάτω 10px */
+}
+
+/* Στυλ για πίνακες (αν υπάρχουν) */
+table {
+    width: 100%; /* Πλήρες πλάτος */
+    border-collapse: collapse; /* Συνδυασμός συνόρων πίνακα */
+    margin-top: 15px; /* Περιθώριο από πάνω 15px */
+}
+
+th, td {
+    padding: 10px; /* Εσωτερική απόσταση 10px */
+    text-align: left; /* Κείμενο αριστερά */
+    border-bottom: 1px solid #ddd; /* Λεπτή γραμμή κάτω */
+}
+
+th {
+    background-color: #aa3636; /* Κόκκινο φόντο για headers */
+    color: white; /* Λευκό κείμενο */
+}
+
+/* Στυλ για την εικόνα του avatar στην επεξεργασία */
+.user-avatar img {
+    width: 50px; /* Πλάτος 50px */
+    height: 50px; /* Ύψος 50px */
+}
+
+/* === Προσαρμογή για μικρές οθόνες === */
+/* Media query για οθόνες μικρότερες από 768px */
+@media (max-width: 768px) {
+    .profile-grid {
+        grid-template-columns: 1fr; /* Μία στήλη για μικρές οθόνες */
+    }
+    .container {
+        padding: 10px; /* Λιγότερη εσωτερική απόσταση */
+    }
+    .btn-container {
+        flex-direction: column; /* Στήλες αντί για γραμμές */
+        align-items: center; /* Κεντράρει τα κουμπιά οριζόντια */
+    }
+    .btn-primary, .btn-secondary {
+        width: 100%; /* Πλήρες πλάτος για κουμπιά */
+        max-width: 300px; /* Μέγιστο πλάτος 300px */
+        margin-bottom: 10px; /* Περιθώριο από κάτω 10px */
+    }
+}

@@ -1,0 +1,301 @@
+/* 
+ * DriveTest - Navbar CSS
+ * Ειδικά στυλ για την navigation bar
+ */
+
+/* Κύρια navigation bar */
+.main-header {
+  background-color: var(--primary-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-sm) 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 75px;
+  width: auto;
+}
+
+.navbar-menu {
+  display: flex;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  position: relative;
+  margin-left: var(--spacing-md);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  color: var(--text-white);
+  text-decoration: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--border-color);
+  background-color: rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+}
+
+.nav-link i {
+  margin-right: var(--spacing-xs);
+}
+
+.nav-link.active {
+  color: var(--secondary-color);
+  font-weight: 500;
+}
+
+/* Dropdown menu */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+.dropdown-toggle::after {
+  content: "";
+  display: inline-block;
+  margin-left: var(--spacing-xs);
+  vertical-align: middle;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  display: none;
+  min-width: 200px;
+  padding: var(--spacing-xs) 0;
+  margin: var(--spacing-xs) 0 0;
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu.show {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-dark);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.dropdown-item i {
+  margin-right: var(--spacing-sm);
+  width: 16px;
+  text-align: center;
+}
+
+.dropdown-divider {
+  height: 0;
+  margin: var(--spacing-xs) 0;
+  overflow: hidden;
+  border-top: 1px solid var(--border-color);
+}
+
+.dropdown-item.text-danger {
+  color: var(--danger-color);
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: rgba(244, 67, 54, 0.05);
+}
+
+/* Navbar toggler για κινητές συσκευές */
+.navbar-toggler {
+  display: none;
+  background: none;
+  border: none;
+  font-size: var(--font-size-large);
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: var(--spacing-sm);
+}
+
+/* Alert container */
+.alert-container {
+  background-color: transparent;
+  padding: var(--spacing-sm) 0;
+}
+
+.alert {
+  position: relative;
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-md);
+  transition: opacity 0.3s ease;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  border-color: #ffeeba;
+  color: #856404;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+  color: #0c5460;
+}
+
+.alert i {
+  margin-right: var(--spacing-sm);
+}
+
+.close-alert {
+  position: absolute;
+  right: var(--spacing-md);
+  top: var(--spacing-md);
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.7;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+}
+
+.close-alert:hover {
+  opacity: 1;
+}
+
+/* Media queries για κινητές συσκευές */
+@media (max-width: 768px) {
+  .navbar {
+    padding: var(--spacing-sm) 0;
+  }
+  
+  .navbar-brand {
+    z-index: 2;
+  }
+  
+  .logo {
+    height: 40px;
+  }
+  
+  .navbar-toggler {
+    display: block;
+    z-index: 2;
+  }
+  
+  .navbar-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 75%;
+    max-width: 300px;
+    height: 100vh;
+    background-color: var(--card-background);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    padding: 60px var(--spacing-md) var(--spacing-md);
+    z-index: 1;
+    overflow-y: auto;
+    transition: right 0.3s ease;
+  }
+  
+  .navbar-menu.active {
+    right: 0;
+  }
+  
+  .navbar-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .nav-item {
+    margin-left: 0;
+    margin-bottom: var(--spacing-sm);
+    width: 100%;
+  }
+  
+  .nav-link {
+    padding: var(--spacing-sm) 0;
+    width: 100%;
+  }
+  
+  .dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    background-color: transparent;
+    display: none;
+    padding-left: var(--spacing-lg);
+    margin-top: 0;
+  }
+  
+  .dropdown-menu.show {
+    display: block;
+    animation: none;
+  }
+  
+  .dropdown-item {
+    padding: var(--spacing-xs) 0;
+  }
+  
+  .dropdown-divider {
+    display: none;
+  }
+}

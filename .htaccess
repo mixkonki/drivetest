@@ -1,0 +1,7 @@
+# .htaccess στη ρίζα
+RewriteEngine On
+
+# Αν το αρχείο ή ο φάκελος δεν υπάρχει, προώθησε στον φάκελο public
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/$1 [L,QSA]
