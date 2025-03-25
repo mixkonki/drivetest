@@ -1,0 +1,200 @@
+/* 
+ * DriveTest - Duration Form CSS
+ * Ειδικά στυλ για τη φόρμα διάρκειας συνδρομής
+ */
+
+/* Τα βασικά στυλ φόρμας κληρονομούνται από το category_form.css */
+
+/* Ειδικά στυλ για την διάρκεια */
+.duration-icon {
+    font-size: 1.2rem;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.duration-slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.duration-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.duration-slider:hover {
+    opacity: 1;
+}
+
+.duration-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.duration-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.duration-slider::-webkit-slider-thumb:hover,
+.duration-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 8px rgba(170, 54, 54, 0.5);
+}
+
+.duration-value-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.duration-input {
+    width: 80px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-align: center;
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    transition: all 0.3s;
+}
+
+.duration-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(170, 54, 54, 0.25);
+}
+
+.duration-unit {
+    font-size: 16px;
+    color: var(--text-dark);
+    min-width: 55px;
+}
+
+.duration-visualization {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+}
+
+.duration-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 8px;
+}
+
+.duration-scale span {
+    font-size: 14px;
+    color: var(--text-light);
+    position: relative;
+}
+
+.duration-scale span::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 6px;
+    background-color: var(--border-color);
+    bottom: -8px;
+    left: 50%;
+}
+
+.duration-description {
+    text-align: center;
+    font-size: 16px;
+    color: var(--text-dark);
+    margin-top: 10px;
+}
+
+.duration-description strong {
+    color: var(--primary-color);
+}
+
+.duration-tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    margin-left: 5px;
+}
+
+.duration-info-box {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid var(--primary-color);
+}
+
+.duration-info-box h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+    font-size: 16px;
+}
+
+.duration-info-box p {
+    margin: 0 0 8px;
+    color: var(--text-dark);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.duration-info-box ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.duration-info-box li {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: var(--text-dark);
+}
+
+.help-text {
+    color: var(--text-light);
+    font-style: italic;
+    margin-top: 5px;
+}
+
+.action-icon {
+    margin-right: 5px;
+}
+
+/* Responsive διάταξη */
+@media (max-width: 768px) {
+    .duration-slider-container {
+        width: 100%;
+    }
+    
+    .duration-value-container {
+        justify-content: center;
+    }
+}

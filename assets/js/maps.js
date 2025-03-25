@@ -55,21 +55,35 @@ function initMap(elementId, lat, lng, zoom = 15, draggable = false) {
             fullscreenControl: true
         });
         
-        // Δημιουργία marker
-        const marker = new google.maps.Marker({
-            position: { lat: parseFloat(lat), lng: parseFloat(lng) },
-            map: map,
-            draggable: draggable,
-            animation: google.maps.Animation.DROP
-        });
+       // Δημιουργία του AdvancedMarkerElement αντί για το Marker
+       const markerPosition = { lat: parseFloat(lat), lng: parseFloat(lng) };
         
-        return { map, marker };
-    } catch (e) {
-        console.error('Error creating map:', e);
-        return null;
-    }
+       // Ελέγχουμε αν το AdvancedMarkerElement είναι διαθέσιμο
+       if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
+           const marker = new google.maps.marker.AdvancedMarkerElement({
+               position: markerPosition,
+               map: map,
+               draggable: draggable
+           });
+           
+           return { map, marker };
+       } else {
+           // Fallback στο παλιό Marker αν το AdvancedMarkerElement δεν είναι διαθέσιμο
+           console.warn('AdvancedMarkerElement not available, using deprecated Marker');
+           const marker = new google.maps.Marker({
+               position: markerPosition,
+               map: map,
+               draggable: draggable,
+               animation: google.maps.Animation.DROP
+           });
+           
+           return { map, marker };
+       }
+   } catch (e) {
+       console.error('Error creating map:', e);
+       return null;
+   }
 }
-
 /**
  * Αρχικοποίηση χάρτη με δυνατότητα επεξεργασίας
  * 

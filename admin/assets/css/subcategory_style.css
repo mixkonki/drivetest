@@ -1,0 +1,321 @@
+/* 
+ * DriveTest - Subcategory Management CSS
+ * Στυλ για τη διαχείριση υποκατηγοριών
+ */
+
+ .admin-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.subcategory-form {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.subcategory-form h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-large);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-sm);
+}
+
+/* Προεπισκόπηση εικονιδίου */
+.icon-preview {
+    display: flex;
+    align-items: center;
+    margin-top: var(--spacing-sm);
+    gap: var(--spacing-sm);
+}
+
+.icon-preview img {
+    border: 1px solid var(--border-color);
+    padding: 5px;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius-sm);
+}
+
+.icon-preview-label {
+    font-size: var(--font-size-small);
+    color: var(--text-light);
+}
+
+/* Προσαρμογές για τον πίνακα υποκατηγοριών */
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: var(--spacing-xl);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.admin-table th {
+    background-color: var(--secondary-color);
+    color: var(--text-white);
+    text-align: left;
+    padding: var(--spacing-md);
+    font-weight: 600;
+}
+
+.admin-table td {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.admin-table tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.admin-table tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Στυλ για κουμπιά ενεργειών */
+.btn-edit, 
+.btn-delete {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: var(--font-size-large);
+    text-decoration: none;
+    display: inline-block;
+    margin-right: var(--spacing-sm);
+    transition: all 0.3s ease;
+}
+
+.btn-edit {
+    color: var(--info-color);
+}
+
+.btn-delete {
+    color: var(--danger-color);
+}
+
+.btn-edit:hover {
+    color: #0b7dda;
+    transform: scale(1.1);
+}
+
+.btn-delete:hover {
+    color: #d32f2f;
+    transform: scale(1.1);
+}
+
+.action-icon {
+    margin-right: var(--spacing-xs);
+}
+
+/* Στυλ για τη φόρμα */
+.form-control {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    margin-top: var(--spacing-xs);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+/* Ειδοποιήσεις */
+.alert {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid var(--success-color);
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid var(--danger-color);
+}
+
+/* Επιπλέον στυλ */
+.text-center {
+    text-align: center;
+}
+
+/* Πίνακας επιβεβαίωσης διαγραφής */
+.confirmation-container {
+    background-color: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    padding: 30px;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.confirmation-header {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.confirmation-icon {
+    margin: 20px auto;
+    width: 80px;
+    height: 80px;
+    background-color: #fff5f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #ffebeb;
+}
+
+.warning-icon {
+    font-size: 40px;
+    color: var(--danger-color);
+}
+
+.confirmation-content {
+    margin-bottom: 30px;
+}
+
+.category-preview {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 20px;
+    gap: 15px;
+    justify-content: center;
+}
+
+.category-icon-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-icon {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.category-details {
+    text-align: left;
+}
+
+.category-name {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.category-parent {
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.confirmation-message {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: var(--text-dark);
+}
+
+.confirmation-message strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.confirmation-warning {
+    background-color: #fff5f5;
+    padding: 12px;
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid var(--danger-color);
+    color: var(--text-dark);
+    text-align: left;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.confirmation-question {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Απόκριση για κινητές συσκευές */
+@media (max-width: 768px) {
+    .admin-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .admin-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    
+    .admin-actions a,
+    .admin-actions button {
+        width: 100%;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
+    
+    .confirmation-actions {
+        flex-direction: column;
+    }
+    
+    .btn-danger,
+    .btn-secondary {
+        width: 100%;
+    }
+}

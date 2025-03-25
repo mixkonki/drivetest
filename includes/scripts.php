@@ -8,13 +8,13 @@
 <!-- Προσθήκη αρχικής κλάσης loading στο body για αποφυγή FOUC -->
 <script>
 document.body.classList.add('loading');
-window.addEventListener('load', function() {
+window.addEventListener('DOMContentLoaded', function() {
     document.body.classList.remove('loading');
 });
 // Fallback για την περίπτωση που δεν πυροδοτηθεί το 'load' event
 setTimeout(function() {
-    document.body.classList.remove('loading');
-}, 1000);
+        document.body.classList.remove('loading');
+    }, 100);
 </script>
 
 <!-- jQuery -->

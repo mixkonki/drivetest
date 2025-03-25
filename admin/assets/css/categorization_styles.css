@@ -1,0 +1,247 @@
+/**
+ * Στυλ για την βελτιωμένη κατηγοριοποίηση στη μαζική εισαγωγή
+ */
+
+/* Στυλ για τις επιλογές κατηγοριοποίησης */
+.categorization-option {
+    margin-bottom: 25px;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.categorization-option h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Στυλ για τα radio buttons */
+.radio-container {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.radio-option:hover {
+    background-color: #f0f0f0;
+}
+
+.radio-option input[type="radio"] {
+    margin: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.radio-option input[type="radio"]:checked {
+    border-color: #aa3636;
+    background-color: white;
+    box-shadow: inset 0 0 0 5px #aa3636;
+}
+
+.radio-option input[type="radio"]:hover {
+    border-color: #aa3636;
+}
+
+.radio-option input[type="radio"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+}
+
+.radio-option label {
+    cursor: pointer;
+    font-weight: normal;
+    color: #444;
+}
+
+.radio-option label span.disabled-note {
+    color: #999;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* Στυλ για τα πεδία επιλογής κατηγοριών */
+.category-fields {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ddd;
+    transition: all 0.3s ease;
+}
+
+/* Στυλ για τις νέες φόρμες */
+.new-item-form {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border: 1px solid #d1e7ff;
+    border-radius: 5px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.input-with-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-with-buttons input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.input-with-buttons input:focus {
+    border-color: #aa3636;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(170, 54, 54, 0.2);
+}
+
+/* Μίνι κουμπιά */
+.btn-mini {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.save-new-item {
+    background-color: #28a745;
+    color: white;
+}
+
+.save-new-item:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-new-item {
+    background-color: #6c757d;
+    color: white;
+}
+
+.cancel-new-item:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Στυλ για τις επιλογές "Νέο..." στα dropdowns */
+.new-item-option {
+    font-style: italic;
+    color: #007bff !important;
+    background-color: #f0f8ff !important;
+    border-top: 1px dashed #ccc;
+    margin-top: 5px;
+    padding-top: 5px !important;
+}
+
+/* Λίστα νέων στοιχείων */
+.new-items-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.new-items-list li {
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    background-color: #f0f8ff;
+    border-left: 3px solid #17a2b8;
+    border-radius: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.new-items-list li .item-id {
+    background-color: #e6f7ff;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.85em;
+    color: #0c5460;
+    font-weight: bold;
+}
+
+/* Container για τα δημιουργηθέντα στοιχεία */
+.created-items {
+    background-color: #effaf5;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-left: 4px solid #28a745;
+}
+
+.created-items h4 {
+    color: #155724;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.created-group {
+    margin-bottom: 20px;
+}
+
+.created-group:last-child {
+    margin-bottom: 0;
+}
+
+.created-group h5 {
+    color: #155724;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed #c3e6cb;
+}
+
+/* Προσαρμογές για κινητά */
+@media (max-width: 768px) {
+    .radio-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .input-with-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .input-with-buttons .btn-mini {
+        margin-top: 5px;
+    }
+}

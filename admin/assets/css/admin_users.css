@@ -1,0 +1,448 @@
+/* 
+ * DriveTest - Admin Users CSS
+ * Ειδικά στυλ για τη σελίδα διαχείρισης χρηστών
+ */
+
+/* Κεφαλίδα τμήματος χρηστών */
+.user-management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    width: auto;
+    background-color: var(--card-background);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+  }
+  
+  .user-management-header .admin-title {
+    font-size: var(--font-size-xl);
+    color: var(--primary-color);
+    margin: 0;
+    flex: 0 0 auto;
+    font-weight: 600;
+    border-bottom: none;
+  }
+  
+  /* Φόρμα αναζήτησης χρηστών */
+  .search-form {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: var(--spacing-sm);
+    max-width: 700px;
+  }
+  
+  .search-form input[type="text"],
+  .search-form select {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background-color: var(--card-background);
+    color: var(--text-dark);
+    font-size: var(--font-size-base);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .search-form input[type="text"] {
+    flex: 1;
+  }
+  
+  .search-form select {
+    min-width: 120px;
+  }
+  
+  .search-form input[type="text"]:focus,
+  .search-form select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(170, 54, 54, 0.25);
+  }
+  
+  .search-form button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--primary-color);
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .search-form button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+  }
+  
+  /* Κουμπιά ενεργειών */
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-left: auto;
+  }
+  
+  /* Πίνακας χρηστών */
+  .users-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    background-color: var(--card-background);
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .users-table th {
+    background-color: var(--secondary-color);
+    color: var(--text-white);
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    transition: background-color 0.3s ease;
+    position: relative;
+  }
+  
+  .users-table th.sortable {
+    cursor: pointer;
+    padding-right: 25px;
+  }
+  
+  .users-table th.sortable::after {
+    content: "↕";
+    position: absolute;
+    right: 8px;
+    opacity: 0.5;
+  }
+  
+  .users-table th.sortable[data-order="asc"]::after {
+    content: "↑";
+    opacity: 1;
+  }
+  
+  .users-table th.sortable[data-order="desc"]::after {
+    content: "↓";
+    opacity: 1;
+  }
+  
+  .users-table th.sortable:hover {
+    background-color: var(--secondary-dark);
+  }
+  
+  .users-table td {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-dark);
+    font-size: var(--font-size-base);
+    vertical-align: middle;
+  }
+  
+  .users-table tr {
+    transition: background-color 0.3s ease;
+  }
+  
+  .users-table tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+  
+  .users-table tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Avatar στυλ */
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  .user-avatar:hover {
+    transform: scale(1.15);
+  }
+  
+  /* Σύνδεσμος ονόματος χρήστη */
+  .user-name-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s ease;
+    display: inline-block;
+  }
+  
+  .user-name-link::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+  }
+  
+  .user-name-link:hover {
+    color: var(--primary-dark);
+    text-decoration: none;
+  }
+  
+  .user-name-link:hover::after {
+    width: 100%;
+  }
+  
+  /* Badges κατάστασης */
+  .status-active,
+  .status-inactive {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-small);
+    font-weight: 500;
+    text-align: center;
+    min-width: 80px;
+  }
+  
+  .status-active {
+    background-color: var(--success-color);
+    color: var(--text-white);
+  }
+  
+  .status-inactive {
+    background-color: var(--danger-color);
+    color: var(--text-white);
+  }
+  
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-lg);
+    gap: var(--spacing-xs);
+  }
+  
+  .pagination a,
+  .pagination span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--border-radius-md);
+    text-decoration: none;
+    font-size: var(--font-size-base);
+    transition: all 0.3s ease;
+  }
+  
+  .pagination a {
+    background-color: var(--card-background);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+  }
+  
+  .pagination a:hover {
+    background-color: var(--primary-color);
+    color: var(--text-white);
+    border-color: var(--primary-color);
+  }
+  
+  .pagination .current {
+    background-color: var(--primary-color);
+    color: var(--text-white);
+    font-weight: 600;
+  }
+  
+  .pagination .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Empty state */
+  .empty-users-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow);
+    margin-top: var(--spacing-lg);
+  }
+  
+  .empty-users-state i {
+    font-size: 48px;
+    color: var(--text-light);
+    margin-bottom: var(--spacing-md);
+    display: block;
+  }
+  
+  .empty-users-state p {
+    color: var(--text-light);
+    font-size: var(--font-size-large);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  /* Dropdowns για τα φίλτρα */
+  .filter-dropdown {
+    position: relative;
+  }
+  
+  .filter-dropdown select {
+    appearance: none;
+    padding-right: 25px;
+    cursor: pointer;
+  }
+  
+  .filter-dropdown::after {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: var(--text-light);
+    pointer-events: none;
+  }
+  
+  /* Tooltip για πληροφορίες χρήστη */
+  .user-info-tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .user-info-tooltip .tooltip-content {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--secondary-color);
+    color: var(--text-white);
+    text-align: center;
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    position: absolute;
+    z-index: 100;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    font-size: var(--font-size-small);
+  }
+  
+  .user-info-tooltip:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .user-info-tooltip .tooltip-content::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--secondary-color) transparent transparent transparent;
+  }
+  
+  /* Media Queries */
+  @media (max-width: 992px) {
+    .user-management-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .search-form {
+      max-width: 100%;
+      width: 100%;
+      margin-top: var(--spacing-md);
+    }
+    
+    .action-buttons {
+      margin-left: 0;
+      margin-top: var(--spacing-md);
+      width: 100%;
+      justify-content: flex-start;
+    }
+    
+    .users-table {
+      font-size: var(--font-size-small);
+    }
+    
+    .users-table th,
+    .users-table td {
+      padding: var(--spacing-sm);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .search-form {
+      flex-wrap: wrap;
+    }
+    
+    .search-form input[type="text"],
+    .search-form select,
+    .search-form button {
+      flex: 0 0 100%;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .action-buttons a {
+      width: 100%;
+      margin-bottom: var(--spacing-xs);
+      text-align: center;
+    }
+    
+    .users-table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+    }
+    
+    .pagination {
+      flex-wrap: wrap;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .user-management-header .admin-title {
+      font-size: var(--font-size-large);
+    }
+    
+    .users-table th {
+      padding: var(--spacing-xs);
+      font-size: var(--font-size-small);
+    }
+    
+    .users-table td {
+      padding: var(--spacing-xs);
+      font-size: var(--font-size-small);
+    }
+    
+    .status-active,
+    .status-inactive {
+      min-width: 60px;
+      padding: var(--spacing-xs) var(--spacing-xs);
+      font-size: 12px;
+    }
+  }
+  

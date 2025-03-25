@@ -1,0 +1,76 @@
+/* 
+ * DriveTest - Admin Footer CSS
+ * Ειδικά στυλ για το footer του admin panel
+ */
+
+ .admin-footer {
+    background-color: var(--secondary-color);
+    color: var(--text-white);
+    padding: var(--spacing-md) 0;
+    margin-top: auto;
+    text-align: center;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: calc(100% - 2 * var(--page-margin));
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+  }
+  
+  .footer-logo {
+    height: 40px;
+    width: auto;
+    opacity: 0.9;
+  }
+  
+  .footer-copyright {
+    font-size: var(--font-size-small);
+    opacity: 0.9;
+  }
+  
+  .footer-links {
+    display: flex;
+    gap: var(--spacing-md);
+  }
+  
+  .footer-link {
+    color: var(--text-white);
+    text-decoration: none;
+    font-size: var(--font-size-small);
+    opacity: 0.8;
+    transition: all 0.3s ease;
+  }
+  
+  .footer-link:hover {
+    opacity: 1;
+    text-decoration: none;
+    color: var(--border-color);
+  }
+  
+  .footer-version {
+    font-size: var(--font-size-small);
+    opacity: 0.7;
+  }
+  
+  /* Media queries για κινητές συσκευές */
+  @media (max-width: 768px) {
+    .footer-container {
+      flex-direction: column;
+      gap: var(--spacing-md);
+      text-align: center;
+      padding: var(--spacing-sm);
+    }
+    
+    .footer-links {
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+    
+    .footer-logo {
+      height: 30px;
+    }
+  }

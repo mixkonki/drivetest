@@ -1,0 +1,561 @@
+/* 
+ * Βελτιωμένα στυλ για τη σελίδα μαζικής εισαγωγής ερωτήσεων 
+ */
+
+/* Γενικά στυλ */
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.admin-title {
+    color: #aa3636;
+    font-size: 24px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #aa3636;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Τμήματα φόρμας */
+.form-section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.form-section h3 {
+    font-size: 18px;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Ομάδες πεδίων */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.form-group select,
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+}
+
+.form-group select:focus,
+.form-group input[type="file"]:focus {
+    border-color: #aa3636;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(170, 54, 54, 0.2);
+}
+
+.form-group select:disabled {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.help-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Προεπισκόπηση CSV */
+.preview-table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    font-size: 14px;
+}
+
+.preview-table th {
+    background-color: #f6f6f6;
+    color: #333;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    font-weight: bold;
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+.preview-table td {
+    border: 1px solid #eee;
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.preview-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.preview-table tr:hover {
+    background-color: #f0f0f0;
+}
+
+.column-index {
+    display: block;
+    color: #999;
+    font-size: 12px;
+    font-weight: normal;
+    margin-top: 3px;
+}
+
+.empty-cell {
+    background-color: #f8f8f8;
+    color: #999;
+}
+
+/* Φόρμα αντιστοίχισης */
+.mapping-section {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.mapping-section h4 {
+    color: #333;
+    margin-top: 0;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* Checkbox container */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.checkbox-label {
+    font-weight: normal;
+}
+
+/* Αποτελέσματα εισαγωγής */
+.result-section {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.result-section h3 {
+    color: #28a745;
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.result-section h4 {
+    color: #555;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.result-summary {
+    background-color: #f8f9fa;
+    border-left: 4px solid #17a2b8;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.result-summary p {
+    margin: 5px 0;
+    font-size: 15px;
+}
+
+.result-summary strong {
+    color: #333;
+}
+
+/* Επιτυχής εισαγωγές */
+.success-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.success-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.success-item:last-child {
+    border-bottom: none;
+}
+
+.success-item:hover {
+    background-color: #f5f5f5;
+}
+
+.success-id {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-right: 15px;
+    font-weight: bold;
+    min-width: 50px;
+    text-align: center;
+    border: 1px solid #c3e6cb;
+}
+
+.success-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.btn-edit {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 18px;
+    margin-left: 15px;
+    transition: color 0.3s;
+}
+
+.btn-edit:hover {
+    color: #0056b3;
+}
+
+/* Σφάλματα */
+.error-section {
+    background-color: #fff8f8;
+    border-left: 4px solid #dc3545;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.error-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.error-item {
+    padding: 12px;
+    border-bottom: 1px solid #f5c6cb;
+    margin-bottom: 10px;
+    background-color: #fff8f8;
+    border-radius: 4px;
+}
+
+.error-item:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.error-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.error-line {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-weight: bold;
+    border: 1px solid #f5c6cb;
+}
+
+.error-message {
+    color: #721c24;
+    flex: 1;
+    font-weight: bold;
+}
+
+.error-data {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: Consolas, Monaco, monospace;
+    word-break: break-all;
+    white-space: pre-wrap;
+    font-size: 12px;
+    color: #666;
+    border: 1px solid #eee;
+}
+
+/* Ειδοποιήσεις */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border-left: 4px solid #999;
+}
+
+.alert.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left-color: #dc3545;
+}
+
+.alert.success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left-color: #28a745;
+}
+
+.alert.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left-color: #ffc107;
+}
+
+.alert.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-left-color: #17a2b8;
+}
+
+/* Οδηγίες μορφής CSV */
+.form-info {
+    background-color: #e9f5fe;
+    border-left: 4px solid #17a2b8;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 4px;
+}
+
+.form-info h4 {
+    color: #0c5460;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.form-info p {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.form-info ol, .form-info ul {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding-left: 25px;
+}
+
+.form-info li {
+    margin-bottom: 8px;
+}
+
+.form-info strong {
+    color: #0c5460;
+}
+
+.form-info pre {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 12px;
+    margin-top: 15px;
+    font-family: Consolas, Monaco, monospace;
+    border: 1px solid #ddd;
+}
+
+/* Κουμπιά ενεργειών */
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.btn-primary, .btn-secondary, .btn-link {
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #aa3636;
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(170, 54, 54, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: #8a2828;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(170, 54, 54, 0.4);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    text-decoration: none;
+    box-shadow: 0 2px 5px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.4);
+}
+
+.btn-link {
+    background: none;
+    color: #6c757d;
+    border: none;
+    text-decoration: underline;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.btn-link:hover {
+    color: #aa3636;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Συμβουλές */
+.tip-item {
+    display: flex;
+    margin-bottom: 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+}
+
+.tip-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    color: #17a2b8;
+    flex-shrink: 0;
+}
+
+.tip-content {
+    flex: 1;
+}
+
+.tip-content h4 {
+    color: #0c5460;
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.tip-content p {
+    margin: 0;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Responsive για κινητές συσκευές */
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .select-group {
+        flex-direction: column;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
+    
+    .preview-table th, .preview-table td {
+        padding: 8px 5px;
+        font-size: 12px;
+    }
+    
+    .tip-item {
+        flex-direction: column;
+    }
+    
+    .tip-icon {
+        margin-bottom: 10px;
+    }
+}
+
+/* Ενημερωτικά banner */
+.info-banner {
+    background-color: #e9f5fe;
+    border-left: 4px solid #17a2b8;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.info-banner p {
+    margin: 0;
+    color: #0c5460;
+}
+
+@media (max-width: 768px) {
+    .info-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .info-banner .btn-primary {
+        margin-top: 10px;
+        width: 100%;
+    }
+}
