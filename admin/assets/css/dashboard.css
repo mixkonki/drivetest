@@ -1,8 +1,3 @@
-/* 
- * DriveTest - Admin Dashboard CSS
- * Ειδικά στυλ για το dashboard του admin panel
- */
-
 /* Κεφαλίδα του dashboard */
 .dashboard-header {
     display: flex;
@@ -387,16 +382,7 @@
       grid-template-columns: 1fr;
     }
     
-    .stats-card {
-      padding: var(--spacing-md);
-    }
-    
-    .stats-icon {
-      width: 40px;
-      height: 40px;
-      font-size: 1.5rem;
-    }
-    
+   
     .dashboard-header {
       flex-direction: column;
       align-items: flex-start;
@@ -443,6 +429,133 @@
     
     .stats-numbers {
       flex-direction: column;
-      gap: var(--spacing-sm);
     }
   }
+  /* Στυλ για τα γραφήματα */
+.dashboard-charts {
+  width: 100%;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
+  padding: var(--spacing-lg);
+  background-color: var(--card-background, #ffffff);
+  height: 100%; /* Γέμισε το διαθέσιμο ύψος */
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container {
+width: 100%;
+  margin: 0 auto;
+  height: 300px; /* Περιορισμός του ύψους */
+}
+
+.chart-container h3 {
+  font-size: var(--font-size-large);
+  margin-bottom: var(--spacing-md);
+  color: var(--secondary-color);
+  text-align: center;
+}
+
+/* Media queries για προσαρμογή στις κινητές συσκευές */
+@media (max-width: 768px) {
+  .chart-container {
+      height: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .chart-container {
+      height: 200px;
+  }
+}
+/* Νέο layout για το dashboard με δύο στήλες */
+/* Dashboard Layout */
+.dashboard-layout {
+  display: flex;
+  width: 100%;
+  gap: var(--spacing-xl, 20px);
+  
+}
+
+.dashboard-column-left {
+  flex: 2; /* Καταλαμβάνει τα 2/3 του χώρου */
+  min-width: 0; /* Αποτρέπει την υπερχείλιση */
+}
+
+.dashboard-column-right {
+  flex: 1; /* Καταλαμβάνει το 1/3 του χώρου */
+  min-width: 0; /* Αποτρέπει την υπερχείλιση */
+}
+
+/* Εξασφάλιση ίδιου ύψους και ευθυγράμμισης */
+.dashboard-column-left,
+.dashboard-column-right {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grid για τις κάρτες στατιστικών */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 κάρτες ανά σειρά */
+  gap: var(--spacing-lg, 15px);
+}
+
+/* Το γράφημα να έχει το ίδιο ύψος με τις κάρτες στατιστικών */
+
+
+.chart-container
+.dashboard-stats-grid {
+  flex: 1; /* Πάρε όλο το διαθέσιμο χώρο */
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container h3 {
+  font-size: var(--font-size-large, 1.2rem);
+  margin-bottom: var(--spacing-md, 10px);
+  color: var(--secondary-color, #333);
+  text-align: center;
+}
+
+.chart-container canvas {
+  flex: 1; /* Γέμισε τον υπόλοιπο χώρο */
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  
+  .dashboard-column-left,
+  .dashboard-column-right {
+    flex: auto;
+  }
+  
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Media queries για προσαρμογή σε κινητές συσκευές */
+@media (max-width: 992px) {
+  .dashboard-layout {
+      flex-direction: column; /* Στοίβαξε τις στήλες σε μικρότερες οθόνες */
+  }
+  
+  .dashboard-charts {
+      height: 400px; /* Σταθερό ύψος στις μικρότερες οθόνες */
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-stats-grid {
+      grid-template-columns: 1fr; /* 1 κάρτα ανά σειρά */
+  }
+  
+}
+
+

@@ -2,14 +2,19 @@
 // Ορισμός τίτλου σελίδας
 $page_title = 'Πίνακας Διαχείρισης';
 
-// Ορισμός flags για φόρτωση ειδικών CSS/JS (αν χρειάζεται)
-$load_chart_js = true; // Για παράδειγμα, αν χρειάζεται το Chart.js
-$load_dashboard_js = true; // Αν υπάρχει ειδικό dashboard.js
-
+// Φόρτωση των απαραίτητων αρχείων
 require_once '../config/config.php';
 require_once '../includes/db_connection.php';
 require_once 'includes/admin_auth.php'; // Έλεγχος αν είναι admin
+
+// Προσθήκη γραφημάτων αν χρειάζεται (θα φορτωθεί αυτόματα από το admin_scripts.php)
+$load_chart_js = true;
+
+// Δεν χρειάζεται το flag για το dashboard.js πλέον, 
+// γιατί θα φορτωθεί αυτόματα βάσει του ονόματος της σελίδας
+
 require_once __DIR__ . '/includes/admin_header.php';
+
 // Λειτουργία για logging
 function log_debug($message) {
     file_put_contents(BASE_PATH . '/admin/test/debug_log.txt', date('[Y-m-d H:i:s] ') . $message . "\n", FILE_APPEND);
@@ -100,9 +105,9 @@ $recent_tests = $recent_tests_result ? $recent_tests_result->fetch_all(MYSQLI_AS
             <a href="test/generate_test.php" class="btn-primary">🧩 Δημιουργία Τεστ</a>
         </div>
     </div>
-
+    
     <div class="dashboard-stats-container">
-        <div class="stats-card users-stats">
+        <div class="stats-card users-stats" style="opacity: 0; transform: translateY(20px);">
             <div class="stats-icon">👥</div>
             <div class="stats-content">
                 <h3>Χρήστες</h3>
@@ -119,8 +124,8 @@ $recent_tests = $recent_tests_result ? $recent_tests_result->fetch_all(MYSQLI_AS
                 <a href="users.php" class="stats-link">Διαχείριση Χρηστών →</a>
             </div>
         </div>
-
-        <div class="stats-card questions-stats">
+        
+        <div class="stats-card questions-stats" style="opacity: 0; transform: translateY(20px);">
             <div class="stats-icon">❓</div>
             <div class="stats-content">
                 <h3>Ερωτήσεις & Κατηγορίες</h3>
@@ -149,8 +154,8 @@ $recent_tests = $recent_tests_result ? $recent_tests_result->fetch_all(MYSQLI_AS
                 </div>
             </div>
         </div>
-
-        <div class="stats-card tests-stats">
+        
+        <div class="stats-card tests-stats" style="opacity: 0; transform: translateY(20px);">
             <div class="stats-icon">🧩</div>
             <div class="stats-content">
                 <h3>Τεστ</h3>
@@ -166,8 +171,8 @@ $recent_tests = $recent_tests_result ? $recent_tests_result->fetch_all(MYSQLI_AS
                 </div>
             </div>
         </div>
-
-        <div class="stats-card subscriptions-stats">
+        
+        <div class="stats-card subscriptions-stats" style="opacity: 0; transform: translateY(20px);">
             <div class="stats-icon">💰</div>
             <div class="stats-content">
                 <h3>Συνδρομές</h3>
@@ -185,11 +190,19 @@ $recent_tests = $recent_tests_result ? $recent_tests_result->fetch_all(MYSQLI_AS
             </div>
         </div>
     </div>
-
     
+
     
     <div class="dashboard-quick-links">
         <h3 class="quick-links-title">⚡ Γρήγορες Ενέργειες</h3>
+        
+        <!-- Προσθήκη αναζήτησης (προαιρετικά) -->
+        <!--
+        <div class="quick-links-search">
+            <input type="text" id="quickLinksSearch" placeholder="Αναζήτηση ενέργειας..." class="form-control">
+        </div>
+        -->
+        
         <div class="quick-links-grid">
             <a href="users.php" class="quick-link">
                 <div class="quick-link-icon">👥</div>
@@ -203,8 +216,6 @@ $recent_tests = $recent_tests_result ? $recent_tests_result->fetch_all(MYSQLI_AS
                 <div class="quick-link-icon">📑</div>
                 <div class="quick-link-label">Διαχείριση Υποκατηγοριών</div>
             </a>
-       
-        
             <a href="test/manage_chapters.php" class="quick-link">
                 <div class="quick-link-icon">📚</div>
                 <div class="quick-link-label">Διαχείριση Κεφαλαίων</div>

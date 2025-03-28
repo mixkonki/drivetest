@@ -4,57 +4,76 @@
 if (!defined('BASE_URL')) {
     require_once dirname(dirname(__DIR__)) . '/config/config.php';
 }
-?>
 
-<!-- Αυτόματη φόρτωση script με βάση το όνομα της σελίδας -->
-<?php
+// Κατάλογος κοινών JS αρχείων για όλες τις σελίδες διαχείρισης
+$common_js_files = [
+    '/admin/assets/js/admin_main.js',
+    '/admin/assets/js/admin_navbar.js'
+];
+
+// Αρχικοποίηση πίνακα για ειδικά JS
+$admin_js_files = [];
+
+// Αυτόματη φόρτωση JS με βάση το όνομα του αρχείου
 $current_page = basename($_SERVER['PHP_SELF'], '.php'); // Αφαιρεί την κατάληξη .php
-$page_specific_js = BASE_URL . '/admin/assets/js/' . $current_page . '.js';
-$page_specific_js_file = BASE_PATH . '/admin/assets/js/' . $current_page . '.js';
-if (file_exists($page_specific_js_file)) {
-    echo '<script src="' . $page_specific_js . '"></script>';
+$specific_js = "/admin/assets/js/{$current_page}.js";
+
+// Έλεγχος για JS σε υποφακέλους (π.χ. test/manage_questions.php)
+if (strpos($_SERVER['PHP_SELF'], '/admin/test/') !== false) {
+    // Φόρτωση του κοινού JS για το τμήμα test
+    $test_common_js = "/admin/assets/js/test/test_common.js";
+    if (file_exists(BASE_PATH . $test_common_js)) {
+        $admin_js_files[] = $test_common_js;
+    }
+    
+    // Φόρτωση του ειδικού JS για την τρέχουσα σελίδα του τμήματος test
+    $test_file = basename($_SERVER['PHP_SELF'], '.php');
+    $specific_test_js = "/admin/assets/js/test/{$test_file}.js";
+    
+    if (file_exists(BASE_PATH . $specific_test_js)) {
+        $admin_js_files[] = $specific_test_js;
+    }
+} else {
+    // Έλεγχος και φόρτωση του ειδικού JS για την τρέχουσα σελίδα
+    if (file_exists(BASE_PATH . $specific_js)) {
+        $admin_js_files[] = $specific_js;
+    }
 }
 
-// Για σελίδες σε υποφακέλους (π.χ. test/manage_questions.php)
-if (strpos($_SERVER['PHP_SELF'], '/') !== false) {
-    $path_parts = explode('/', trim($_SERVER['PHP_SELF'], '/'));
-    if (count($path_parts) > 1) {
-        // Το τελευταίο μέρος είναι το όνομα του αρχείου
-        $filename = basename(end($path_parts), '.php');
-        $subfolder = prev($path_parts); // Το προηγούμενο μέρος είναι ο υποφάκελος
-        
-        // Έλεγχος για JS σε υποφάκελο
-        $subfolder_js_file = BASE_PATH . '/admin/assets/js/' . $subfolder . '/' . $filename . '.js';
-        $subfolder_js = BASE_URL . '/admin/assets/js/' . $subfolder . '/' . $filename . '.js';
-        if (file_exists($subfolder_js_file)) {
-            echo '<script src="' . $subfolder_js . '"></script>';
+// Φόρτωση JS με βάση τις flag μεταβλητές
+$admin_js_flags = [
+    'load_dashboard_js' => '/admin/assets/js/dashboard.js',
+    'load_users_js' => '/admin/assets/js/users.js',
+    'load_admin_subscriptions_js' => '/admin/assets/js/admin_subscriptions.js',
+    'load_chapters_js' => '/admin/assets/js/test/chapters.js',
+    'load_questions_js' => '/admin/assets/js/test/questions.js',
+    'load_subcategories_js' => '/admin/assets/js/test/subcategories.js',
+    'load_test_config_js' => '/admin/assets/js/test/test_config.js',
+    'load_bulk_import_js' => '/admin/assets/js/test/bulk_import.js'
+];
+
+// Φόρτωση των JS με βάση τις flag μεταβλητές
+foreach ($admin_js_flags as $flag => $js_file) {
+    if (isset($$flag) && $$flag === true) {
+        if (file_exists(BASE_PATH . $js_file)) {
+            $admin_js_files[] = $js_file;
         }
     }
 }
-?>
 
-<!-- Conditional JS loading με βάση τις flag μεταβλητές -->
-<?php
-$admin_js_flags = [
-    'load_chart_js' => '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>',
-    'load_dashboard_js' => '<script src="' . BASE_URL . '/admin/assets/js/dashboard.js"></script>',
-    'load_users_js' => '<script src="' . BASE_URL . '/admin/assets/js/users.js"></script>',
-    'load_admin_subscriptions_js' => '<script src="' . BASE_URL . '/admin/assets/js/admin_subscriptions.js"></script>',
-    'load_chapters_js' => '<script src="' . BASE_URL . '/admin/assets/js/test/chapters.js"></script>',
-    'load_questions_js' => '<script src="' . BASE_URL . '/admin/assets/js/test/questions.js"></script>',
-    'load_subcategories_js' => '<script src="' . BASE_URL . '/admin/assets/js/test/subcategories.js"></script>',
-    'load_test_config_js' => '<script src="' . BASE_URL . '/admin/assets/js/test/test_config.js"></script>',
-    'load_bulk_import_js' => '<script src="' . BASE_URL . '/admin/assets/js/test/bulk_import.js"></script>'
+// Ειδικές περιπτώσεις για εξωτερικά scripts
+$external_js_flags = [
+    'load_chart_js' => 'https://cdn.jsdelivr.net/npm/chart.js',
+    // Προσθέστε εδώ και άλλα εξωτερικά JS
 ];
 
-foreach ($admin_js_flags as $flag => $js_include) {
+// Δεν φορτώνουμε ακόμα τα scripts, αυτό θα γίνει στο admin_footer.php
+// Απλώς συλλέγουμε τη λίστα με τα απαιτούμενα scripts
+
+// Τέλος, δημιουργούμε έναν πίνακα με τα εξωτερικά scripts που πρέπει να φορτωθούν
+$external_scripts_to_load = [];
+foreach ($external_js_flags as $flag => $js_url) {
     if (isset($$flag) && $$flag === true) {
-        echo $js_include . "\n";
+        $external_scripts_to_load[] = $js_url;
     }
 }
-?>
-
-<!-- Additional JS (αν έχει οριστεί από το σενάριο) -->
-<?php if (isset($additional_js)): ?>
-    <?= $additional_js ?>
-<?php endif; ?>

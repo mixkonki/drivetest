@@ -4,38 +4,45 @@
 if (!defined('BASE_URL')) {
     require_once dirname(dirname(__DIR__)) . '/config/config.php';
 }
-?>
 
-<!-- Φόρτωση βασικών CSS για το admin panel -->
-<link rel="stylesheet" href="<?= BASE_URL ?>/admin/assets/css/admin.css">
+// Κατάλογος κοινών CSS για όλες τις σελίδες διαχείρισης
+$common_css_files = [
+    '/admin/assets/css/variables.css',
+    '/admin/assets/css/admin_navbar.css',
+    '/admin/assets/css/admin_unified.css',
+    '/admin/assets/css/admin_footer.css',
+ ];
 
-<!-- Αυτόματη φόρτωση CSS με βάση το όνομα της σελίδας -->
-<?php
+// Αρχικοποίηση πίνακα για ειδικά CSS
+$admin_css_files = [];
+
+// Αυτόματη φόρτωση CSS με βάση το όνομα του αρχείου
 $current_page = basename($_SERVER['PHP_SELF'], '.php'); // Αφαιρεί την κατάληξη .php
-$page_specific_css = BASE_PATH . '/admin/assets/css/' . $current_page . '.css';
-if (file_exists($page_specific_css)) {
-    echo '<link rel="stylesheet" href="' . BASE_URL . '/admin/assets/css/' . $current_page . '.css">';
-}
+$specific_css = "/admin/assets/css/{$current_page}.css";
 
-// Για σελίδες σε υποφακέλους (π.χ. test/manage_questions.php)
-if (strpos($_SERVER['PHP_SELF'], '/') !== false) {
-    $path_parts = explode('/', trim($_SERVER['PHP_SELF'], '/'));
-    if (count($path_parts) > 1) {
-        // Το τελευταίο μέρος είναι το όνομα του αρχείου
-        $filename = basename(end($path_parts), '.php');
-        $subfolder = prev($path_parts); // Το προηγούμενο μέρος είναι ο υποφάκελος
-        
-        // Έλεγχος για CSS σε υποφάκελο
-        $subfolder_css = BASE_PATH . '/admin/assets/css/' . $subfolder . '/' . $filename . '.css';
-        if (file_exists($subfolder_css)) {
-            echo '<link rel="stylesheet" href="' . BASE_URL . '/admin/assets/css/' . $subfolder . '/' . $filename . '.css">';
-        }
+// Έλεγχος για CSS σε υποφακέλους (π.χ. test/manage_questions.php)
+if (strpos($_SERVER['PHP_SELF'], '/admin/test/') !== false) {
+    // Φόρτωση του κοινού CSS για το τμήμα test
+    $test_common_css = "/admin/assets/css/test/test_common.css";
+    if (file_exists(BASE_PATH . $test_common_css)) {
+        $admin_css_files[] = $test_common_css;
+    }
+    
+    // Φόρτωση του ειδικού CSS για την τρέχουσα σελίδα του τμήματος test
+    $test_file = basename($_SERVER['PHP_SELF'], '.php');
+    $specific_test_css = "/admin/assets/css/test/{$test_file}.css";
+    
+    if (file_exists(BASE_PATH . $specific_test_css)) {
+        $admin_css_files[] = $specific_test_css;
+    }
+} else {
+    // Έλεγχος και φόρτωση του ειδικού CSS για την τρέχουσα σελίδα
+    if (file_exists(BASE_PATH . $specific_css)) {
+        $admin_css_files[] = $specific_css;
     }
 }
-?>
 
-<!-- Φόρτωση CSS με βάση τις flag μεταβλητές -->
-<?php
+// Φόρτωση CSS με βάση τις flag μεταβλητές
 $admin_css_flags = [
     'load_dashboard_css' => 'dashboard.css',
     'load_users_css' => 'users.css',
@@ -44,24 +51,40 @@ $admin_css_flags = [
     'load_questions_css' => 'test/questions.css',
     'load_subcategories_css' => 'test/subcategories.css',
     'load_test_config_css' => 'test/test_config.css',
-    'load_bulk_import_css' => 'test/bulk_import.css'
-];
-
-$admin_css_flags = [
-    // υπάρχοντα flags...
+    'load_bulk_import_css' => 'test/bulk_import.css',
     'load_form_common_css' => 'form_common.css'
 ];
+
 foreach ($admin_css_flags as $flag => $css_file) {
     if (isset($$flag) && $$flag === true) {
-        $css_path = BASE_PATH . '/admin/assets/css/' . $css_file;
-        if (file_exists($css_path)) {
-            echo '<link rel="stylesheet" href="' . BASE_URL . '/admin/assets/css/' . $css_file . '">' . "\n";
+        $css_path = "/admin/assets/css/{$css_file}";
+        if (file_exists(BASE_PATH . $css_path)) {
+            $admin_css_files[] = $css_path;
         }
     }
 }
-?>
 
-<!-- Additional CSS (αν έχει οριστεί από το σενάριο) -->
-<?php if (isset($additional_css)): ?>
-    <?= $additional_css ?>
-<?php endif; ?>
+// Φόρτωση των κοινών CSS αρχείων
+foreach ($common_css_files as $css_file) {
+    if (file_exists(BASE_PATH . $css_file)) {
+        echo '<link rel="stylesheet" href="' . BASE_URL . $css_file . '">' . "\n";
+    }
+}
+
+// Φόρτωση των ειδικών admin CSS, αν υπάρχουν (αποφυγή διπλοτύπων)
+if (!empty($admin_css_files)) {
+    $loaded_files = []; // Για αποφυγή διπλών φορτώσεων
+    
+    foreach ($admin_css_files as $css_file) {
+        if (!in_array($css_file, $loaded_files) && file_exists(BASE_PATH . $css_file)) {
+            echo '<link rel="stylesheet" href="' . BASE_URL . $css_file . '">' . "\n";
+            $loaded_files[] = $css_file;
+        }
+    }
+}
+
+// Φόρτωση τυχόν εξωτερικού CSS που έχει οριστεί από τη σελίδα
+if (isset($additional_css) && !empty($additional_css)) {
+    echo $additional_css;
+}
+?>
